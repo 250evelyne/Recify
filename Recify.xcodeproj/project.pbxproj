@@ -1,0 +1,742 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04040FE32F3117E300EA6C4C /* RecifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04040FE22F3117E300EA6C4C /* RecifyApp.swift */; };
+		04040FE52F3117E300EA6C4C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04040FE42F3117E300EA6C4C /* ContentView.swift */; };
+		04040FE72F3117E600EA6C4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04040FE62F3117E600EA6C4C /* Assets.xcassets */; };
+		04040FEA2F3117E600EA6C4C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04040FE92F3117E600EA6C4C /* Preview Assets.xcassets */; };
+		04040FEC2F3117E600EA6C4C /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04040FEB2F3117E600EA6C4C /* Persistence.swift */; };
+		04040FEF2F3117E600EA6C4C /* Recify.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 04040FED2F3117E600EA6C4C /* Recify.xcdatamodeld */; };
+		04040FF92F3117E600EA6C4C /* RecifyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04040FF82F3117E600EA6C4C /* RecifyTests.swift */; };
+		040410032F3117E600EA6C4C /* RecifyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410022F3117E600EA6C4C /* RecifyUITests.swift */; };
+		040410052F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410042F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift */; };
+		040410122F3119B600EA6C4C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 040410112F3119B500EA6C4C /* GoogleService-Info.plist */; };
+		040410152F311A9C00EA6C4C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 040410142F311A9C00EA6C4C /* FirebaseAuth */; };
+		040410172F311A9C00EA6C4C /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 040410162F311A9C00EA6C4C /* FirebaseDatabase */; };
+		040410192F311A9C00EA6C4C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 040410182F311A9C00EA6C4C /* FirebaseFirestore */; };
+		0404101B2F311A9C00EA6C4C /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0404101A2F311A9C00EA6C4C /* FirebaseFunctions */; };
+		0404101D2F311A9C00EA6C4C /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0404101C2F311A9C00EA6C4C /* FirebaseInAppMessaging-Beta */; };
+		0404101F2F311A9C00EA6C4C /* FirebaseInAppMessagingSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0404101E2F311A9C00EA6C4C /* FirebaseInAppMessagingSwift-Beta */; };
+		040410212F311A9C00EA6C4C /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 040410202F311A9C00EA6C4C /* FirebaseMessaging */; };
+		040410232F311A9C00EA6C4C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 040410222F311A9C00EA6C4C /* FirebaseStorage */; };
+		040410272F311B1C00EA6C4C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410262F311B1C00EA6C4C /* User.swift */; };
+		040410292F311B5400EA6C4C /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410282F311B5400EA6C4C /* Recipe.swift */; };
+		0404102B2F311B7000EA6C4C /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102A2F311B7000EA6C4C /* OnboardingPage.swift */; };
+		0404102D2F311B9900EA6C4C /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102C2F311B9900EA6C4C /* AuthManager.swift */; };
+		0404102F2F311BBA00EA6C4C /* OnboardingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */; };
+		040410312F311BDC00EA6C4C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410302F311BDC00EA6C4C /* OnboardingView.swift */; };
+		040410332F311C0300EA6C4C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410322F311C0300EA6C4C /* LoginView.swift */; };
+		040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410342F311C3A00EA6C4C /* SignUpView.swift */; };
+		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		04040FF52F3117E600EA6C4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04040FD72F3117E300EA6C4C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 04040FDE2F3117E300EA6C4C;
+			remoteInfo = Recify;
+		};
+		04040FFF2F3117E600EA6C4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04040FD72F3117E300EA6C4C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 04040FDE2F3117E300EA6C4C;
+			remoteInfo = Recify;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04040FDF2F3117E300EA6C4C /* Recify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		04040FE22F3117E300EA6C4C /* RecifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyApp.swift; sourceTree = "<group>"; };
+		04040FE42F3117E300EA6C4C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		04040FE62F3117E600EA6C4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		04040FE92F3117E600EA6C4C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		04040FEB2F3117E600EA6C4C /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		04040FEE2F3117E600EA6C4C /* Recify.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Recify.xcdatamodel; sourceTree = "<group>"; };
+		04040FF42F3117E600EA6C4C /* RecifyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		04040FF82F3117E600EA6C4C /* RecifyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyTests.swift; sourceTree = "<group>"; };
+		04040FFE2F3117E600EA6C4C /* RecifyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecifyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		040410022F3117E600EA6C4C /* RecifyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyUITests.swift; sourceTree = "<group>"; };
+		040410042F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		040410112F3119B500EA6C4C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		040410262F311B1C00EA6C4C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		040410282F311B5400EA6C4C /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		0404102A2F311B7000EA6C4C /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
+		0404102C2F311B9900EA6C4C /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
+		040410302F311BDC00EA6C4C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		040410322F311C0300EA6C4C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		040410342F311C3A00EA6C4C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		04040FDC2F3117E300EA6C4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				040410172F311A9C00EA6C4C /* FirebaseDatabase in Frameworks */,
+				040410152F311A9C00EA6C4C /* FirebaseAuth in Frameworks */,
+				040410212F311A9C00EA6C4C /* FirebaseMessaging in Frameworks */,
+				040410192F311A9C00EA6C4C /* FirebaseFirestore in Frameworks */,
+				0404101B2F311A9C00EA6C4C /* FirebaseFunctions in Frameworks */,
+				040410232F311A9C00EA6C4C /* FirebaseStorage in Frameworks */,
+				0404101F2F311A9C00EA6C4C /* FirebaseInAppMessagingSwift-Beta in Frameworks */,
+				0404101D2F311A9C00EA6C4C /* FirebaseInAppMessaging-Beta in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FF12F3117E600EA6C4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FFB2F3117E600EA6C4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		04040FD62F3117E300EA6C4C = {
+			isa = PBXGroup;
+			children = (
+				040410112F3119B500EA6C4C /* GoogleService-Info.plist */,
+				04040FE12F3117E300EA6C4C /* Recify */,
+				04040FF72F3117E600EA6C4C /* RecifyTests */,
+				040410012F3117E600EA6C4C /* RecifyUITests */,
+				04040FE02F3117E300EA6C4C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		04040FE02F3117E300EA6C4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				04040FDF2F3117E300EA6C4C /* Recify.app */,
+				04040FF42F3117E600EA6C4C /* RecifyTests.xctest */,
+				04040FFE2F3117E600EA6C4C /* RecifyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		04040FE12F3117E300EA6C4C /* Recify */ = {
+			isa = PBXGroup;
+			children = (
+				040410252F311B0D00EA6C4C /* Views */,
+				040410242F311B0400EA6C4C /* Models */,
+				04040FE22F3117E300EA6C4C /* RecifyApp.swift */,
+				04040FE42F3117E300EA6C4C /* ContentView.swift */,
+				04040FE62F3117E600EA6C4C /* Assets.xcassets */,
+				04040FEB2F3117E600EA6C4C /* Persistence.swift */,
+				04040FED2F3117E600EA6C4C /* Recify.xcdatamodeld */,
+				04040FE82F3117E600EA6C4C /* Preview Content */,
+				0404102C2F311B9900EA6C4C /* AuthManager.swift */,
+			);
+			path = Recify;
+			sourceTree = "<group>";
+		};
+		04040FE82F3117E600EA6C4C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				04040FE92F3117E600EA6C4C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		04040FF72F3117E600EA6C4C /* RecifyTests */ = {
+			isa = PBXGroup;
+			children = (
+				04040FF82F3117E600EA6C4C /* RecifyTests.swift */,
+			);
+			path = RecifyTests;
+			sourceTree = "<group>";
+		};
+		040410012F3117E600EA6C4C /* RecifyUITests */ = {
+			isa = PBXGroup;
+			children = (
+				040410022F3117E600EA6C4C /* RecifyUITests.swift */,
+				040410042F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift */,
+			);
+			path = RecifyUITests;
+			sourceTree = "<group>";
+		};
+		040410242F311B0400EA6C4C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				040410262F311B1C00EA6C4C /* User.swift */,
+				040410282F311B5400EA6C4C /* Recipe.swift */,
+				0404102A2F311B7000EA6C4C /* OnboardingPage.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		040410252F311B0D00EA6C4C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */,
+				040410302F311BDC00EA6C4C /* OnboardingView.swift */,
+				040410322F311C0300EA6C4C /* LoginView.swift */,
+				040410342F311C3A00EA6C4C /* SignUpView.swift */,
+				040410362F31234300EA6C4C /* ProfileView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		04040FDE2F3117E300EA6C4C /* Recify */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 040410082F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "Recify" */;
+			buildPhases = (
+				04040FDB2F3117E300EA6C4C /* Sources */,
+				04040FDC2F3117E300EA6C4C /* Frameworks */,
+				04040FDD2F3117E300EA6C4C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Recify;
+			packageProductDependencies = (
+				040410142F311A9C00EA6C4C /* FirebaseAuth */,
+				040410162F311A9C00EA6C4C /* FirebaseDatabase */,
+				040410182F311A9C00EA6C4C /* FirebaseFirestore */,
+				0404101A2F311A9C00EA6C4C /* FirebaseFunctions */,
+				0404101C2F311A9C00EA6C4C /* FirebaseInAppMessaging-Beta */,
+				0404101E2F311A9C00EA6C4C /* FirebaseInAppMessagingSwift-Beta */,
+				040410202F311A9C00EA6C4C /* FirebaseMessaging */,
+				040410222F311A9C00EA6C4C /* FirebaseStorage */,
+			);
+			productName = Recify;
+			productReference = 04040FDF2F3117E300EA6C4C /* Recify.app */;
+			productType = "com.apple.product-type.application";
+		};
+		04040FF32F3117E600EA6C4C /* RecifyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0404100B2F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "RecifyTests" */;
+			buildPhases = (
+				04040FF02F3117E600EA6C4C /* Sources */,
+				04040FF12F3117E600EA6C4C /* Frameworks */,
+				04040FF22F3117E600EA6C4C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				04040FF62F3117E600EA6C4C /* PBXTargetDependency */,
+			);
+			name = RecifyTests;
+			productName = RecifyTests;
+			productReference = 04040FF42F3117E600EA6C4C /* RecifyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		04040FFD2F3117E600EA6C4C /* RecifyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0404100E2F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "RecifyUITests" */;
+			buildPhases = (
+				04040FFA2F3117E600EA6C4C /* Sources */,
+				04040FFB2F3117E600EA6C4C /* Frameworks */,
+				04040FFC2F3117E600EA6C4C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				040410002F3117E600EA6C4C /* PBXTargetDependency */,
+			);
+			name = RecifyUITests;
+			productName = RecifyUITests;
+			productReference = 04040FFE2F3117E600EA6C4C /* RecifyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		04040FD72F3117E300EA6C4C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					04040FDE2F3117E300EA6C4C = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					04040FF32F3117E600EA6C4C = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 04040FDE2F3117E300EA6C4C;
+					};
+					04040FFD2F3117E600EA6C4C = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 04040FDE2F3117E300EA6C4C;
+					};
+				};
+			};
+			buildConfigurationList = 04040FDA2F3117E300EA6C4C /* Build configuration list for PBXProject "Recify" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 04040FD62F3117E300EA6C4C;
+			packageReferences = (
+				040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			productRefGroup = 04040FE02F3117E300EA6C4C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				04040FDE2F3117E300EA6C4C /* Recify */,
+				04040FF32F3117E600EA6C4C /* RecifyTests */,
+				04040FFD2F3117E600EA6C4C /* RecifyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		04040FDD2F3117E300EA6C4C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04040FEA2F3117E600EA6C4C /* Preview Assets.xcassets in Resources */,
+				04040FE72F3117E600EA6C4C /* Assets.xcassets in Resources */,
+				040410122F3119B600EA6C4C /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FF22F3117E600EA6C4C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FFC2F3117E600EA6C4C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		04040FDB2F3117E300EA6C4C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04040FEC2F3117E600EA6C4C /* Persistence.swift in Sources */,
+				040410372F31234400EA6C4C /* ProfileView.swift in Sources */,
+				0404102D2F311B9900EA6C4C /* AuthManager.swift in Sources */,
+				04040FEF2F3117E600EA6C4C /* Recify.xcdatamodeld in Sources */,
+				040410312F311BDC00EA6C4C /* OnboardingView.swift in Sources */,
+				040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */,
+				04040FE52F3117E300EA6C4C /* ContentView.swift in Sources */,
+				040410292F311B5400EA6C4C /* Recipe.swift in Sources */,
+				040410272F311B1C00EA6C4C /* User.swift in Sources */,
+				0404102F2F311BBA00EA6C4C /* OnboardingPageView.swift in Sources */,
+				040410332F311C0300EA6C4C /* LoginView.swift in Sources */,
+				04040FE32F3117E300EA6C4C /* RecifyApp.swift in Sources */,
+				0404102B2F311B7000EA6C4C /* OnboardingPage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FF02F3117E600EA6C4C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04040FF92F3117E600EA6C4C /* RecifyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04040FFA2F3117E600EA6C4C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				040410052F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift in Sources */,
+				040410032F3117E600EA6C4C /* RecifyUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		04040FF62F3117E600EA6C4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 04040FDE2F3117E300EA6C4C /* Recify */;
+			targetProxy = 04040FF52F3117E600EA6C4C /* PBXContainerItemProxy */;
+		};
+		040410002F3117E600EA6C4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 04040FDE2F3117E300EA6C4C /* Recify */;
+			targetProxy = 04040FFF2F3117E600EA6C4C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		040410062F3117E600EA6C4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		040410072F3117E600EA6C4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		040410092F3117E600EA6C4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.Recify;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0404100A2F3117E600EA6C4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.Recify;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		0404100C2F3117E600EA6C4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.RecifyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Recify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Recify";
+			};
+			name = Debug;
+		};
+		0404100D2F3117E600EA6C4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.RecifyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Recify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Recify";
+			};
+			name = Release;
+		};
+		0404100F2F3117E600EA6C4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.RecifyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Recify;
+			};
+			name = Debug;
+		};
+		040410102F3117E600EA6C4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eve.RecifyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Recify;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		04040FDA2F3117E300EA6C4C /* Build configuration list for PBXProject "Recify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				040410062F3117E600EA6C4C /* Debug */,
+				040410072F3117E600EA6C4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		040410082F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "Recify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				040410092F3117E600EA6C4C /* Debug */,
+				0404100A2F3117E600EA6C4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0404100B2F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "RecifyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0404100C2F3117E600EA6C4C /* Debug */,
+				0404100D2F3117E600EA6C4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0404100E2F3117E600EA6C4C /* Build configuration list for PBXNativeTarget "RecifyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0404100F2F3117E600EA6C4C /* Debug */,
+				040410102F3117E600EA6C4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		040410142F311A9C00EA6C4C /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		040410162F311A9C00EA6C4C /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		040410182F311A9C00EA6C4C /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		0404101A2F311A9C00EA6C4C /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		0404101C2F311A9C00EA6C4C /* FirebaseInAppMessaging-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessaging-Beta";
+		};
+		0404101E2F311A9C00EA6C4C /* FirebaseInAppMessagingSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessagingSwift-Beta";
+		};
+		040410202F311A9C00EA6C4C /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		040410222F311A9C00EA6C4C /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 040410132F311A9C00EA6C4C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		04040FED2F3117E600EA6C4C /* Recify.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				04040FEE2F3117E600EA6C4C /* Recify.xcdatamodel */,
+			);
+			currentVersion = 04040FEE2F3117E600EA6C4C /* Recify.xcdatamodel */;
+			path = Recify.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 04040FD72F3117E300EA6C4C /* Project object */;
+}

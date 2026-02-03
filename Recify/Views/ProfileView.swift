@@ -1,0 +1,278 @@
+//
+//  ProfileView.swift
+//  Recify
+//
+//  Created by mac on 2026-02-02.
+//
+
+import SwiftUI
+
+struct ProfileView: View {
+    @EnvironmentObject var authManager: AuthManager
+    @State private var showLogoutConfirm = false
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 0) {
+                    VStack(spacing: 12) {
+                        ZStack(alignment: .bottomTrailing) {
+                            Circle()
+                                .fill(LinearGradient(
+                                    colors: [Color.orange.opacity(0.6), Color.pink.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 120, height: 120)
+                                .overlay(
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 50))
+                                        .foregroundColor(.white)
+                                )
+                            
+                            Circle()
+                                .fill(Color.pink)
+                                .frame(width: 36, height: 36)
+                                .overlay(
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.white)
+                                )
+                        }
+                        .padding(.top, 30)
+                        
+                        Text(authManager.userProfile?.userName ?? "User")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text(authManager.userProfile?.email ?? "")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.bottom, 30)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("ACCOUNT INFORMATION")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                            .padding(.bottom, 8)
+                        
+                        VStack(spacing: 0) {
+                            SettingsRow(
+                                icon: "person.circle.fill",
+                                iconColor: .blue,
+                                title: "Edit Username",
+                                subtitle: "@\(authManager.userProfile?.userName.lowercased().replacingOccurrences(of: " ", with: "_") ?? "username")",
+                                action: {}
+                            )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            SettingsRow(
+                                icon: "envelope.fill",
+                                iconColor: .blue,
+                                title: "Change Email",
+                                action: {}
+                            )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            SettingsRow(
+                                icon: "lock.fill",
+                                iconColor: .blue,
+                                title: "Reset Password",
+                                action: {}
+                            )
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    }
+                    .padding(.bottom, 24)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("PRIVACY & SECURITY")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                            .padding(.bottom, 8)
+                        
+                        VStack(spacing: 0) {
+                            SettingsToggleRow(
+                                icon: "eye.slash.fill",
+                                iconColor: .pink,
+                                title: "Private Profile",
+                                isOn: .constant(true)
+                            )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            SettingsToggleRow(
+                                icon: "bolt.fill",
+                                iconColor: .pink,
+                                title: "Show Activity Status",
+                                isOn: .constant(false)
+                            )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            SettingsRow(
+                                icon: "nosign",
+                                iconColor: .pink,
+                                title: "Blocked Accounts",
+                                action: {}
+                            )
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    }
+                    .padding(.bottom, 24)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("SUPPORT")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                            .padding(.bottom, 8)
+                        
+                        VStack(spacing: 0) {
+                            SettingsRow(
+                                icon: "questionmark.circle.fill",
+                                iconColor: .gray,
+                                title: "Help Center",
+                                action: {}
+                            )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            SettingsRow(
+                                icon: "doc.text.fill",
+                                iconColor: .gray,
+                                title: "Terms of Service",
+                                action: {}
+                            )
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    }
+                    .padding(.bottom, 24)
+                    
+                    Button(action: {
+                        showLogoutConfirm = true
+                    }) {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("Logout")
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.pink)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
+                    
+                    Text("Recify Version 2.4.0 (2023)")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                        .padding(.bottom, 30)
+                }
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Account Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert("Logout", isPresented: $showLogoutConfirm) {
+                Button("Cancel", role: .cancel) {}
+                Button("Logout", role: .destructive) {
+                    authManager.signOut()
+                }
+            } message: {
+                Text("Are you sure you want to logout?")
+            }
+        }
+    }
+}
+
+struct SettingsRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    var subtitle: String?
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundColor(.white)
+                    .frame(width: 36, height: 36)
+                    .background(iconColor.opacity(0.2))
+                    .cornerRadius(8)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .foregroundColor(.primary)
+                        .fontWeight(.medium)
+                    
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+            }
+            .padding()
+        }
+    }
+}
+
+struct SettingsToggleRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    @Binding var isOn: Bool
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(.white)
+                .frame(width: 36, height: 36)
+                .background(iconColor.opacity(0.2))
+                .cornerRadius(8)
+            
+            Text(title)
+                .foregroundColor(.primary)
+                .fontWeight(.medium)
+            
+            Spacer()
+            
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(.pink)
+        }
+        .padding()
+    }
+}
+
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProfileView()
+            .environmentObject(AuthManager())
+    }
+}
