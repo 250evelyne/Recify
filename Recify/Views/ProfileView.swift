@@ -30,14 +30,16 @@ struct ProfileView: View {
                                         .foregroundColor(.white)
                                 )
                             
-                            Circle()
-                                .fill(Color.pink)
-                                .frame(width: 36, height: 36)
-                                .overlay(
-                                    Image(systemName: "camera.fill")
-                                        .font(.system(size: 16))
-                                        .foregroundColor(.white)
-                                )
+                            NavigationLink(destination: EditProfileView().environmentObject(authManager)) {
+                                Circle()
+                                    .fill(Color.pink)
+                                    .frame(width: 36, height: 36)
+                                    .overlay(
+                                        Image(systemName: "pencil")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.white)
+                                    )
+                            }
                         }
                         .padding(.top, 30)
                         
@@ -52,7 +54,7 @@ struct ProfileView: View {
                     .padding(.bottom, 30)
                     
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("ACCOUNT INFORMATION")
+                        Text("MY ACTIVITY")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.gray)
@@ -60,29 +62,22 @@ struct ProfileView: View {
                             .padding(.bottom, 8)
                         
                         VStack(spacing: 0) {
-                            SettingsRow(
-                                icon: "person.circle.fill",
-                                iconColor: .blue,
-                                title: "Edit Username",
-                                subtitle: "@\(authManager.userProfile?.userName.lowercased().replacingOccurrences(of: " ", with: "_") ?? "username")",
-                                action: {}
-                            )
+                            NavigationLink(destination: CookingStatisticsTabView().environmentObject(authManager)) {
+                                SettingsRowContent(
+                                    icon: "chart.bar.fill",
+                                    iconColor: .pink,
+                                    title: "Cooking Statistics",
+                                    subtitle: "View your progress"
+                                )
+                            }
                             
                             Divider().padding(.leading, 60)
                             
                             SettingsRow(
-                                icon: "envelope.fill",
-                                iconColor: .blue,
-                                title: "Change Email",
-                                action: {}
-                            )
-                            
-                            Divider().padding(.leading, 60)
-                            
-                            SettingsRow(
-                                icon: "lock.fill",
-                                iconColor: .blue,
-                                title: "Reset Password",
+                                icon: "heart.fill",
+                                iconColor: .pink,
+                                title: "Favorite Recipes",
+                                subtitle: "\(authManager.userProfile?.favorites.count ?? 0) saved",
                                 action: {}
                             )
                         }
@@ -103,16 +98,16 @@ struct ProfileView: View {
                         VStack(spacing: 0) {
                             SettingsToggleRow(
                                 icon: "eye.slash.fill",
-                                iconColor: .pink,
+                                iconColor: .blue,
                                 title: "Private Profile",
-                                isOn: .constant(true)
+                                isOn: .constant(false)
                             )
                             
                             Divider().padding(.leading, 60)
                             
                             SettingsToggleRow(
                                 icon: "bolt.fill",
-                                iconColor: .pink,
+                                iconColor: .blue,
                                 title: "Show Activity Status",
                                 isOn: .constant(false)
                             )
@@ -121,7 +116,7 @@ struct ProfileView: View {
                             
                             SettingsRow(
                                 icon: "nosign",
-                                iconColor: .pink,
+                                iconColor: .blue,
                                 title: "Blocked Accounts",
                                 action: {}
                             )
@@ -180,7 +175,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 16)
                     
-                    Text("Recify Version 2.4.0 (2023)")
+                    Text("Recify Version 2.4.0 (2026)")
                         .font(.caption2)
                         .foregroundColor(.gray)
                         .padding(.bottom, 30)
@@ -201,6 +196,43 @@ struct ProfileView: View {
     }
 }
 
+struct SettingsRowContent: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    var subtitle: String? = nil
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(.white)
+                .frame(width: 36, height: 36)
+                .background(iconColor.opacity(0.2))
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .foregroundColor(.primary)
+                    .fontWeight(.medium)
+                
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14))
+                .foregroundColor(.gray)
+        }
+        .padding()
+    }
+}
+
 struct SettingsRow: View {
     let icon: String
     let iconColor: Color
@@ -210,33 +242,7 @@ struct SettingsRow: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .background(iconColor.opacity(0.2))
-                    .cornerRadius(8)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .foregroundColor(.primary)
-                        .fontWeight(.medium)
-                    
-                    if let subtitle = subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
-            }
-            .padding()
+            SettingsRowContent(icon: icon, iconColor: iconColor, title: title, subtitle: subtitle)
         }
     }
 }
