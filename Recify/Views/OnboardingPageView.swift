@@ -11,29 +11,33 @@ struct OnboardingPageView: View {
     let page: OnboardingPage
     
     var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
-            
-            Image(systemName: "fork.knife.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 280, height: 280)
-                .foregroundColor(.pink)
-            
-            VStack(spacing: 12) {
-                Text(page.title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
+        ZStack{
+            VStack(spacing: 30) {
+                Spacer()
                 
-                Text(page.description)
-                    .font(.body)
-                    .foregroundColor(.gray)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                Image("onBordingPageImage")
+                    .resizable()
+                    .clipShape(.circle)
+                    .scaledToFit()
+                    .frame(width: 450, height: 450)
+                    .shadow(radius: 8)
+                //.foregroundColor(.pink)
+                
+                VStack(spacing: 12) {
+                    Text(page.title)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(page.description)
+                        .font(.body)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
         }
     }
 }

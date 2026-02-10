@@ -8,11 +8,85 @@
 import SwiftUI
 
 struct IngredientPantryView: View {
+    
+    var ingredient : Ingredients
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            
+            RoundedRectangle(cornerRadius: 15)
+                .frame(width: 360, height: 100)
+                .foregroundColor(.white)
+                //.shadow(radius: 5) //just so i can see with the white background
+                .overlay {
+                    HStack{
+                        AsyncImage(url: URL(string: ingredient.imageUrl)) { image in
+                            image.resizable().scaledToFit()
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .frame(width: 65, height: 65)
+
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(.orange.opacity(0.2))
+                                .frame(width: 65, height: 65)
+                                .overlay {
+                                    Image(systemName: ingredient.category?.icon ?? "carrot.fill")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.orange)
+                                    
+                                }
+                        }
+                        
+                        VStack(alignment: .leading){
+                            Text(ingredient.name)
+                                .fontWeight(.semibold)
+                            Text("\(ingredient.quantity ?? 0) \(ingredient.unit?.rawValue ?? "N/A")").foregroundColor(.gray)
+                        }
+                        
+                        Spacer()
+                        
+                        Button {
+                            if ingredient.quantity != 0 {
+                                //ingredient.quantity! -= 1 //dont work rn
+                            }
+                        } label: {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.pink.opacity(0.2))
+                                .overlay {
+                                    Image(systemName: "minus")
+                                        .foregroundColor(.pink)
+                                        .fontWeight(.semibold)
+                                        .font(.title3)
+                                }
+                        }
+                        
+                        Text("\(ingredient.quantity!)") //i have to put the ! becuase else if shows Optional(4)
+                            .fontWeight(.semibold)
+                            .font(.system(size: 20))
+                            .padding(5)
+                        
+                        Button {
+                            //ingredient.quantity += 1
+                        } label: {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.pink)
+                                .overlay {
+                                    Image(systemName: "plus")
+                                        .foregroundColor(.white)
+                                        .fontWeight(.semibold)
+                                        .font(.title3)
+                                }
+                        }
+                    }.padding(.horizontal)
+                }
+        }
+        
     }
 }
 
 #Preview {
-    IngredientPantryView()
+    IngredientPantryView(ingredient: Ingredients(id: "1", name: "Carrot", quantity: 4, unit: units.pcs, imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", category: Filters.vegetables))
 }

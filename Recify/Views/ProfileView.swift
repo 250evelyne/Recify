@@ -11,10 +11,17 @@ struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var showLogoutConfirm = false
     
+    @StateObject private var ingredientVM = IngredientViewModel()
+    
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
+                    Button("Import Ingredients") {
+                        Task {
+                            await ingredientVM.uploadingIngredientsToFirebase()
+                        }
+                    }
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
                             Circle()

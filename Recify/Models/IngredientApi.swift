@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct IngredientApi: Codable {
+    let id: Int
+    let name: String
+    let image: String
+}

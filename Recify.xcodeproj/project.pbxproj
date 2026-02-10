@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,7 +16,6 @@
 		04040FF92F3117E600EA6C4C /* RecifyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04040FF82F3117E600EA6C4C /* RecifyTests.swift */; };
 		040410032F3117E600EA6C4C /* RecifyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410022F3117E600EA6C4C /* RecifyUITests.swift */; };
 		040410052F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410042F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift */; };
-		040410122F3119B600EA6C4C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 040410112F3119B500EA6C4C /* GoogleService-Info.plist */; };
 		040410152F311A9C00EA6C4C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 040410142F311A9C00EA6C4C /* FirebaseAuth */; };
 		040410172F311A9C00EA6C4C /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 040410162F311A9C00EA6C4C /* FirebaseDatabase */; };
 		040410192F311A9C00EA6C4C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 040410182F311A9C00EA6C4C /* FirebaseFirestore */; };
@@ -28,12 +27,20 @@
 		040410272F311B1C00EA6C4C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410262F311B1C00EA6C4C /* User.swift */; };
 		040410292F311B5400EA6C4C /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410282F311B5400EA6C4C /* Recipe.swift */; };
 		0404102B2F311B7000EA6C4C /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102A2F311B7000EA6C4C /* OnboardingPage.swift */; };
-		0404102D2F311B9900EA6C4C /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102C2F311B9900EA6C4C /* AuthManager.swift */; };
 		0404102F2F311BBA00EA6C4C /* OnboardingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */; };
 		040410312F311BDC00EA6C4C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410302F311BDC00EA6C4C /* OnboardingView.swift */; };
 		040410332F311C0300EA6C4C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410322F311C0300EA6C4C /* LoginView.swift */; };
 		040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410342F311C3A00EA6C4C /* SignUpView.swift */; };
 		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
+		FA46E3DA2F369C7A002CB0ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FA46E3D92F369C7A002CB0ED /* GoogleService-Info.plist */; };
+		FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3DB2F36A448002CB0ED /* PantryView.swift */; };
+		FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FA2F37C3B0002CB0ED /* Filters.swift */; };
+		FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */; };
+		FA46E4012F37D450002CB0ED /* AddIngredientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E4002F37D450002CB0ED /* AddIngredientView.swift */; };
+		FA46E4032F37D794002CB0ED /* floatingButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E4022F37D794002CB0ED /* floatingButtonLabel.swift */; };
+		FA46E4052F37D9D1002CB0ED /* IngredientsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E4042F37D9D1002CB0ED /* IngredientsView.swift */; };
+		FA46E4072F380E85002CB0ED /* IngredientPantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E4062F380E85002CB0ED /* IngredientPantryView.swift */; };
+		FA9A76F22F39168C00458CC8 /* IngredientApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9A76F12F39168C00458CC8 /* IngredientApi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,17 +73,28 @@
 		04040FFE2F3117E600EA6C4C /* RecifyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecifyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		040410022F3117E600EA6C4C /* RecifyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyUITests.swift; sourceTree = "<group>"; };
 		040410042F3117E600EA6C4C /* RecifyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecifyUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		040410112F3119B500EA6C4C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		040410262F311B1C00EA6C4C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		040410282F311B5400EA6C4C /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		0404102A2F311B7000EA6C4C /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
-		0404102C2F311B9900EA6C4C /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
 		040410302F311BDC00EA6C4C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		040410322F311C0300EA6C4C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		040410342F311C3A00EA6C4C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		FA46E3D92F369C7A002CB0ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		FA46E3DB2F36A448002CB0ED /* PantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryView.swift; sourceTree = "<group>"; };
+		FA46E3FA2F37C3B0002CB0ED /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
+		FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ingredients.swift; sourceTree = "<group>"; };
+		FA46E4002F37D450002CB0ED /* AddIngredientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientView.swift; sourceTree = "<group>"; };
+		FA46E4022F37D794002CB0ED /* floatingButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = floatingButtonLabel.swift; sourceTree = "<group>"; };
+		FA46E4042F37D9D1002CB0ED /* IngredientsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsView.swift; sourceTree = "<group>"; };
+		FA46E4062F380E85002CB0ED /* IngredientPantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientPantryView.swift; sourceTree = "<group>"; };
+		FA9A76F12F39168C00458CC8 /* IngredientApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientApi.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		FA9A76EA2F38F11200458CC8 /* Service */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Service; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		04040FDC2F3117E300EA6C4C /* Frameworks */ = {
@@ -114,11 +132,11 @@
 		04040FD62F3117E300EA6C4C = {
 			isa = PBXGroup;
 			children = (
-				040410112F3119B500EA6C4C /* GoogleService-Info.plist */,
 				04040FE12F3117E300EA6C4C /* Recify */,
 				04040FF72F3117E600EA6C4C /* RecifyTests */,
 				040410012F3117E600EA6C4C /* RecifyUITests */,
 				04040FE02F3117E300EA6C4C /* Products */,
+				FA46E3D92F369C7A002CB0ED /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,6 +153,7 @@
 		04040FE12F3117E300EA6C4C /* Recify */ = {
 			isa = PBXGroup;
 			children = (
+				FA9A76EA2F38F11200458CC8 /* Service */,
 				040410252F311B0D00EA6C4C /* Views */,
 				040410242F311B0400EA6C4C /* Models */,
 				04040FE22F3117E300EA6C4C /* RecifyApp.swift */,
@@ -143,7 +162,6 @@
 				04040FEB2F3117E600EA6C4C /* Persistence.swift */,
 				04040FED2F3117E600EA6C4C /* Recify.xcdatamodeld */,
 				04040FE82F3117E600EA6C4C /* Preview Content */,
-				0404102C2F311B9900EA6C4C /* AuthManager.swift */,
 			);
 			path = Recify;
 			sourceTree = "<group>";
@@ -179,6 +197,9 @@
 				040410262F311B1C00EA6C4C /* User.swift */,
 				040410282F311B5400EA6C4C /* Recipe.swift */,
 				0404102A2F311B7000EA6C4C /* OnboardingPage.swift */,
+				FA46E3FA2F37C3B0002CB0ED /* Filters.swift */,
+				FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */,
+				FA9A76F12F39168C00458CC8 /* IngredientApi.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -186,11 +207,16 @@
 		040410252F311B0D00EA6C4C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FA46E4042F37D9D1002CB0ED /* IngredientsView.swift */,
 				0404102E2F311BBA00EA6C4C /* OnboardingPageView.swift */,
 				040410302F311BDC00EA6C4C /* OnboardingView.swift */,
 				040410322F311C0300EA6C4C /* LoginView.swift */,
 				040410342F311C3A00EA6C4C /* SignUpView.swift */,
 				040410362F31234300EA6C4C /* ProfileView.swift */,
+				FA46E3DB2F36A448002CB0ED /* PantryView.swift */,
+				FA46E4002F37D450002CB0ED /* AddIngredientView.swift */,
+				FA46E4022F37D794002CB0ED /* floatingButtonLabel.swift */,
+				FA46E4062F380E85002CB0ED /* IngredientPantryView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -209,6 +235,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FA9A76EA2F38F11200458CC8 /* Service */,
 			);
 			name = Recify;
 			packageProductDependencies = (
@@ -314,7 +343,7 @@
 			files = (
 				04040FEA2F3117E600EA6C4C /* Preview Assets.xcassets in Resources */,
 				04040FE72F3117E600EA6C4C /* Assets.xcassets in Resources */,
-				040410122F3119B600EA6C4C /* GoogleService-Info.plist in Resources */,
+				FA46E3DA2F369C7A002CB0ED /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,12 +370,19 @@
 			files = (
 				04040FEC2F3117E600EA6C4C /* Persistence.swift in Sources */,
 				040410372F31234400EA6C4C /* ProfileView.swift in Sources */,
-				0404102D2F311B9900EA6C4C /* AuthManager.swift in Sources */,
 				04040FEF2F3117E600EA6C4C /* Recify.xcdatamodeld in Sources */,
 				040410312F311BDC00EA6C4C /* OnboardingView.swift in Sources */,
+				FA9A76F22F39168C00458CC8 /* IngredientApi.swift in Sources */,
+				FA46E4012F37D450002CB0ED /* AddIngredientView.swift in Sources */,
+				FA46E4032F37D794002CB0ED /* floatingButtonLabel.swift in Sources */,
+				FA46E4072F380E85002CB0ED /* IngredientPantryView.swift in Sources */,
 				040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */,
+				FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */,
 				04040FE52F3117E300EA6C4C /* ContentView.swift in Sources */,
+				FA46E4052F37D9D1002CB0ED /* IngredientsView.swift in Sources */,
+				FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */,
 				040410292F311B5400EA6C4C /* Recipe.swift in Sources */,
+				FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */,
 				040410272F311B1C00EA6C4C /* User.swift in Sources */,
 				0404102F2F311BBA00EA6C4C /* OnboardingPageView.swift in Sources */,
 				040410332F311C0300EA6C4C /* LoginView.swift in Sources */,
