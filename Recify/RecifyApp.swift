@@ -8,20 +8,8 @@
 import SwiftUI
 import FirebaseCore
 
-/*
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions lunchOptions : [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
-        return true
-    }
-}*/
-
-
 @main
 struct RecifyApp: App {
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @StateObject private var authManager = AuthManager()
     
@@ -31,17 +19,16 @@ struct RecifyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if authManager.isAuthenticated {
+            if !hasSeenOnboarding {
+                OnboardingView()
+                    .environmentObject(authManager)
+            } else if authManager.isAuthenticated {
+                
                 TabBarView()
                     .environmentObject(authManager)
             } else {
-                if hasSeenOnboarding {
-                    LoginView()
-                        .environmentObject(authManager)
-                } else {
-                    OnboardingView()
-                        .environmentObject(authManager)
-                }
+                LoginView()
+                    .environmentObject(authManager)
             }
         }
     }
