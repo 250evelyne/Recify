@@ -3,6 +3,9 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AuthManager: ObservableObject {
+    
+    static let shared = AuthManager()
+    
     @Published var isAuthenticated = false
     @Published var currentUser: FirebaseAuth.User?
     @Published var userProfile: User?
@@ -86,7 +89,7 @@ class AuthManager: ObservableObject {
             self.db.collection("users").document(user.uid).setData([
                 "email": email,
                 "userName": userName,
-                "favorites": []
+                "favorites": [] as [String]
             ]) { error in
                 if let error = error {
                     print(" Firestore error: \(error.localizedDescription)")
