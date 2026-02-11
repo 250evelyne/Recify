@@ -50,7 +50,7 @@ struct ContentView: View {
             do {
                 try viewContext.save()
             } catch {
-               
+              
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
@@ -64,7 +64,7 @@ struct ContentView: View {
             do {
                 try viewContext.save()
             } catch {
-               
+              
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
