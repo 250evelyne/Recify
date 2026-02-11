@@ -1,0 +1,13 @@
+# Xcode
+build/
+DerivedData/
+
+# User-specific
+*.xcuserdatad
+xcuserdata/
+
+# Configuration
+GoogleService-Info.plist
+
+# System files
+.DS_Store
