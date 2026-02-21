@@ -7,24 +7,22 @@
 
 import Foundation
 
-enum HttpMethod: String{
+enum HttpMethod: String {
     case GET, POST, PUT, DELETE
 }
 
-
-
 class IngredientsService {
     
+    // Define the webService and baseUrl within the class scope
     private let webService = WebService()
     private let baseUrl = "https://www.themealdb.com/api/json/v1/1/list.php?i=list"
     
-    // MARK: get the ingredients
-    func fetchIngredients() async -> [IngredientApi]{
-        let result: [IngredientApi]? = await webService.sendRequest(toUrl: baseUrl, method: .GET)
+    func fetchIngredients() async -> [IngredientApi] {
+        let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: HttpMethod.GET)
         
-        return result ?? []
+        return result?.meals ?? []
     }
-    
+}
     
 //    let id: Int?
 //    let name: String
@@ -63,4 +61,4 @@ class IngredientsService {
     
     
     
-}
+

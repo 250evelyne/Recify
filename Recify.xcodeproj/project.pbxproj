@@ -32,6 +32,7 @@
 		040410332F311C0300EA6C4C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410322F311C0300EA6C4C /* LoginView.swift */; };
 		040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410342F311C3A00EA6C4C /* SignUpView.swift */; };
 		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
+		20794A462F3E1B2800F73918 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 20794A452F3E1B2800F73918 /* GoogleService-Info.plist */; };
 		20EE05842F3D0F3B00930D68 /* ConversationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */; };
 		20EE05852F3D0F3B00930D68 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05802F3D0F3B00930D68 /* MessageBubble.swift */; };
 		20EE05862F3D0F3B00930D68 /* NewChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05822F3D0F3B00930D68 /* NewChatView.swift */; };
@@ -46,7 +47,6 @@
 		20EE05972F3D109E00930D68 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05962F3D109E00930D68 /* HomeView.swift */; };
 		20EE05992F3D10C100930D68 /* RecipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05982F3D10C100930D68 /* RecipeCard.swift */; };
 		20EE059B2F3D10DA00930D68 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE059A2F3D10DA00930D68 /* TabBarView.swift */; };
-		20EE059D2F3D116000930D68 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 20EE059C2F3D116000930D68 /* GoogleService-Info.plist */; };
 		FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3DB2F36A448002CB0ED /* PantryView.swift */; };
 		FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FA2F37C3B0002CB0ED /* Filters.swift */; };
 		FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */; };
@@ -95,6 +95,7 @@
 		040410322F311C0300EA6C4C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		040410342F311C3A00EA6C4C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		20794A452F3E1B2800F73918 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		20EE057E2F3D0F3B00930D68 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRow.swift; sourceTree = "<group>"; };
 		20EE05802F3D0F3B00930D68 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
@@ -109,7 +110,6 @@
 		20EE05962F3D109E00930D68 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		20EE05982F3D10C100930D68 /* RecipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCard.swift; sourceTree = "<group>"; };
 		20EE059A2F3D10DA00930D68 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
-		20EE059C2F3D116000930D68 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FA46E3DB2F36A448002CB0ED /* PantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryView.swift; sourceTree = "<group>"; };
 		FA46E3FA2F37C3B0002CB0ED /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
 		FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ingredients.swift; sourceTree = "<group>"; };
@@ -180,7 +180,7 @@
 		04040FE12F3117E300EA6C4C /* Recify */ = {
 			isa = PBXGroup;
 			children = (
-				20EE059C2F3D116000930D68 /* GoogleService-Info.plist */,
+				20794A452F3E1B2800F73918 /* GoogleService-Info.plist */,
 				FA9A76EA2F38F11200458CC8 /* Service */,
 				040410252F311B0D00EA6C4C /* Views */,
 				040410242F311B0400EA6C4C /* Models */,
@@ -401,7 +401,7 @@
 			files = (
 				04040FEA2F3117E600EA6C4C /* Preview Assets.xcassets in Resources */,
 				04040FE72F3117E600EA6C4C /* Assets.xcassets in Resources */,
-				20EE059D2F3D116000930D68 /* GoogleService-Info.plist in Resources */,
+				20794A462F3E1B2800F73918 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,7 +630,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eve.Recify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team.PrjRecipeAppIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -658,7 +658,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eve.Recify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team.PrjRecipeAppIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

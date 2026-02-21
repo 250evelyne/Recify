@@ -19,6 +19,13 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
+            PantryView()
+                .tabItem {
+                    Image(systemName: selectedTab == 2 ? "archivebox.fill" : "archivebox")
+                    Text("Pantry")
+                }
+                .tag(2)
+            
             CookingModeTabView()
                 .tabItem {
                     Image(systemName: selectedTab == 1 ? "play.circle.fill" : "play.circle")

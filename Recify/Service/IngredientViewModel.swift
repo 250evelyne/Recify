@@ -7,8 +7,9 @@
 
 import Foundation
 
-
 class IngredientViewModel: ObservableObject {
+
+    
     @Published var ingredients: [Ingredients] = []
     
 //    @Published var isLoading: Bool = false ///remeber to add a cirlce porgress bar thingy to the app
@@ -44,16 +45,28 @@ class IngredientViewModel: ObservableObject {
         let apiIngredients = await service.fetchIngredients()
         
         for apiIngredient in apiIngredients {
-            let name = apiIngredient.name
+            let name = apiIngredient.strIngredient
             let image = apiIngredient.image
             let category = autoAssignCategory(from: name)
             
-            firebase.addIngredient(name: name, imageUrl: image, category: category)
+            let defaultQuantity = 1
+            let defaultUnit = units.pcs
+            
+            firebase.addIngredient(
+                name: name,
+                imageUrl: image,
+                category: category,
+                quantity: defaultQuantity,
+                unit: defaultUnit
+            )
         }
     }
     
     
     ///since the api im using doent give categories for the ingredients ina try and mapp them by looking for key words
+    ///i think that the filters dont work for sesonig and other because this dont filter them propertly
+    ///plus i forgot to add other to the filter
+    ///need to add more categories they all kind fucked i dont have any for cooking wine and other stuff
     func autoAssignCategory(from name: String) -> Filters {
         let lower = name.lowercased()
 
@@ -69,6 +82,27 @@ class IngredientViewModel: ObservableObject {
             return .vegetables
         }
     }
+    
+    func searchIngredients(query: String) async {
+        // You would likely filter or fetch from your service here
+        let results = await service.fetchIngredients()
+        // Filter results based on the user's search query
+        DispatchQueue.main.async {
+            self.ingredients = results.filter { $0.strIngredient.localizedCaseInsensitiveContains(query) }
+                .map { apiItem in
+                    Ingredients(
+                        name: apiItem.strIngredient,
+                        quantity: 1, // Default quantity
+                        unit: .pcs,  // Default unit
+                        imageUrl: apiItem.image,
+                        category: self.autoAssignCategory(from: apiItem.strIngredient)
+                    )
+                }
+        }
+    }
+    
+    
+    
     
     
 }

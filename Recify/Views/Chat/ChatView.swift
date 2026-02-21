@@ -137,6 +137,7 @@ struct ChatView: View {
         guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty,
               let conversationId = conversation.id else { return }
         
+        // Use 'chatManager' (no $) and call the correct 'in:' parameter
         chatManager.sendMessage(text: messageText, in: conversationId)
         messageText = ""
     }

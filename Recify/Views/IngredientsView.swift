@@ -10,9 +10,18 @@ import SwiftUI
 struct IngredientsView: View {
     
     let ingredient : Ingredients
+    
+    var onSelect: ((Ingredients) -> Void)? = nil
+    
+    //manual initializer to handle both the simple call and the trailing closure call
+    init(ingredient: Ingredients, onSelect: ((Ingredients) -> Void)? = nil) {
+        self.ingredient = ingredient
+        self.onSelect = onSelect
+    }
+    
     //fyi for later he @state maeks it mutable thats why our toggle wasnt working
     @State private var ingredientSelected : Bool = false //the  list of ingredients the users wants to add?? not sure how ima do that, or like for now ima just keep track of the check box
-    @State private var quantity : Int = 0
+    @State private var quantity : Int = 1 //this start at 1 so users don't add 0 items
     
     @State private var selectedUnits: units = units.pcs
     
@@ -21,9 +30,9 @@ struct IngredientsView: View {
         if #available(iOS 17.0, *) { ///should prob find another solution to this becuase i thinking nothing will show up if they dont have the correct version, becuase of the fill
             RoundedRectangle(cornerRadius: 20)
                 .overlay( //need to have the over lay here becuase is dont elt me use the baforegourn color else
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(ingredientSelected ? Color.pink : Color.gray.opacity(0.1), lineWidth: ingredientSelected ? 3 : 1)
-                    )
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(ingredientSelected ? Color.pink : Color.gray.opacity(0.1), lineWidth: ingredientSelected ? 3 : 1)
+                )
                 .foregroundColor(.white) //switch this back to white at the end
                 .frame(width: 360, height: ingredientSelected ? 200 : 100)
                 .animation(.easeInOut(duration: 0.4), value: ingredientSelected) ///anaimation kinda ugly might change it later
@@ -62,6 +71,9 @@ struct IngredientsView: View {
                             
                             Button {
                                 ingredientSelected.toggle() //add the actions for the pink check twhen its clicked
+                                
+                                //if they unselect it, we should probably remove it from the parent list
+                                // but for now, we trigger onSelect when they actually click the "Add" button below
                             } label: {
                                 Image(systemName: ingredientSelected ? "checkmark.circle.fill" : "plus")
                                     .foregroundStyle(ingredientSelected ? .pink : .gray)
@@ -142,20 +154,36 @@ struct IngredientsView: View {
                                     }
                             }
                             
+                            //confirms the selection with the picked quantity and unit
+                            Button {
+                                let updatedIngredient = Ingredients(
+                                    id: ingredient.id,
+                                    name: ingredient.name,
+                                    quantity: quantity,
+                                    unit: selectedUnits,
+                                    imageUrl: ingredient.imageUrl,
+                                    category: ingredient.category
+                                )
+                                onSelect?(updatedIngredient)
+                            } label: {
+                                Text("Confirm Selection")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.pink)
+                            }
+                            .padding(.top, 5)
+                            
                         }
-                        
                         
                     }.padding()
                 }.padding(5) ///this padding i put becuase if i dont put space arouf it when it cuts it and takes it to the other view it cuts of the outside of the rame so the stroke gets cut off
         } else {
             // Fallback on earlier versions
+            Text(ingredient.name)
         }
         
     }
 }
-
-
-
 
 #Preview {
     IngredientsView(ingredient: Ingredients(id: "1", name: "Carrot", quantity: 5, unit: .cups, imageUrl: "https://spoonacular.com/cdn/ingredients_100x100/carrot.png", category: .vegetables))
