@@ -10,6 +10,7 @@ import SwiftUI
 struct IngredientPantryView: View {
     
     var ingredient : Ingredients
+    @StateObject private var firebaseVM = FirebaseViewModel.shared
     
     var body: some View {
         VStack{
@@ -47,8 +48,10 @@ struct IngredientPantryView: View {
                         Spacer()
                         
                         Button {
+                            firebaseVM.updateQuantity(ingredient: ingredient, change: -1)
+                            
                             if ingredient.quantity != 0 {
-                                //ingredient.quantity! -= 1 //dont work rn
+                                
                             }
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
@@ -62,12 +65,14 @@ struct IngredientPantryView: View {
                                 }
                         }
                         
-                        Text("\(ingredient.quantity!)") //i have to put the ! becuase else if shows Optional(4)
+                        Text("\(ingredient.quantity ?? 0)")
                             .fontWeight(.semibold)
                             .font(.system(size: 20))
                             .padding(5)
                         
                         Button {
+                            
+                            firebaseVM.updateQuantity(ingredient: ingredient, change: 1)
                             //ingredient.quantity += 1
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
