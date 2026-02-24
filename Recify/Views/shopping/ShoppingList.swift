@@ -65,7 +65,7 @@ struct ShoppingList: View {
                     .frame(width: 60, height: 60)
                     .overlay {
                         
-                        NavigationLink(destination: AddIngredientView()) {
+                        NavigationLink(destination: SearchItemShoppingView()) { //the navigation button isnt working any more
                             
                             Image(systemName: "plus")
                                 .foregroundStyle(.white)
@@ -103,7 +103,7 @@ struct shopItemView : View {
                                 .frame(width: 27, height: 27)
                                 .foregroundStyle( isSelected ? Color("primaryColor") : .white )
                                 .overlay {
-                                    Image(systemName: "checkmark")
+                                    Image(systemName: "checkmark") //add that whenc its checkd it corsses out
                                         .foregroundStyle(.white)
                                         .fontWeight(.bold)
                                     

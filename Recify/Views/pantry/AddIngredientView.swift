@@ -102,7 +102,7 @@ struct AddIngredientView: View {
                 .padding(.vertical)
             
             // Results from the API search
-            ForEach(viewModel.ingredients) { ingredient in
+            ForEach(viewModel.ingredients, id: \.id) { ingredient in
                 IngredientsView(ingredient: ingredient) { selectedItem in
                     if let index = selectedIngredients.firstIndex(where: { $0.name == selectedItem.name }) {
                         selectedIngredients[index] = selectedItem

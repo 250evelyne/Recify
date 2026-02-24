@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 struct Ingredients: Identifiable, Codable{ //, Codable , says its not conforming to decodable rn so add later when i do the fetch for the api
     @DocumentID var id: String? //for firestore
-    
+
    // let id: Int?
     var name: String
     var quantity : Int? //when i get them from the api there isnt gonna be a quantity or unit
