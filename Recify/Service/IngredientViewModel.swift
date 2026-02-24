@@ -11,6 +11,7 @@ class IngredientViewModel: ObservableObject {
 
     
     @Published var ingredients: [Ingredients] = []
+    @Published var isLoading : Bool = false
     
 //    @Published var isLoading: Bool = false ///remeber to add a cirlce porgress bar thingy to the app
   //  @Published var errorMessage: String?
@@ -85,6 +86,8 @@ class IngredientViewModel: ObservableObject {
     
     func searchIngredients(query: String) async {
         // You would likely filter or fetch from your service here
+        //isLoading = true
+        
         let results = await service.fetchIngredients()
         // Filter results based on the user's search query
         DispatchQueue.main.async {
@@ -99,6 +102,8 @@ class IngredientViewModel: ObservableObject {
                     )
                 }
         }
+        
+        //isLoading = false
     }
     
     

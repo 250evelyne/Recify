@@ -41,12 +41,18 @@ struct TabBarView: View {
                 }
                 .tag(3)
             
+            ShoppingList()
+                .tabItem {
+                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")
+                    Text("Shop")
+                }.tag(4)
+            
             ProfileView()
                 .tabItem {
                     Image(systemName: selectedTab == 4 ? "person.fill" : "person")
                     Text("Profile")
                 }
-                .tag(4)
+                .tag(5)
         }
         .accentColor(.pink)
     }
