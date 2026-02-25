@@ -10,62 +10,55 @@ import SwiftUI
 struct SearchItemShoppingView: View {
     
     @StateObject private var viewModel = IngredientViewModel()
-
+    
     @State private var searchedIngredient: String = ""
     
     var body: some View {
         VStack(alignment: .leading){
             headerSearchSection.padding(.horizontal)
             
+            Text("SUGGESTIONS")
+                .foregroundStyle(.gray)
+                .fontWeight(.semibold)
+                .padding(.horizontal)
             
-                Text("SUGGESTIONS")
-                    .foregroundStyle(.gray)
-                    .fontWeight(.semibold)
-                
             ScrollView(.vertical, showsIndicators: false) {
                 if viewModel.isLoading {
                     ProgressView()
-                }
-                else if !searchedIngredient.isEmpty && viewModel.ingredients.isEmpty {
-                    Text("No ingredients found")
-                        .foregroundStyle(.gray).padding()
-                }
-                else{
-                    ForEach (viewModel.ingredients, id: \.id) { ingredient in
+                } else {
+                  
+                    ForEach(viewModel.pagedIngredients) { ingredient in
                         addItemShoppingList(ingredient: ingredient)
+                            .onAppear {
+                            
+                                if ingredient.apiId == viewModel.pagedIngredients.last?.apiId {
+                                    viewModel.loadNextPage()
+                                }
+                            }
                     }
                 }
-                
             }
             
-
         }.navigationTitle("Shopping List")
-        
-        Spacer()
     }
-    
     
     private var headerSearchSection: some View {
         VStack {
-                        
             RoundedRectangle(cornerRadius: 20)
                 .stroke(.blue, lineWidth: 2)
-                .frame(width: 350, height: 50)
+                .frame(height: 50) 
                 .foregroundStyle(.white)
                 .overlay {
                     HStack {
                         Button {
-                            Task{ //see if this works
+                            Task {
                                 await viewModel.searchIngredients(query: searchedIngredient)
                             }
                         } label: {
-                            Image(systemName: "magnifyingglass") //add functionality to this
+                            Image(systemName: "magnifyingglass")
                                 .foregroundStyle(.blue)
                                 .padding(.leading)
-                            
                         }
-
-                        
                         
                         TextField("Search your ingredients...", text: $searchedIngredient)
                             .foregroundStyle(.black)
@@ -75,7 +68,8 @@ struct SearchItemShoppingView: View {
                                 }
                             }
                     }
-                }.shadow(color: .blue.opacity(0.2), radius: 5)
+                }
+                .shadow(color: .blue.opacity(0.2), radius: 5)
                 .padding(.bottom)
         }
     }

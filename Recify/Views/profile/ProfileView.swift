@@ -17,11 +17,7 @@ struct ProfileView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
-                    Button("Import Ingredients") {
-                        Task {
-                            await ingredientVM.uploadingIngredientsToFirebase()
-                        }
-                    }
+                   
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
                             Circle()
