@@ -11,12 +11,13 @@ struct IngredientResponse: Codable {
     let meals: [IngredientApi]
 }
 
-struct IngredientApi: Codable {
+struct IngredientApi: Codable, Identifiable { // Add Identifiable
     let idIngredient: String
     let strIngredient: String
     
-    // The API doesn't provide a direct image URL in the list,
-    // but you can construct it using the name.
+    // Add this to satisfy Identifiable using the API's unique ID
+    var id: String { idIngredient }
+    
     var image: String {
         "https://www.themealdb.com/images/ingredients/\(strIngredient).png"
     }

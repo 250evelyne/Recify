@@ -5,6 +5,10 @@
 //  Created by Macbook on 2026-02-06.
 //
 
+
+
+// pagination - fetch in chunks
+
 import SwiftUI
 
 struct PantryView: View {
@@ -127,11 +131,29 @@ struct PantryView: View {
                     }
                 }
             }
+            
+            
             .background(Color.pink.opacity(0.05))
             .ignoresSafeArea()
             .padding(.init(top: 0, leading: 0, bottom: 5, trailing: 0))
+            
+            
+            .onAppear {
+                if !firebaseManager.ingredients.isEmpty {
+                    isLoading = false
+                }
+            }
+            .onReceive(firebaseManager.$ingredients) { newIngredients in
+             
+                if !newIngredients.isEmpty {
+                    isLoading = false
+                }
+            }
+            //
         }
     }
+    
+    
 }
 #Preview {
     PantryView()
