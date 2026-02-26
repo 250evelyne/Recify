@@ -5,8 +5,6 @@
 //  Created by Macbook on 2026-02-06.
 //
 
-
-
 // pagination - fetch in chunks
 
 import SwiftUI
@@ -15,8 +13,8 @@ struct PantryView: View {
     
     @State private var ingredientsSearch : String = ""
     @State private var selectedFilter : Filters = .all
-    @State private var isLoading : Bool = true
-    
+
+   
     var filteredIngredients: [Ingredients] {
         firebaseManager.ingredients.filter { ingredient in
             let matchesSearch = ingredientsSearch.isEmpty ||
@@ -34,6 +32,7 @@ struct PantryView: View {
     var body: some View {
         NavigationStack {
             VStack {
+            
                 UnevenRoundedRectangle(bottomLeadingRadius: 40, bottomTrailingRadius: 40)
                     .foregroundColor(.blue.opacity(0.15))
                     .frame(maxWidth: .infinity, maxHeight: 220)
@@ -43,10 +42,6 @@ struct PantryView: View {
                                 Text("Pantry")
                                     .bold()
                                     .font(.title)
-                                
-                                
-                                
-                                
                                 Spacer()
                                 Circle()
                                     .foregroundStyle(.white)
@@ -75,7 +70,7 @@ struct PantryView: View {
                     }
                 
                 VStack {
-                    // Filter Buttons
+             
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(Filters.allCases) { filter in
@@ -95,15 +90,24 @@ struct PantryView: View {
                         Spacer()
                     }.padding()
                     
+                
                     ScrollView(.vertical, showsIndicators: false) {
-                        
-                        if isLoading {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .padding()
-                        } else {
-                            ForEach(filteredIngredients) { ingredient in
+                        LazyVStack {
+                            ForEach(filteredIngredients, id: \.id) { ingredient in
                                 IngredientPantryView(ingredient: ingredient)
+                                    .onAppear {
+                                        //if the ingridient appears as the  last one of the list, it will load more
+                                 
+                                        if ingredient.id == firebaseManager.ingredients.last?.id {
+                                            firebaseManager.fetchIngredients()
+                                        }
+                                    }
+                            }
+                            
+                            //will show like a spiner loading icon that will show to the user that is loading "chunk"
+                            if firebaseManager.isLoading {
+                                ProgressView()
+                                    .padding()
                             }
                         }
                     }
@@ -118,9 +122,7 @@ struct PantryView: View {
                                     .foregroundColor(.pink)
                                     .frame(width: 60, height: 60)
                                     .overlay {
-                                        
                                         NavigationLink(destination: AddIngredientView()) {
-                                            
                                             Image(systemName: "plus")
                                                 .foregroundStyle(.white)
                                                 .font(.title)
@@ -131,30 +133,13 @@ struct PantryView: View {
                     }
                 }
             }
-            
-            
             .background(Color.pink.opacity(0.05))
             .ignoresSafeArea()
             .padding(.init(top: 0, leading: 0, bottom: 5, trailing: 0))
-            
-            
-            .onAppear {
-                if !firebaseManager.ingredients.isEmpty {
-                    isLoading = false
-                }
-            }
-            .onReceive(firebaseManager.$ingredients) { newIngredients in
-             
-                if !newIngredients.isEmpty {
-                    isLoading = false
-                }
-            }
-            //
         }
     }
-    
-    
 }
+
 #Preview {
     PantryView()
 }
