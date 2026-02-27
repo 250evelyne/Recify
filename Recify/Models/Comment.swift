@@ -6,3 +6,11 @@
 //
 
 import Foundation
+import FirebaseFirestore
+
+struct Comment: Identifiable, Codable {
+    var id: String?
+    let userId: String
+    let text: String
+    let createdAt: Date
+}
