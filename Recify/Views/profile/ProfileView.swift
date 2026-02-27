@@ -83,6 +83,18 @@ struct ProfileView: View {
                                 subtitle: "\(authManager.userProfile?.favorites.count ?? 0) saved",
                                 action: {}
                             )
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            NavigationLink(destination: PantryView()) {
+                                SettingsRowContent(
+                                    icon: "archivebox.fill",
+                                    iconColor: .brown,
+                                    title: "Pantry",
+                                    subtitle: "View all your saved Ingredients"
+                                )
+                            }
+                            
                         }
                         .background(Color.white)
                         .cornerRadius(12)

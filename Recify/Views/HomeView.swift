@@ -122,7 +122,16 @@ struct HomeView: View {
                         Image(systemName: "bell")
                             .foregroundColor(.pink)
                     }
+                    
                 }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: ShoppingList()) {
+                        Image(systemName: "cart.fill")
+                    }
+                    
+                }
+                
             }
         }
     }

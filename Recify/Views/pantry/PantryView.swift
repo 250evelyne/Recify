@@ -42,16 +42,34 @@ struct PantryView: View {
                                 Text("Pantry")
                                     .bold()
                                     .font(.title)
+
                                 Spacer()
                                 Circle()
+                                    .shadow(color: .pink, radius: 3, y: 2)
+                                    .foregroundColor(.pink)
+                                    .frame(width: 50, height: 50)
+                                    .overlay {
+                                        
+                                        NavigationLink(destination: AddIngredientView()) {
+                                            
+                                            Image(systemName: "plus")
+                                                .foregroundStyle(.white)
+                                                .font(.title)
+                                        }
+                                    }
+                                
+                                Circle()
+                                    .shadow(color: .gray, radius: 3, y: 2)
                                     .foregroundStyle(.white)
                                     .frame(width: 50, height: 50)
                                     .overlay {
+                                        
                                         Image("onBordingPageImage")
                                             .resizable()
                                             .clipShape(.circle)
                                             .frame(width: 45, height: 45)
                                     }
+                                
                             }.padding(.init(top: 70, leading: 30, bottom: 10, trailing: 30))
                             
                             RoundedRectangle(cornerRadius: 20)
@@ -112,6 +130,7 @@ struct PantryView: View {
                         }
                     }
                     .padding(.horizontal)
+
                     .overlay {
                         VStack {
                             Spacer()
@@ -131,6 +150,7 @@ struct PantryView: View {
                             }.padding()
                         }.padding()
                     }
+
                 }
             }
             .background(Color.pink.opacity(0.05))

@@ -19,12 +19,13 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
-            PantryView()
-                .tabItem {
-                    Image(systemName: selectedTab == 2 ? "archivebox.fill" : "archivebox")
-                    Text("Pantry")
-                }
-                .tag(2)
+            //gonna move this to user profile
+//            PantryView()
+//                .tabItem {
+//                    Image(systemName: selectedTab == 2 ? "archivebox.fill" : "archivebox")
+//                    Text("Pantry")
+//                }
+//                .tag(2)
             
             CookingModeTabView()
                 .tabItem {
@@ -33,6 +34,12 @@ struct TabBarView: View {
                 }
                 .tag(1)
             
+            CommunityFeedView()
+                .tabItem {
+                    Image(systemName: selectedTab == 4 ? "person.3.fill" : "person.3")
+                    Text("Feed")
+                }
+                .tag(2)
             
             MessagesListView()
                 .tabItem {
@@ -41,18 +48,21 @@ struct TabBarView: View {
                 }
                 .tag(3)
             
-            ShoppingList()
-                .tabItem {
-                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")
-                    Text("Shop")
-                }.tag(4)
+            //move this to home page
+//            ShoppingList()
+//                .tabItem {
+//                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")
+//                    Text("Shop")
+//                }.tag(4)
             
             ProfileView()
                 .tabItem {
                     Image(systemName: selectedTab == 4 ? "person.fill" : "person")
                     Text("Profile")
                 }
-                .tag(5)
+                .tag(4)
+            
+            
         }
         .accentColor(.pink)
     }
