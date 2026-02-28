@@ -17,6 +17,7 @@ class FirebaseViewModel: ObservableObject {
     @Published var ingredients : [Ingredients] = []
     @Published var isLoading: Bool = false
     @Published var canLoadMore: Bool = true
+    @Published var shoppingItems: [Ingredients] = []
     
     private var lastDocument: DocumentSnapshot? = nil
     private let pageSize = 20
@@ -57,9 +58,10 @@ class FirebaseViewModel: ObservableObject {
             }
         }
     }
-    
+        
     func addIngredient(name: String, imageUrl: String, category: Filters, quantity: Int, unit: units) {
         guard let collection = userCollection else { return }
+        
         let docId = name.lowercased().trimmingCharacters(in: .whitespaces)
         
         if let existingIngredient = ingredients.first(where: { $0.id == docId }) {
@@ -105,4 +107,77 @@ class FirebaseViewModel: ObservableObject {
         }
         return db.collection("users").document(uid).collection("ingredients")
     }
+    
+    func addToShoppingList(name: String, imageUrl: String, category: Filters, quantity: Int, unit: units) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let docId = name.lowercased().trimmingCharacters(in: .whitespaces)
+        let docRef = db.collection("users").document(userId).collection("shopping_list").document(docId)
+        
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let currentQuantity = document.data()?["quantity"] as? Int ?? 0
+                docRef.updateData([
+                    "quantity": currentQuantity + quantity,
+                    "timestamp": FieldValue.serverTimestamp()
+                ])
+            } else {
+                let shoppingItem: [String: Any] = [
+                    "name": name,
+                    "imageUrl": imageUrl,
+                    "category": category.rawValue,
+                    "quantity": quantity,
+                    "unit": unit.rawValue,
+                    "isChecked": false,
+                    "timestamp": FieldValue.serverTimestamp()
+                ]
+                docRef.setData(shoppingItem)
+            }
+        }
+    }
+    
+    func fetchShoppingList() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users").document(userId).collection("shopping_list")
+            .addSnapshotListener { querySnapshot, error in
+                guard let documents = querySnapshot?.documents else { return }
+                
+                self.shoppingItems = documents.compactMap { doc -> Ingredients? in
+                    do {
+                        return try doc.data(as: Ingredients.self)
+                    } catch {
+                        print("Debuging error for \(doc.documentID): \(error)") //just to debug wahts going on
+                        return nil
+                    }
+                }
+            }
+    }
+        
+    func clearCompletedShoppingItems(items: [Ingredients]) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        
+        for item in items {
+            if let documentId = item.id {
+                db.collection("users").document(userId).collection("shopping_list").document(documentId).delete() { error in
+                    if let error = error {
+                        print("Error removing document: \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func toggleShoppingItemCheck(item: Ingredients) {
+        guard let userId = Auth.auth().currentUser?.uid, let docId = item.id else { return }
+        let db = Firestore.firestore()
+        
+        let currentStatus = item.isChecked ?? false
+        
+        db.collection("users").document(userId).collection("shopping_list").document(docId).updateData([
+            "isChecked": !currentStatus
+        ])
+    }
+    
 }
