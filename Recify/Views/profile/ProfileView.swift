@@ -17,7 +17,7 @@ struct ProfileView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
-                   
+                    
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
                             Circle()
@@ -199,6 +199,7 @@ struct ProfileView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Account Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarRole(.editor)
             .alert("Logout", isPresented: $showLogoutConfirm) {
                 Button("Cancel", role: .cancel) {}
                 Button("Logout", role: .destructive) {

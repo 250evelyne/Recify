@@ -93,5 +93,5 @@ struct IngredientPantryView: View {
 }
 
 #Preview {
-    IngredientPantryView(ingredient: Ingredients(id: "1", name: "Carrot", quantity: 4, unit: units.pcs, imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", category: Filters.vegetables))
+    IngredientPantryView(ingredient: Ingredients(id: "1", name: "Apple", quantity: 4, unit: units.pcs, imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", category: Filters.vegetables))
 }
