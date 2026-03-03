@@ -8,50 +8,69 @@
 import Foundation
 import Combine
 import FirebaseFirestore
+import FirebaseAuth
 
 class FirebaseViewModel: ObservableObject {
-    
     static let shared = FirebaseViewModel()
     private let db = Firestore.firestore()
     
     @Published var ingredients : [Ingredients] = []
+    @Published var isLoading: Bool = false
+    @Published var canLoadMore: Bool = true
+    @Published var shoppingItems: [Ingredients] = []
     
-    init(){
-        fetchIngredients()
-    }
+    private var lastDocument: DocumentSnapshot? = nil
+    private let pageSize = 20
     
-    func fetchIngredients(){
-        db.collection("ingredients").addSnapshotListener { querySnapshot, error in
+    
+    func fetchIngredients() {
+        guard let collection = userCollection, !isLoading && canLoadMore else { return }
+        
+        isLoading = true
+        var query: Query = collection.order(by: "name").limit(to: pageSize)
+        
+        if let lastCursor = lastDocument {
+            query = query.start(afterDocument: lastCursor)
+        }
+        
+        query.getDocuments { [weak self] querySnapshot, error in
+            guard let self = self else { return }
+            self.isLoading = false
+            
             if let error = error {
-                print(error.localizedDescription)
+                print("Error fetching ingredients: \(error.localizedDescription)")
                 return
             }
             
-            self.ingredients = querySnapshot?.documents.compactMap({ document in
-                try? document.data(as: Ingredients.self)
-            }) ?? []
+            guard let documents = querySnapshot?.documents, !documents.isEmpty else {
+                self.canLoadMore = false
+                return
+            }
+            
+            self.lastDocument = documents.last
+            let newIngredients = documents.compactMap({ try? $0.data(as: Ingredients.self) })
+            
+            DispatchQueue.main.async {
+                self.ingredients.append(contentsOf: newIngredients)
+                if documents.count < self.pageSize {
+                    self.canLoadMore = false
+                }
+            }
         }
     }
-    
+        
     func addIngredient(name: String, imageUrl: String, category: Filters, quantity: Int, unit: units) {
+        guard let collection = userCollection else { return }
+        
         let docId = name.lowercased().trimmingCharacters(in: .whitespaces)
         
-        // Check if the ingredient already exists in the local list
         if let existingIngredient = ingredients.first(where: { $0.id == docId }) {
-            //if it exists, just update the quantity by adding the new amount
             updateQuantity(ingredient: existingIngredient, change: quantity)
         } else {
-            //if it doesn't exist, create a new document
-            let newIngredient = Ingredients(
-                name: name,
-                quantity: quantity,
-                unit: unit,
-                imageUrl: imageUrl,
-                category: category
-            )
-            
+            let newIngredient = Ingredients(name: name, quantity: quantity, unit: unit, imageUrl: imageUrl, category: category)
             do {
-                try db.collection("ingredients").document(docId).setData(from: newIngredient)
+                try collection.document(docId).setData(from: newIngredient)
+                self.refreshData()
             } catch {
                 print("Error saving ingredient: \(error.localizedDescription)")
             }
@@ -59,24 +78,106 @@ class FirebaseViewModel: ObservableObject {
     }
     
     func updateQuantity(ingredient: Ingredients, change: Int) {
-        guard let id = ingredient.id else { return }
+        guard let collection = userCollection, let id = ingredient.id else { return }
         let currentQuantity = ingredient.quantity ?? 0
         let newQuantity = currentQuantity + change
         
         if newQuantity > 0 {
-            db.collection("ingredients").document(id).updateData([
-                "quantity": newQuantity
-            ]) { error in
-                if let error = error {
-                    print("Error updating quantity: \(error.localizedDescription)")
+            collection.document(id).updateData(["quantity": newQuantity])
+            if let index = self.ingredients.firstIndex(where: { $0.id == id }) {
+                self.ingredients[index].quantity = newQuantity
+            }
+        } else {
+            collection.document(id).delete()
+            self.ingredients.removeAll { $0.id == id }
+        }
+    }
+    
+    func refreshData() {
+        lastDocument = nil
+        ingredients = []
+        canLoadMore = true
+        fetchIngredients()
+    }
+    
+    private var userCollection: CollectionReference? {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("DEBUG: No user ID found - user is not logged in.")
+            return nil
+        }
+        return db.collection("users").document(uid).collection("ingredients")
+    }
+    
+    func addToShoppingList(name: String, imageUrl: String, category: Filters, quantity: Int, unit: units) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let docId = name.lowercased().trimmingCharacters(in: .whitespaces)
+        let docRef = db.collection("users").document(userId).collection("shopping_list").document(docId)
+        
+        docRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let currentQuantity = document.data()?["quantity"] as? Int ?? 0
+                docRef.updateData([
+                    "quantity": currentQuantity + quantity,
+                    "timestamp": FieldValue.serverTimestamp()
+                ])
+            } else {
+                let shoppingItem: [String: Any] = [
+                    "name": name,
+                    "imageUrl": imageUrl,
+                    "category": category.rawValue,
+                    "quantity": quantity,
+                    "unit": unit.rawValue,
+                    "isChecked": false,
+                    "timestamp": FieldValue.serverTimestamp()
+                ]
+                docRef.setData(shoppingItem)
+            }
+        }
+    }
+    
+    func fetchShoppingList() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users").document(userId).collection("shopping_list")
+            .addSnapshotListener { querySnapshot, error in
+                guard let documents = querySnapshot?.documents else { return }
+                
+                self.shoppingItems = documents.compactMap { doc -> Ingredients? in
+                    do {
+                        return try doc.data(as: Ingredients.self)
+                    } catch {
+                        print("Debuging error for \(doc.documentID): \(error)") //just to debug wahts going on
+                        return nil
+                    }
                 }
             }
-        } else if newQuantity <= 0 {
-            db.collection("ingredients").document(id).delete() { error in
-                if let error = error {
-                    print("Error deleting ingredient: \(error.localizedDescription)")
+    }
+        
+    func clearCompletedShoppingItems(items: [Ingredients]) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        
+        for item in items {
+            if let documentId = item.id {
+                db.collection("users").document(userId).collection("shopping_list").document(documentId).delete() { error in
+                    if let error = error {
+                        print("Error removing document: \(error)")
+                    }
                 }
             }
         }
     }
+    
+    func toggleShoppingItemCheck(item: Ingredients) {
+        guard let userId = Auth.auth().currentUser?.uid, let docId = item.id else { return }
+        let db = Firestore.firestore()
+        
+        let currentStatus = item.isChecked ?? false
+        
+        db.collection("users").document(userId).collection("shopping_list").document(docId).updateData([
+            "isChecked": !currentStatus
+        ])
+    }
+    
 }

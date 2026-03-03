@@ -9,7 +9,6 @@ import SwiftUI
 
 struct addItemShoppingList: View {
     
-    
     let ingredient : Ingredients
     
     var onSelect: ((Ingredients) -> Void)? = nil
@@ -20,35 +19,31 @@ struct addItemShoppingList: View {
         self.onSelect = onSelect
     }
     //fyi for later he @state maeks it mutable thats why our toggle wasnt working
-    @State private var ingredientSelected : Bool = true //the  list of ingredients the users wants to add?? not sure how ima do that, or like for now ima just keep track of the check box
+    @State private var ingredientSelected : Bool = false
     @State private var quantity : Int = 1 //this start at 1 so users don't add 0 items
     
     @State private var selectedUnits: units = units.pcs
     
     @StateObject private var viewModel = IngredientViewModel()
-
+    
     @State private var searchedIngredient: String = ""
     
-    // Track selected ingredients before adding to pantry
+    //this track selected ingredients before adding to pantry
     @State private var selectedIngredients: [Ingredients] = []
     
+    //toast notification
+    @State private var showToast: Bool = false
+    
     var body: some View {
-        
-        
-        if #available(iOS 17.0, *) { ///should prob find another solution to this becuase i thinking nothing will show up if they dont have the correct version, becuase of the fill
+        ZStack {
             VStack{
-                
-                
                 RoundedRectangle(cornerRadius: 20)
-                    .overlay( //need to have the over lay here becuase is dont elt me use the baforegourn color else
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(ingredientSelected ? Color.blue : Color.gray.opacity(0.1), lineWidth: ingredientSelected ? 3 : 1)
-                    )
-                    .foregroundColor(.white)
+                    .stroke(ingredientSelected ? Color.blue : Color.gray.opacity(0.1), lineWidth: ingredientSelected ? 3 : 1)
+                    .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
                     .frame(width: 360, height: ingredientSelected ? 180 : 100)
-                    .animation(.easeInOut(duration: 0.4), value: ingredientSelected)
-                    .shadow(color: .gray.opacity(0.2), radius: 5)
-                    .overlay {
+                    .animation(.spring(response: 0.4, dampingFraction: 0.7), value: ingredientSelected)
+                    .shadow(color: Color.gray.opacity(0.2), radius: 5)
+                    .overlay(
                         VStack{
                             HStack{
                                 AsyncImage(url: URL(string: ingredient.imageUrl)){phase in
@@ -58,124 +53,120 @@ struct addItemShoppingList: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 10))
                                     }else {
                                         RoundedRectangle(cornerRadius: 10)
-                                            .foregroundStyle(.green.opacity(0.3))
+                                            .foregroundColor(Color.green.opacity(0.3))
                                             .frame(width: 65, height: 65)
-                                            .overlay {
+                                            .overlay(
                                                 Image(systemName: ingredient.category?.icon ?? "carrot.fill")
                                                     .resizable()
                                                     .frame(width: 40, height: 40)
                                                     .foregroundColor(.green)
-                                            }
-                                        
+                                            )
                                     }
                                 }
                                 
                                 VStack(alignment: .leading){
-                                    
                                     Text(ingredient.name)
                                         .fontWeight(.semibold)
                                         .font(.system(size: 20))
                                     
                                     Text(ingredient.category?.rawValue ?? "N/A")
-                                        .foregroundStyle(.gray)
+                                        .foregroundColor(.gray)
                                         .font(.system(size: 13))
-                                    
                                 }.padding(.leading)
                                 
                                 Spacer()
                                 
                                 if !ingredientSelected {
-                                    Button {
-                                        ingredientSelected.toggle() //add the actions for the pink check twhen its clicked
-                                        
-                                        //if they unselect it, we should probably remove it from the parent list
-                                        // but for now, we trigger onSelect when they actually click the "Add" button below
-                                    } label: {
-                                        
-                                        Image(systemName: ingredientSelected ? "checkmark.circle.fill" : "plus")
-                                            .foregroundStyle(ingredientSelected ? .pink : .gray)
+                                    Button(action: {
+                                        withAnimation { ingredientSelected.toggle() }
+                                    }) {
+                                        Image(systemName: "plus")
+                                            .foregroundColor(.gray)
                                             .font(.title)
                                     }
-                                    
-                                }else{
-                                    //changes to an add so it shows that thiswill be added to this shopping list
-                                    
+                                } else {
                                     Button("Add") {
-                                        ingredientSelected.toggle()
-                                        //addIngredient(indridient: Ingredient ) //add the ingredetn to the shopping list for the user with the quanity and the unit they picked
-                                        //TODO: add a toast saying that the item was added and then the ingredient should be come smaller again
+                                        FirebaseViewModel.shared.addToShoppingList(
+                                            name: ingredient.name,
+                                            imageUrl: ingredient.imageUrl,
+                                            category: ingredient.category ?? .other,
+                                            quantity: quantity,
+                                            unit: selectedUnits
+                                        )
+                                        
+                                        // Trigger the collapse and toast
+                                        withAnimation(.easeInOut) {
+                                            ingredientSelected = false // ingredient should be come smaller again
+                                            showToast = true // show the toast
+                                        }
+                                        
+                                        // Hide toast after 2 seconds
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            withAnimation { showToast = false }
+                                        }
                                     }
-                                    
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
                                 }
-                                
-                                
                             }.padding()
                             
-                            
-                            
                             if ingredientSelected {
-                                
-                                Divider().padding(.horizontal).foregroundStyle(.blue)
+                                Divider().padding(.horizontal).background(Color.blue)
                                 
                                 HStack{
-                                    
                                     Text("Set quantity: ")
                                         .foregroundColor(.blue)
                                         .fontWeight(.semibold)
                                         .font(.system(size: 13))
                                     
                                     RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color.blue.opacity(0.1))
                                         .frame(width: 130, height: 30)
-                                        .foregroundStyle(.blue.opacity(0.1))
-                                        .overlay {
-                                            setQuantity
-                                        }
+                                        .overlay(setQuantity)
                                     
                                     Spacer()
                                     
                                     RoundedRectangle(cornerRadius: 10)
-                                        .foregroundColor(.gray.opacity(0.1))
+                                        .fill(Color.gray.opacity(0.1))
                                         .frame(width: 80, height: 50)
-                                        .overlay {
-                                            
-                                            Picker("", selection: $selectedUnits) { //loki really wide and i dont like the look but wtv
+                                        .overlay(
+                                            Picker("", selection: $selectedUnits) {
                                                 ForEach(units.allCases, id: \.self){unit in
-                                                    Text(unit.rawValue)
+                                                    Text(unit.rawValue).tag(unit)
                                                 }
-                                            }.pickerStyle(.menu)
+                                            }
+                                                .pickerStyle(MenuPickerStyle())
                                                 .tint(.black)
-                                            
-                                        }
+                                        )
                                 }.padding()
                             }
-                            
                         }
-                        
-                    }.padding()
-            }.padding(5) ///this padding i put becuase if i dont put space arouf it when it cuts it and takes it to the other view it cuts of the outside of the rame so the stroke gets cut off
-                .navigationTitle("Shopping List")
+                    )
+            }
+            .padding(5)
             
-        } else {
-            // Fallback on earlier versions
-            Text(ingredient.name)
+            //toast TODO??
+            if showToast {
+                VStack {
+                    Spacer()
+                    Text("Added \(ingredient.name) to Shopping List!")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 20)
+                        .background(Capsule().fill(Color.black.opacity(0.8)))
+                        .padding(.bottom, 20)
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
-        
+        .navigationTitle("Shopping List")
     }
-
-    
     
     private var setQuantity : some View {
-        
-        var quantity = 1
-        
-        return HStack(spacing: 20){
-            
-            Button {
-                if quantity != 0 {
-                    quantity -= 1
-                }
-            } label: {
-                
+        HStack(spacing: 20){
+            Button(action: { if quantity > 1 { quantity -= 1 } }) {
                 Image(systemName: "minus")
                     .foregroundColor(.blue)
                     .fontWeight(.semibold)
@@ -187,24 +178,14 @@ struct addItemShoppingList: View {
                 .font(.system(size: 20))
                 .padding(5)
             
-            Button {
-                quantity += 1
-            } label: {
-                
+            Button(action: { quantity += 1 }) {
                 Image(systemName: "plus")
                     .foregroundColor(.blue)
                     .fontWeight(.semibold)
                     .font(.title3)
             }
-            
-            
         }
-        
     }
-
-
-
-    
 }
 
 #Preview {

@@ -16,6 +16,8 @@ struct Ingredients: Identifiable, Codable{ //, Codable , says its not conforming
     var unit : units?
     var imageUrl: String
     var category: Filters? //check if i have top ut this as nil for when i first get the list of ingredients since they dont have cateogries?
+    var isChecked: Bool? = false //have to add this to make the shooping work
+    var timestamp: Date? //same here
 }
 
 

@@ -17,14 +17,24 @@ class IngredientsService {
     
     private var cachedIngredients: [Ingredients] = []
     
-    func fetchAllIngredients() async -> [Ingredients] {
-        if !cachedIngredients.isEmpty { return cachedIngredients }
+    func fetchAllIngredients(forceRefresh: Bool = false) async -> [Ingredients] {
+        if !forceRefresh && !cachedIngredients.isEmpty {
+            return cachedIngredients
+        }
         
         let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: .GET)
         let rawMeals = result?.meals ?? []
         
-        // Map to Ingredients model once and cache it
-        self.cachedIngredients = rawMeals.map { apiItem in
+        self.cachedIngredients = []
+        
+        var uniqueNames = Set<String>()
+        let uniqueRawMeals = rawMeals.filter { meal in
+            guard !uniqueNames.contains(meal.strIngredient) else { return false }
+            uniqueNames.insert(meal.strIngredient)
+            return true
+        }
+        
+        self.cachedIngredients = uniqueRawMeals.map { apiItem in
             Ingredients(
                 apiId: apiItem.idIngredient,
                 name: apiItem.strIngredient,
@@ -40,11 +50,22 @@ class IngredientsService {
     
     private func autoAssignCategory(from name: String) -> Filters {
         let lower = name.lowercased()
-        if lower.contains("beef") || lower.contains("chicken") || lower.contains("pork") { return .proteins }
-        else if lower.contains("milk") || lower.contains("cheese") { return .dairy }
-        else if lower.contains("rice") || lower.contains("pasta") { return .grains }
-        else if lower.contains("oil") { return .oils }
-        else { return .vegetables }
+        
+        if ["water", "stock", "broth", "juice", "wine"].contains(where: lower.contains) { return .liquids }
+        if ["apple", "banana", "orange", "lemon", "lime", "berry", "strawberry", "grape"].contains(where: lower.contains) { return .fruits }
+        if ["butter", "oil", "margarine", "lard"].contains(where: lower.contains) { return .oils }
+        
+        if lower.contains("beef") || lower.contains("chicken") || lower.contains("pork") || lower.contains("fish") {
+            return .proteins
+        } else if lower.contains("milk") || lower.contains("cheese") || lower.contains("yogurt") {
+            return .dairy
+        } else if lower.contains("rice") || lower.contains("pasta") || lower.contains("flour") {
+            return .grains
+        } else if ["salt", "pepper", "clove", "thyme", "oregano", "ginger"].contains(where: lower.contains) {
+            return .seasoning
+        }
+        
+        return .vegetables
     }
     
     func getIngredients(page: Int, pageSize: Int = 20) async -> [Ingredients] {

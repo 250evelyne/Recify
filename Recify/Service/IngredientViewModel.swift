@@ -11,6 +11,7 @@ class IngredientViewModel: ObservableObject {
     @Published var pagedIngredients: [Ingredients] = []
     @Published var isLoading: Bool = false
     
+    private var activeFilter: Filters = .all
     private var allFetchedResults: [Ingredients] = []
     private let pageSize = 20
     private var currentIndex = 0
@@ -21,19 +22,13 @@ class IngredientViewModel: ObservableObject {
         
         let allIngredients = await service.fetchAllIngredients()
         
-        let task = Task.detached(priority: .userInitiated) {
-            if query.isEmpty {
-                return allIngredients
-            }
+        let results = allIngredients.filter { ingredient in
+            let matchesQuery = query.isEmpty || ingredient.name.localizedCaseInsensitiveContains(query)
             
-            // Check against both name and category for better filtering
-            return allIngredients.filter {
-                $0.name.localizedCaseInsensitiveContains(query) ||
-                $0.category?.rawValue.localizedCaseInsensitiveContains(query) ?? false
-            }
+            let matchesFilter = (activeFilter == .all) || (ingredient.category == activeFilter)
+            
+            return matchesQuery && matchesFilter
         }
-        
-        let results = await task.value
         
         await MainActor.run {
             self.allFetchedResults = results
@@ -43,6 +38,8 @@ class IngredientViewModel: ObservableObject {
         }
     }
     
+
+    
     func loadNextPage() {
         let nextIndex = min(currentIndex + pageSize, allFetchedResults.count)
         guard currentIndex < nextIndex else { return }
@@ -50,8 +47,54 @@ class IngredientViewModel: ObservableObject {
         let newItems = allFetchedResults[currentIndex..<nextIndex]
         
         DispatchQueue.main.async {
-            self.pagedIngredients.append(contentsOf: Array(newItems))
+            for item in newItems {
+                //check if the name already exists in the paged list
+                if !self.pagedIngredients.contains(where: { $0.name == item.name }) {
+                    self.pagedIngredients.append(item)
+                }
+            }
             self.currentIndex = nextIndex
         }
     }
+    
+    
+    func filterByCategory(filter: Filters) {
+        //store the filter so the search function knows about it
+        self.activeFilter = filter
+        
+        if filter == .all {
+            self.pagedIngredients = Array(allFetchedResults.prefix(pageSize))
+        } else {
+            let filtered = allFetchedResults.filter { $0.category == filter }
+            self.pagedIngredients = Array(filtered.prefix(pageSize))
+        }
+    }
+    
+    func determineCategory(name: String) -> Filters {
+        let lowerName = name.lowercased()
+        
+        if ["water", "milk", "juice", "stock", "broth"].contains(where: lowerName.contains) {
+            return .liquids 
+        }
+        
+        if ["apple", "banana", "orange", "berry", "lemon"].contains(where: lowerName.contains) {
+            return .fruits
+        }
+        
+        return .vegetables
+    }
+    
+    
+    func refreshIngredients() async {
+        await MainActor.run { self.isLoading = true }
+        
+        let results = await service.fetchAllIngredients(forceRefresh: true)
+        
+        await MainActor.run {
+            self.allFetchedResults = results
+            self.pagedIngredients = Array(results.prefix(20))
+            self.isLoading = false
+        }
+    }
+    
 }
