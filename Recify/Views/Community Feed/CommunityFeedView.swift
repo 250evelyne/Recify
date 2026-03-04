@@ -39,16 +39,6 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.2))
                 
-                HStack{
-                    tabView(index: 0, title: "Trending", selectedTab: $selectedTab)
-                    tabView(index: 1, title: "Following", selectedTab: $selectedTab)
-                    
-                    Spacer()
-                }.padding(.horizontal)
-                    .padding(.top)
-                
-                Divider()
-                
                 ScrollView(.vertical, showsIndicators: false){
                     //ForEach //fecth all the psots in the firebase
                     PostView(posts: Post(userId: "user_012", caption: "nfew wnife ewjde esejfesj eses k jdjsefjewf", imageUrl: "https://picsum.photos/400", createdAt: Date(), likes: 46), comments: mockComments)

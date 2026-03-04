@@ -41,7 +41,7 @@ struct PantryView: View {
                     HStack {
                         Text("Pantry").hidden() //has to put this here cuz if i deleted the searrch button will go ramdoly go up so "hidden" until now i think would be an option
                             .bold()
-                            .font(.title)
+                           .font(.title)
                         Spacer()
                     }
                     .padding(.top, 60)
@@ -149,11 +149,11 @@ struct PantryView: View {
     PantryView()
 }
 
-struct ingredient: View {
-    var body: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .overlay {
-                Image(systemName: "")
-            }
-    }
-}
+//struct ingredient: View {
+//    var body: some View {
+//        RoundedRectangle(cornerRadius: 20)
+//            .overlay {
+//                Image(systemName: "")
+//            }
+//    }
+//}

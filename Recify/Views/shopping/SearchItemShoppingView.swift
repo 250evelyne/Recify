@@ -57,7 +57,7 @@ struct SearchItemShoppingView: View {
         }
     }
     
-    private var headerSearchSection: some View {
+    var headerSearchSection: some View {
         VStack {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.blue, lineWidth: 2)

@@ -10,6 +10,7 @@ import SwiftUI
 struct CommentsSheetView: View {
     
     let comments : [Comment]
+    @State private var text : String = ""
 
     @Environment(\.dismiss) private var dissmiss
     var body: some View {
@@ -78,6 +79,31 @@ struct CommentsSheetView: View {
                 .frame(maxWidth: .infinity, alignment: .leading) // i need this or else the .leaading in the vstack dosnt do anything by its self
                     
             }
+            
+            Divider()
+            
+            RoundedRectangle(cornerRadius: 20)
+                .frame(height: 50)
+                .foregroundStyle(.gray.opacity(0.05))
+                .shadow(color: .gray, radius: 5)
+                .overlay {
+                    HStack{
+                        Image(systemName: "person.fill") //TODO: change this to the user pfp
+                            .clipShape(.circle) .font(.title)
+                        
+                        TextField("Add a comment...", text: $text)
+                        
+                        Button {
+                            //TODO: take the post the comments are under and aqdd the ocmmetn to the poat
+                            //AddComment()
+                        } label: {
+                            Image(systemName: "paperplane.circle.fill")
+                                .foregroundStyle(.pink)
+                                .font(.title)
+                        }
+
+                    }.padding()
+                }
             
         }.padding()
         
