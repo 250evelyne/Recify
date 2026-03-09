@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct CookingModeTabView: View {
+struct CookingModeTabView: View { //
     let recipeTitle: String
     let steps: [String]
     
