@@ -11,9 +11,12 @@ import FirebaseAuth
 
 class FeedViewModel: ObservableObject {
     @Published var posts: [Post] = []
+    @Published var userPosts: [Post] = []
+    @Published var currentComments: [Comment] = []
+    
+    private var commentsListener: ListenerRegistration?
     private let db = Firestore.firestore()
     
-    // Listen for real-time post updates
     func fetchPosts() {
         db.collection("posts")
             .order(by: "createdAt", descending: true)
@@ -29,33 +32,28 @@ class FeedViewModel: ObservableObject {
             }
     }
     
-    // Save a new post to Firestore
     func createPost(caption: String, imageUrl: String) {
         print("Attempting to create post...")
         
-        // 1. Get the current authenticated user ID directly from Firebase Auth
         guard let authUser = Auth.auth().currentUser else {
-            print("❌ ERROR: No user logged into Firebase Auth!")
+            print("ERROR: No user logged into Firebase Auth!")
             return
         }
         
         let userId = authUser.uid
         
-        // 2. Fetch the user's document from Firestore to get their username safely
         db.collection("users").document(userId).getDocument { [weak self] document, error in
             guard let self = self else { return }
             
             if let error = error {
-                print("❌ ERROR fetching user profile: \(error.localizedDescription)")
+                print("ERROR fetching user profile: \(error.localizedDescription)")
                 return
             }
             
-            // Extract the userName (Fallback to "Unknown User" just in case)
             let userName = document?.data()?["userName"] as? String ?? "Unknown User"
             
-            print("✅ User found: \(userName). Preparing to save...")
+            print("User found: \(userName). Preparing to save...")
             
-            // 3. Create and save the post
             let newPost = Post(
                 userId: userId,
                 userName: userName,
@@ -67,9 +65,9 @@ class FeedViewModel: ObservableObject {
             
             do {
                 _ = try self.db.collection("posts").addDocument(from: newPost)
-                print("✅ SUCCESS: Post successfully added to Firestore!")
+                print("SUCCESS: Post successfully added to Firestore!")
             } catch {
-                print("❌ Firebase Error creating post: \(error.localizedDescription)")
+                print("Firebase Error creating post: \(error.localizedDescription)")
             }
         }
     }
@@ -84,4 +82,71 @@ class FeedViewModel: ObservableObject {
     }
     
     
+    
+    // Fetch posts for a specific user
+    func fetchUserPosts(userId: String) {
+        db.collection("posts")
+            .whereField("userId", isEqualTo: userId)
+            .addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("Error fetching user posts: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else { return }
+                
+                var fetchedPosts = documents.compactMap { try? $0.data(as: Post.self) }
+                fetchedPosts.sort { $0.createdAt > $1.createdAt }
+                
+                self.userPosts = fetchedPosts
+            }
+    }
+    
+    
+    // Fetch live comments for a specific post
+    func fetchComments(for postId: String) {
+        commentsListener?.remove()
+        
+        commentsListener = db.collection("posts").document(postId).collection("comments")
+            .order(by: "createdAt", descending: false)
+            .addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("Error fetching comments: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else { return }
+                
+                self.currentComments = documents.compactMap { try? $0.data(as: Comment.self) }
+            }
+    }
+    
+    func addComment(to postId: String, text: String) {
+        guard let authUser = Auth.auth().currentUser else { return }
+        let userId = authUser.uid
+        
+        db.collection("users").document(userId).getDocument { [weak self] document, error in
+            guard let self = self else { return }
+            let userName = document?.data()?["userName"] as? String ?? "Unknown User"
+            
+            let newComment = Comment(
+                userId: userId,
+                userName: userName,
+                text: text,
+                createdAt: Date()
+            )
+            
+            do {
+                _ = try self.db.collection("posts").document(postId).collection("comments").addDocument(from: newComment)
+                
+                self.db.collection("posts").document(postId).updateData([
+                    "commentCount": FieldValue.increment(Int64(1))
+                ])
+                
+                print("SUCCESS: Comment added and count incremented!")
+            } catch {
+                print("Error adding comment: \(error.localizedDescription)")
+            }
+        }
+    }
 }

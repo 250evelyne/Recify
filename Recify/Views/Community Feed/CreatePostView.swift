@@ -10,8 +10,6 @@ import SwiftUI
 struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var caption: String = ""
-    
-    // Create an instance of the ViewModel to save the post
     @StateObject private var feedVM = FeedViewModel()
     
     var body: some View {
@@ -26,9 +24,8 @@ struct CreatePostView: View {
                 Text("Create Post").bold().font(.title)
                 Spacer()
                 Button {
-                    // Save the post to the DB
                     feedVM.createPost(caption: caption, imageUrl: "https://picsum.photos/400")
-                    dismiss() // Close the view
+                    dismiss() 
                 } label: {
                     Text("Post")
                 }

@@ -16,4 +16,5 @@ struct Post: Identifiable, Codable {
     var imageUrl: String
     var createdAt: Date
     var likes: Int
+    var commentCount: Int = 0
 }

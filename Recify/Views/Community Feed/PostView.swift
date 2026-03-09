@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostView: View {
     let post: Post
-    @ObservedObject var feedVM: FeedViewModel // Passed down from CommunityFeedView
+    @ObservedObject var feedVM: FeedViewModel
     
     @State private var showComments: Bool = false
     
@@ -25,7 +25,7 @@ struct PostView: View {
                         .clipShape(.circle)
                         .font(.title)
                     VStack(alignment: .leading) {
-                        // Dynamically display the user's name
+                        // Dynamically display the users name
                         Text(post.userName)
                             .bold()
                         Text(RelativeDateTimeFormatter().localizedString(for: post.createdAt, relativeTo: Date()))
@@ -69,25 +69,24 @@ struct PostView: View {
                     } label: {
                         interactionBtn(icon: "heart.fill", count: post.likes, color: .pink)
                     }
-                    
+ 
                     Button {
                         showComments = true
                     } label: {
-                        interactionBtn(icon: "bubble.fill", count: 0, color: .blue)
+                        //relpaced 0 with post.commentCount so it will count the real comments
+                        interactionBtn(icon: "bubble.fill", count: post.commentCount, color: .blue)
                     }
                     
                 }.padding(.leading)
             }
             .sheet(isPresented: $showComments) {
-                CommentsSheetView(comments: []) // Pass empty array until Comments fetch is wired up
+                CommentsSheetView(post: post, feedVM: feedVM)
             }
             .padding()
         }
     }
     
     // MARK: - Helper Views
-    
-    // Re-added the missing interactionBtn view builder
     @ViewBuilder
     private func interactionBtn(icon: String, count: Int, color: Color) -> some View {
         HStack(spacing: 5) {
@@ -114,7 +113,8 @@ struct PostView: View {
             caption: "Delicious home made sourdough",
             imageUrl: "https://picsum.photos/400",
             createdAt: Date(),
-            likes: 12
+            likes: 12,
+            commentCount: 5 
         ),
         feedVM: FeedViewModel()
     )

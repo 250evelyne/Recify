@@ -33,6 +33,7 @@
 		040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410342F311C3A00EA6C4C /* SignUpView.swift */; };
 		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
 		20794A462F3E1B2800F73918 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 20794A452F3E1B2800F73918 /* GoogleService-Info.plist */; };
+		20794C8F2F58E19F00751877 /* MyPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20794C8E2F58E19F00751877 /* MyPostsView.swift */; };
 		20EE05842F3D0F3B00930D68 /* ConversationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */; };
 		20EE05852F3D0F3B00930D68 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05802F3D0F3B00930D68 /* MessageBubble.swift */; };
 		20EE05862F3D0F3B00930D68 /* NewChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05822F3D0F3B00930D68 /* NewChatView.swift */; };
@@ -108,6 +109,7 @@
 		040410342F311C3A00EA6C4C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		20794A452F3E1B2800F73918 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		20794C8E2F58E19F00751877 /* MyPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPostsView.swift; sourceTree = "<group>"; };
 		20EE057E2F3D0F3B00930D68 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationRow.swift; sourceTree = "<group>"; };
 		20EE05802F3D0F3B00930D68 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				FAA5E4B32F509C6100F3122C /* PostView.swift */,
 				FAA5E4B52F50CF5E00F3122C /* CommentsSheetView.swift */,
 				FAA5E4B72F50E47500F3122C /* CreatePostView.swift */,
+				20794C8E2F58E19F00751877 /* MyPostsView.swift */,
 			);
 			path = "Community Feed";
 			sourceTree = "<group>";
@@ -537,6 +540,7 @@
 				FAA5E4B62F50CF5E00F3122C /* CommentsSheetView.swift in Sources */,
 				FA839EA82F4A6C9A0010E2E6 /* ShoppingList.swift in Sources */,
 				FAA185B12F57D52200A67F7C /* DietaryRestrictions.swift in Sources */,
+				20794C8F2F58E19F00751877 /* MyPostsView.swift in Sources */,
 				20EE05852F3D0F3B00930D68 /* MessageBubble.swift in Sources */,
 				20EE05952F3D109100930D68 /* EditProfileView.swift in Sources */,
 				FA6CEFC22F4D36D900748A27 /* SearchItemShoppingView.swift in Sources */,
