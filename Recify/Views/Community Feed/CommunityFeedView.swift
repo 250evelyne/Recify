@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct CommunityFeedView: View {
-    @State private var selectedTab : Int = 0
+    @StateObject private var feedVM = FeedViewModel()
+    
     var body: some View {
-        NavigationStack{
-            VStack{
-                HStack{
-                    
-                    NavigationLink(destination: ProfileView()) {
-                        Image(systemName: "person.fill") //TODO: change this to the user pfp
+        NavigationStack {
+            VStack {
+                HStack {
+                    NavigationLink(destination: MyPostsView()) {
+                        Image(systemName: "person.fill")
                             .clipShape(.circle)
                             .font(.title)
                     }
@@ -23,13 +23,12 @@ struct CommunityFeedView: View {
                     Text("Community Feed")
                         .bold()
                     Spacer()
-                    Circle() //TODO: need to make a page for the creation of a post
+                    Circle()
                         .shadow(color: .pink, radius: 3, y: 2)
                         .foregroundColor(.pink)
                         .frame(width: 50, height: 50)
                         .overlay {
-                            NavigationLink(destination: CreatePostView())
-                            {
+                            NavigationLink(destination: CreatePostView()) {
                                 Image(systemName: "plus")
                                     .foregroundStyle(.white)
                                     .font(.title)
@@ -39,15 +38,23 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.2))
                 
-                ScrollView(.vertical, showsIndicators: false){
-                    //ForEach //fecth all the psots in the firebase
-                    PostView(posts: Post(userId: "user_012", caption: "nfew wnife ewjde esejfesj eses k jdjsefjewf", imageUrl: "https://picsum.photos/400", createdAt: Date(), likes: 46), comments: mockComments)
-                    PostView(posts: Post(userId: "user_012", caption: "nfew wnife ewjde esejfesj eses k jdjsefjewf", imageUrl: "https://picsum.photos/400", createdAt: Date(), likes: 46), comments: mockComments)
+                
+                Divider()
+                
+                ScrollView(.vertical, showsIndicators: false) {
+                    ForEach(feedVM.posts) { post in
+                        PostView(post: post, feedVM: feedVM)
+                    }
                 }
-            }.background(Color.pink.opacity(0.1))
+            }
+            .background(Color.pink.opacity(0.1))
+            .onAppear {
+                feedVM.fetchPosts() //tjis loads posts when the view appears
+            }
         }
     }
 }
+
 
 #Preview {
     CommunityFeedView()

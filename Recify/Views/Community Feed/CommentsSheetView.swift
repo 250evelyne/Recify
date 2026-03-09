@@ -9,9 +9,11 @@ import SwiftUI
 
 struct CommentsSheetView: View {
     
-    let comments : [Comment]
+    let post: Post
+    @ObservedObject var feedVM: FeedViewModel
+    
     @State private var text : String = ""
-
+    
     @Environment(\.dismiss) private var dissmiss
     var body: some View {
         VStack{
@@ -34,7 +36,7 @@ struct CommentsSheetView: View {
             ScrollView{
                 VStack(alignment: .leading){
                     
-                    ForEach(comments){ comment in
+                    ForEach(feedVM.currentComments){ comment in
                         
                         HStack{
                             
@@ -61,7 +63,7 @@ struct CommentsSheetView: View {
                             
                             VStack(alignment: .leading){
                                 HStack{
-                                    Text("user name") //TODO: smae thing fecth the users name with the id
+                                    Text(comment.userName) //TODO: smae thing fecth the users name with the id
                                         .fontWeight(.semibold)
                                     Text(RelativeDateTimeFormatter().localizedString(for: comment.createdAt ,relativeTo: Date()))
                                         .foregroundStyle(.gray)
@@ -77,7 +79,7 @@ struct CommentsSheetView: View {
                     
                 }
                 .frame(maxWidth: .infinity, alignment: .leading) // i need this or else the .leaading in the vstack dosnt do anything by its self
-                    
+                
             }
             
             Divider()
@@ -94,22 +96,32 @@ struct CommentsSheetView: View {
                         TextField("Add a comment...", text: $text)
                         
                         Button {
-                            //TODO: take the post the comments are under and aqdd the ocmmetn to the poat
-                            //AddComment()
+                            if let postId = post.id, !text.isEmpty {
+                                feedVM.addComment(to: postId, text: text)
+                                text = ""
+                            }
                         } label: {
                             Image(systemName: "paperplane.circle.fill")
                                 .foregroundStyle(.pink)
                                 .font(.title)
                         }
-
+                        
                     }.padding()
                 }
             
         }.padding()
+            .onAppear {
+                if let postId = post.id {
+                    feedVM.fetchComments(for: postId)
+                }
+            }
         
     }
 }
 
 #Preview {
-    CommentsSheetView(comments: [Comment(id: "001", userId: "001", text: "this recipe is amazing the pastle colors worked perfectly for my baby shower", createdAt: Date())])
+    CommentsSheetView(
+        post: Post(id: "001", userId: "001", userName: "Jane", caption: "Test", imageUrl: "", createdAt: Date(), likes: 0),
+        feedVM: FeedViewModel()
+    )
 }

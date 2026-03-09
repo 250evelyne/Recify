@@ -9,8 +9,9 @@ import Foundation
 import FirebaseFirestore
 
 struct Comment: Identifiable, Codable {
-    var id: String?
+    @DocumentID var id: String?
     let userId: String
+    let userName: String 
     let text: String
     let createdAt: Date
 }
