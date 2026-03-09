@@ -59,16 +59,17 @@ struct ShoppingList: View {
                 .overlay(Color.orange.opacity(0.3))
                 .padding(.top, 10)
             
-            HStack {
-                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
-                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.top)
-            
-            Divider()
-                .overlay(Color.orange.opacity(0.3))
+            //i dont think we gonna implement this
+//            HStack {
+//                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
+//                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
+//                Spacer()
+//            }
+//            .padding(.horizontal)
+//            .padding(.top)
+//            
+//            Divider()
+//                .overlay(Color.orange.opacity(0.3))
             
             //foreach item the user added to thier shopping list
             ScrollView {
@@ -243,6 +244,7 @@ struct ShoppingListItemRow: View {
     }
 }
 
+
 struct tabView: View {
     let index: Int
     let title: String
@@ -270,6 +272,61 @@ struct ShoppingList_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ShoppingList()
+        }
+    }
+}
+          
+struct shopItemView: View {
+    let title: String
+    let quantity: Int
+    let unit: units
+    @Binding var isSelected: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+
+            
+            RoundedRectangle(cornerRadius: 18)
+                .frame(maxWidth: .infinity)
+                .frame(height: 75)
+                .foregroundStyle(.white)
+                .overlay {
+                    HStack(spacing: 20) {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 27, height: 27)
+                                .foregroundStyle(Color("primaryColor"))
+                                .overlay {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.white)
+                                        .fontWeight(.bold)
+                                }
+                        } else {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.pink.opacity(0.6), lineWidth: 2)
+                                .frame(width: 28, height: 28)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text(title)
+                                .fontWeight(.semibold)
+                                .font(.system(size: 18))
+                                .strikethrough(isSelected, color: .gray)
+                                .foregroundColor(isSelected ? .gray : .black)
+                            
+                            Text("\(quantity) \(unit.rawValue)")
+                                .foregroundStyle(.gray.opacity(0.5))
+                                .strikethrough(isSelected, color: .gray.opacity(0.5))
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
+                .onTapGesture {
+                    withAnimation {
+                        isSelected.toggle()
+                    }
+                }
         }
     }
 }

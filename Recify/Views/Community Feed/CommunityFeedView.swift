@@ -36,7 +36,7 @@ struct CommunityFeedView: View {
                         }
                 }
                 .padding()
-                .background(.blue.opacity(0.2))
+                .background(.blue.opacity(0.08))
                 
                 
                 Divider()

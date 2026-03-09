@@ -59,6 +59,9 @@
 		FA6CEFC22F4D36D900748A27 /* SearchItemShoppingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6CEFC12F4D36D900748A27 /* SearchItemShoppingView.swift */; };
 		FA839EA82F4A6C9A0010E2E6 /* ShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA839EA72F4A6C9A0010E2E6 /* ShoppingList.swift */; };
 		FA839EAC2F4BAFB20010E2E6 /* addItemShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA839EAB2F4BAFB20010E2E6 /* addItemShoppingList.swift */; };
+		FA9504E82F58A2020082B995 /* SearchRecipeResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */; };
+		FA9504EA2F5DECA60082B995 /* SearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504E92F5DECA60082B995 /* SearchResults.swift */; };
+		FA9504EE2F5DF3850082B995 /* searchResultCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504ED2F5DF3850082B995 /* searchResultCard.swift */; };
 		FA9A76F22F39168C00458CC8 /* IngredientApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9A76F12F39168C00458CC8 /* IngredientApi.swift */; };
 		FAA185AF2F57CC1400A67F7C /* CookTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA185AE2F57CC1400A67F7C /* CookTime.swift */; };
 		FAA185B12F57D52200A67F7C /* DietaryRestrictions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA185B02F57D52200A67F7C /* DietaryRestrictions.swift */; };
@@ -135,6 +138,9 @@
 		FA6CEFC12F4D36D900748A27 /* SearchItemShoppingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItemShoppingView.swift; sourceTree = "<group>"; };
 		FA839EA72F4A6C9A0010E2E6 /* ShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingList.swift; sourceTree = "<group>"; };
 		FA839EAB2F4BAFB20010E2E6 /* addItemShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addItemShoppingList.swift; sourceTree = "<group>"; };
+		FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRecipeResultsView.swift; sourceTree = "<group>"; };
+		FA9504E92F5DECA60082B995 /* SearchResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResults.swift; sourceTree = "<group>"; };
+		FA9504ED2F5DF3850082B995 /* searchResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultCard.swift; sourceTree = "<group>"; };
 		FA9A76F12F39168C00458CC8 /* IngredientApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientApi.swift; sourceTree = "<group>"; };
 		FAA185AE2F57CC1400A67F7C /* CookTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookTime.swift; sourceTree = "<group>"; };
 		FAA185B02F57D52200A67F7C /* DietaryRestrictions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietaryRestrictions.swift; sourceTree = "<group>"; };
@@ -282,6 +288,7 @@
 				20EE05922F3D107200930D68 /* CookingStatisticsTabView.swift */,
 				20EE059A2F3D10DA00930D68 /* TabBarView.swift */,
 				FA6CEFC02F4D367A00748A27 /* profile */,
+				FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -312,6 +319,8 @@
 			isa = PBXGroup;
 			children = (
 				FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */,
+				FA9504E92F5DECA60082B995 /* SearchResults.swift */,
+				FA9504ED2F5DF3850082B995 /* searchResultCard.swift */,
 			);
 			path = "Search and advanced filters";
 			sourceTree = "<group>";
@@ -523,6 +532,7 @@
 				20EE058E2F3D0F5500930D68 /* Conversation.swift in Sources */,
 				20EE058F2F3D0F5500930D68 /* Message.swift in Sources */,
 				04040FEC2F3117E600EA6C4C /* Persistence.swift in Sources */,
+				FA9504EE2F5DF3850082B995 /* searchResultCard.swift in Sources */,
 				040410372F31234400EA6C4C /* ProfileView.swift in Sources */,
 				04040FEF2F3117E600EA6C4C /* Recify.xcdatamodeld in Sources */,
 				FAA5E4AD2F509A6100F3122C /* Post.swift in Sources */,
@@ -539,6 +549,7 @@
 				20F7E13F2F5E76F200A9A6AC /* MealApi.swift in Sources */,
 				FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */,
 				FA0A82652F578A0E0066A796 /* AdvanceSearchFiltersView.swift in Sources */,
+				FA9504EA2F5DECA60082B995 /* SearchResults.swift in Sources */,
 				04040FE52F3117E300EA6C4C /* ContentView.swift in Sources */,
 				FAA5E4B82F50E47500F3122C /* CreatePostView.swift in Sources */,
 				FAA185AF2F57CC1400A67F7C /* CookTime.swift in Sources */,
@@ -557,6 +568,8 @@
 				20EE05882F3D0F3B00930D68 /* MessagesListView.swift in Sources */,
 				FAA5E4AF2F509B7200F3122C /* Comment.swift in Sources */,
 				FA46E4052F37D9D1002CB0ED /* IngredientsView.swift in Sources */,
+				FA9504E82F58A2020082B995 /* SearchRecipeResultsView.swift in Sources */,
+				20EE05972F3D109E00930D68 /* HomeView.swift in Sources */,
 				FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */,
 				20EE059B2F3D10DA00930D68 /* TabBarView.swift in Sources */,
 				040410292F311B5400EA6C4C /* Recipe.swift in Sources */,

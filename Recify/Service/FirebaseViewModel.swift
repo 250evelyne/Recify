@@ -25,6 +25,25 @@ class FirebaseViewModel: ObservableObject {
     private let pageSize = 20
     
     
+    func fetchRecipes(searchQuery: String) {
+        db.collection("recipes")
+            .whereField("name", isGreaterThanOrEqualTo: searchQuery)
+            .whereField("name", isLessThanOrEqualTo: searchQuery + "\u{f8ff}") //searching for names that start with he qesry
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching recipes: \(error)")
+                    return
+                }
+
+                guard let documents = snapshot?.documents else { return }
+
+                self.recipes = documents.compactMap { doc in
+                    try? doc.data(as: Recipe.self)
+                }
+            }
+    }
+    
+    
     func fetchIngredients() {
         guard let collection = userCollection, !isLoading && canLoadMore else { return }
         

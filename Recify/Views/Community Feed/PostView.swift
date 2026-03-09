@@ -100,6 +100,26 @@ struct PostView: View {
         .padding(.vertical, 5)
         .background(Color.gray.opacity(0.1))
         .cornerRadius(15)
+}
+
+struct interactionBtn : View {
+    var icon : String
+    var count : Int
+    var color : Color
+    var body: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .stroke(color, lineWidth: 1)
+        //.foregroundStyle(color.opacity(0.3)) //so aparently its stroke or the abckground color no inbetween
+            .frame(width: 80, height: 40)
+            .overlay {
+                HStack{
+                    Image(systemName: icon)
+                        .foregroundStyle(color)
+                    
+                    Text("\(count)") .foregroundStyle(color)
+                }
+            }.background(color.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
 

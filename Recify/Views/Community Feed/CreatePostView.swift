@@ -41,22 +41,31 @@ struct CreatePostView: View {
                 // TODO: Add image picker later
             } label: {
                 RoundedRectangle(cornerRadius: 15)
-                    .strokeBorder(Color.blue, style: StrokeStyle(lineWidth: 1, dash: [10,6]))
+                    .strokeBorder(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))
                     .foregroundStyle(.blue.opacity(0.1))
-                    .frame(height: 300)
-                    .padding()
+                    .frame(width: 350,height: 300)
+                    
                     .overlay {
                         VStack {
-                            Image(systemName: "camera.on.rectangle")
+                            Image(systemName: "camera.fill") //TODO: ask for permission like the locaiton permission, then we get the path where the image is stored and then u store it in the firebase
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 60, height: 60)
+                                .frame(width: 35, height: 35)
                                 .foregroundStyle(.blue)
+                                .padding(15)
+                                .background(
+                                    Circle()
+                                        .fill(Color.white)
+                                )
+
                             Text("Add Photo")
                                 .foregroundStyle(.blue)
                                 .bold()
                         }
                     }
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                
             }
             
             TextField("Write a caption...", text: $caption)

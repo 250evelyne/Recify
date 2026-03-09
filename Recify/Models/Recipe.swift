@@ -13,9 +13,11 @@ struct Recipe: Identifiable, Codable {
     var category: String
     var ingredients: [String]
     var instructions: [String]
+    //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
     var servings: Int
     var timeMinutes: Int
     var userId: String
+    var dificulty : Difficulty? //ig they dont need to put it
     
     init(id: String? = nil, title: String, category: String, ingredients: [String], instructions: [String], servings: Int, timeMinutes: Int, userId: String) {
         self.id = id
@@ -27,4 +29,14 @@ struct Recipe: Identifiable, Codable {
         self.timeMinutes = timeMinutes
         self.userId = userId
     }
+}
+
+
+enum Difficulty: String, Codable, CaseIterable{
+    case easy = "Easy"
+    case medium = "Medium"
+    case hard = "Hard"
+    case beginner = "Beginner" //TODO: idk if i should make a new enum for thsi as like levels or wtv
+    case intermidiate = "Intermidiate"
+    case advanced = "Advanced"
 }
