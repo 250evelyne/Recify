@@ -2,7 +2,7 @@
 //  CookingModeTabView.swift
 //
 //  CalendarView.swift
-//  Uis
+//  Recify
 //
 //  Created by mac on 2026-03-07.
 //
@@ -43,7 +43,7 @@ struct CookingModeTabView: View {
                 .background(Color.white)
                 
                 
-                ScrollView {
+                ScrollView { //TODO: only scroll for the instructions not the button i wanna keep it so its always visible
                     VStack(spacing: 20) {
                         // Recipe IMG
                         Image(systemName: "fork.knife.circle.fill")
@@ -74,6 +74,7 @@ struct CookingModeTabView: View {
                         .cornerRadius(12)
                         
                         // Voice Commands
+                        //TODO: delee this if its pk with evelyne
                         HStack {
                             Image(systemName: "mic.fill")
                                 .foregroundColor(.pink)
@@ -139,7 +140,7 @@ struct CookingModeTabView: View {
             .navigationTitle("Cooking: \(recipeTitle)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .navigationBarLeading) { //TODO: remove the bnavigation back 
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark")
                             .foregroundColor(.gray)

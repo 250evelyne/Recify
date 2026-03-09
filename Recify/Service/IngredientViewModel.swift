@@ -97,4 +97,17 @@ class IngredientViewModel: ObservableObject {
         }
     }
     
+    func fetchCategoryFor(ingredientName: String) async -> Filters {
+        // Search the API for this specific ingredient name
+        await searchIngredients(query: ingredientName)
+        
+        // Look at the results and see if we find a match
+        if let match = pagedIngredients.first(where: { $0.name.lowercased() == ingredientName.lowercased() }) {
+            return match.category ?? .other
+        }
+        
+        return FirebaseViewModel.shared.getCategory(for: ingredientName)
+    }
+
+    
 }

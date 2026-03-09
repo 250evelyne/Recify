@@ -9,29 +9,31 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var searchText: String = ""
-    
-    let pantryMatchRecipes = [
-        (title: "Zesty Avocado Quinoa", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400", time: "25m", difficulty: "Easy", rating: 4.7, match: 90),
-        (title: "Harissa Chickpea Bowl", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400", time: "30m", difficulty: "Medium", rating: 4.8, match: 85)
-    ]
-    
-    let trendingRecipes = [
-        (title: "Garlic Herb Seared Steak", image: "https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=400", time: "25m", difficulty: "Easy", rating: 4.7),
-        (title: "Neapolitan Basil Pizza", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400", time: "50m", difficulty: "Medium", rating: 4.7),
-        (title: "Yakitori Style Skewers", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400", time: "30m", difficulty: "Medium", rating: 4.3),
-        (title: "Buttermilk Berry Stack", image: "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=400", time: "20m", difficulty: "Easy", rating: 4.5)
-    ]
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
+                VStack(alignment: .leading, spacing: 24) {
+                    
+                    // MARK: - Search Bar & Filter (Always Visible)
+                    HStack(spacing: 12) {
                         HStack {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
-                            TextField("Search by ingredients (e.g., Chicken)", text: $searchText)
+                            TextField("Search recipes (e.g., Chicken)", text: $searchText)
                                 .autocapitalization(.none)
+                                .onSubmit {
+                                    Task {
+                                        await viewModel.searchMeals(query: searchText)
+                                    }
+                                }
+                                .onChange(of: searchText) { newValue in
+                                    if newValue.isEmpty {
+                                        viewModel.searchResults = []
+                                        viewModel.hasNoResults = false
+                                    }
+                                }
                         }
                         .padding()
                         .background(Color.gray.opacity(0.1))
@@ -42,78 +44,158 @@ struct HomeView: View {
                         } label: {
                             Image(systemName: "slider.horizontal.3")
                                 .foregroundColor(.pink)
-                                .frame(width: 44, height: 44)
+                                .frame(width: 50, height: 50)
                                 .background(Color.pink.opacity(0.1))
                                 .cornerRadius(10)
                         }
-                        
                     }
                     .padding(.horizontal)
                     .padding(.top, 8)
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Perfect for your Pantry")
+                    
+                    // MARK: - Dynamic Content Area
+                    // If searching, show the search loader
+                    if viewModel.isSearching {
+                        ProgressView("Searching...")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 40)
+                        
+                        // If we have search results, ONLY show the search results grid
+                    }
+                    else if viewModel.hasNoResults {
+                        VStack(spacing: 12) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 50))
+                                .foregroundColor(.gray.opacity(0.5))
+                                .padding(.bottom, 8)
+                            
+                            Text("No results found")
                                 .font(.title3)
                                 .fontWeight(.bold)
-                            Spacer()
-                            Button(action: {}) {
-                                Text("See All")
-                                    .font(.subheadline)
-                                    .foregroundColor(.pink)
-                            }
+                            
+                            Text("We couldn't find any recipes for \"\(searchText)\". Try searching for a different ingredient.")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
                         }
-                        .padding(.horizontal)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(pantryMatchRecipes, id: \.title) { recipe in
-                                    RecipeCard(
-                                        title: recipe.title,
-                                        imageURL: recipe.image,
-                                        time: recipe.time,
-                                        difficulty: recipe.difficulty,
-                                        rating: recipe.rating,
-                                        matchPercentage: recipe.match
-                                    )
-                                    .frame(width: 180)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 60)
+                    }
+                    else if !viewModel.searchResults.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            SectionHeader(
+                                title: "Search Results",
+                                subtitle: "Found \(viewModel.searchResults.count) recipes",
+                                icon: "magnifyingglass",
+                                iconColor: .pink
+                            )
+                            
+                            LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
+                                ForEach(viewModel.searchResults) { meal in
+                                    NavigationLink(destination: RecipeInstructionsView(
+                                        mealId: meal.idMeal,
+                                        recipeTitle: meal.strMeal,
+                                        recipeImage: meal.strMealThumb
+                                    )) {
+                                        RecipeCard(
+                                            title: meal.strMeal,
+                                            imageURL: meal.strMealThumb,
+                                            time: "30m",
+                                            difficulty: "Medium",
+                                            rating: 4.5,
+                                            matchPercentage: nil
+                                        )
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal)
                         }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "flame.fill")
-                                .foregroundColor(.pink)
-                            Text("Trending Now")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                            Spacer()
-                            Button(action: {}) {
-                                Text("See All")
-                                    .font(.subheadline)
-                                    .foregroundColor(.pink)
-                            }
-                        }
-                        .padding(.horizontal)
                         
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                            ForEach(trendingRecipes, id: \.title) { recipe in
-                                RecipeCard(
-                                    title: recipe.title,
-                                    imageURL: recipe.image,
-                                    time: recipe.time,
-                                    difficulty: recipe.difficulty,
-                                    rating: recipe.rating,
-                                    matchPercentage: nil
+                    } else {
+                        
+                        //Loading thing
+                        if viewModel.isLoading {
+                            ProgressView("Loading Recipes...")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 40)
+                        }
+                        
+                        // Pantry Match Section
+                        if !viewModel.pantryMeals.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                SectionHeader(
+                                    title: "Perfect for your Pantry",
+                                    subtitle: viewModel.pantrySubtitle,
+                                    icon: "sparkles",
+                                    iconColor: .yellow
                                 )
+                                
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 16) {
+                                        ForEach(viewModel.pantryMeals) { meal in
+                                            NavigationLink(destination: RecipeInstructionsView(
+                                                mealId: meal.idMeal,
+                                                recipeTitle: meal.strMeal,
+                                                recipeImage: meal.strMealThumb
+                                            )) {
+                                                RecipeCard(
+                                                    title: meal.strMeal,
+                                                    imageURL: meal.strMealThumb,
+                                                    time: "30m",
+                                                    difficulty: "Medium",
+                                                    rating: 4.5,
+                                                    matchPercentage: 85
+                                                )
+                                                .frame(width: 160)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                }
                             }
                         }
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom, 20)
+                        
+                        // Trending Now Section
+                        if !viewModel.trendingMeals.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                SectionHeader(
+                                    title: "Trending Now",
+                                    subtitle: "Popular picks for you",
+                                    icon: "flame.fill",
+                                    iconColor: .pink
+                                )
+                                
+                                LazyVGrid(
+                                    columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)],
+                                    spacing: 16
+                                ) {
+                                    ForEach(viewModel.trendingMeals) { meal in
+                                        NavigationLink(destination: RecipeInstructionsView(
+                                            mealId: meal.idMeal,
+                                            recipeTitle: meal.strMeal,
+                                            recipeImage: meal.strMealThumb
+                                        )) {
+                                            RecipeCard(
+                                                title: meal.strMeal,
+                                                imageURL: meal.strMealThumb,
+                                                time: "45m",
+                                                difficulty: "Hard",
+                                                rating: 4.8,
+                                                matchPercentage: nil
+                                            )
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                            .padding(.bottom, 20)
+                        }
+                    } 
+                    
                 }
             }
             .background(Color(.systemGroupedBackground))
@@ -125,18 +207,59 @@ struct HomeView: View {
                         Image(systemName: "bell")
                             .foregroundColor(.pink)
                     }
-                    
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: ShoppingList()) {
                         Image(systemName: "cart.fill")
                     }
-                    
                 }
-                
+            }
+            // Fetch data when the view appears
+            .task {
+                if viewModel.pantryMeals.isEmpty && viewModel.trendingMeals.isEmpty {
+                    await viewModel.fetchHomeData()
+                }
             }
         }
+    }
+}
+                               
+
+// MARK: - Reusable Section Header
+struct SectionHeader: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let iconColor: Color
+    
+    var body: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Image(systemName: icon)
+                        .foregroundColor(iconColor)
+                    Text(title)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                }
+                
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            Button(action: {}) {
+                Text("See All")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.pink)
+            }
+            .padding(.top, 2)
+        }
+        .padding(.horizontal)
     }
 }
 

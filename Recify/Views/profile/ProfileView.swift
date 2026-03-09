@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var showLogoutConfirm = false
-    
+    @StateObject private var firebaseManager = FirebaseViewModel.shared
     @StateObject private var ingredientVM = IngredientViewModel()
     
     var body: some View {
@@ -76,13 +76,14 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            SettingsRow(
-                                icon: "heart.fill",
-                                iconColor: .pink,
-                                title: "Favorite Recipes",
-                                subtitle: "\(authManager.userProfile?.favorites.count ?? 0) saved",
-                                action: {}
-                            )
+                            NavigationLink(destination: FavoriteRecipesView()) {
+                                SettingsRowContent(
+                                    icon: "heart.fill",
+                                    iconColor: .pink,
+                                    title: "Favorite Recipes",
+                                    subtitle: "\(firebaseManager.savedRecipes.count) saved"
+                                )
+                            }
                             
                             Divider().padding(.leading, 60)
                             
