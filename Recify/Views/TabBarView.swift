@@ -27,12 +27,13 @@ struct TabBarView: View {
 //                }
 //                .tag(2)
             
-            CookingModeTabView()
-                .tabItem {
-                    Image(systemName: selectedTab == 1 ? "play.circle.fill" : "play.circle")
-                    Text("Cooking")
-                }
-                .tag(1)
+            //has to be somewhere else
+//            CookingModeTabView()
+//                .tabItem {
+//                    Image(systemName: selectedTab == 1 ? "play.circle.fill" : "play.circle")
+//                    Text("Cooking")
+//                }
+//                .tag(1)
             
             CommunityFeedView()
                 .tabItem {
@@ -48,7 +49,7 @@ struct TabBarView: View {
                 }
                 .tag(3)
             
-            //move this to home page
+            //move this to home page well not sure at the moment 
 //            ShoppingList()
 //                .tabItem {
 //                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")

@@ -8,16 +8,13 @@
 import SwiftUI
 
 struct CreatePostView: View {
-    
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var caption : String = ""
+    @State private var caption: String = ""
+    @StateObject private var feedVM = FeedViewModel()
     
     var body: some View {
-        VStack{
-            
-            HStack{
-                
+        VStack {
+            HStack {
                 Button {
                     dismiss()
                 } label: {
@@ -27,20 +24,22 @@ struct CreatePostView: View {
                 Text("Create Post").bold().font(.title)
                 Spacer()
                 Button {
-                    //TODO: save the post to the db
+                    feedVM.createPost(caption: caption, imageUrl: "https://picsum.photos/400")
+                    dismiss() 
                 } label: {
                     Text("Post")
-                }.buttonStyle(.borderedProminent)
-                    .tint(.pink)
-
-            }.padding()
-
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.pink)
+                .disabled(caption.isEmpty) // Prevent empty posts
+            }
+            .padding()
+            
             Divider()
             
             Button {
-                //TODO: add fnction to add a photo
+                // TODO: Add image picker later
             } label: {
-                
                 RoundedRectangle(cornerRadius: 15)
                     .strokeBorder(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))
                     .foregroundStyle(.blue.opacity(0.1))
@@ -69,13 +68,13 @@ struct CreatePostView: View {
                 
             }
             
-            TextField("Wrtie a caption...", text: $caption).padding()
+            TextField("Write a caption...", text: $caption)
+                .padding()
             
             Spacer()
             
-            
-        }.navigationBarBackButtonHidden(true)
-        
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

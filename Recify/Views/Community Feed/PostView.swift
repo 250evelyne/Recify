@@ -7,86 +7,46 @@
 
 import SwiftUI
 
-let mockComments: [Comment] = [
-    Comment(
-        id: "c1",
-        userId: "user_002",
-        text: "This looks amazing 🔥",
-        createdAt: Date()
-    ), Comment(
-        id: "c2",
-        userId: "user_003",
-        text: "Definitely trying this tonight!",
-        createdAt: Date().addingTimeInterval(-3600)
-    ), Comment(
-        id: "c3",
-        userId: "user_004",
-        text: "Can I replace the cheese with something else?",
-        createdAt: Date().addingTimeInterval(-7200)
-    )
-
-]
-
-let mockPosts: [Post] = [
-    Post(
-        id: "post_001",
-        userId: "user_001",
-        caption: "Creamy garlic pasta with spinach 😍🍝",
-        imageUrl: "https://picsum.photos/400",
-        createdAt: Date().addingTimeInterval(-86400),
-        likes: 42
-    ),
-    Post(
-        id: "post_002",
-        userId: "user_003",
-        caption: "First try at sour dough bread",
-        imageUrl: "https://picsum.photos/400",
-        createdAt: Date().addingTimeInterval(-862340),
-        likes: 29
-    )
-]
-
-
 struct PostView: View {
-    let posts : Post
-    let comments : [Comment]
+    let post: Post
+    @ObservedObject var feedVM: FeedViewModel
     
-    @State private var showComments : Bool = false
+    @State private var showComments: Bool = false
     
     var body: some View {
-        ZStack{
+        ZStack {
             RoundedRectangle(cornerRadius: 10)
                 .foregroundStyle(.white)
                 .frame(width: 380)
-
-            VStack(alignment: .leading)
-            {
-                HStack(spacing: 15){
-                    Image(systemName: "person.fill") //TODO: change this to the user pfp
-                        .clipShape(.circle) .font(.title)
-                    VStack(alignment: .leading){
-                        
-                        Text("chef_amy") //TODO: get the user name fromt he user is
+            
+            VStack(alignment: .leading) {
+                HStack(spacing: 15) {
+                    Image(systemName: "person.fill")
+                        .clipShape(.circle)
+                        .font(.title)
+                    VStack(alignment: .leading) {
+                        // Dynamically display the users name
+                        Text(post.userName)
                             .bold()
-                        Text(RelativeDateTimeFormatter().localizedString(for: posts.createdAt, relativeTo: Date())) //i dont think we need location so ya
+                        Text(RelativeDateTimeFormatter().localizedString(for: post.createdAt, relativeTo: Date()))
                             .foregroundStyle(.secondary)
                     }
                 }.padding(.leading)
                 
-                HStack{
+                HStack {
                     Spacer()
-                    AsyncImage(url: URL(string: posts.imageUrl)){ phase in
-                        switch phase{
+                    AsyncImage(url: URL(string: post.imageUrl)) { phase in
+                        switch phase {
                         case .empty:
-                            ProfileView()
-                        case .success(let image) :
+                            ProgressView()
+                        case .success(let image):
                             image
                                 .resizable()
                                 .scaledToFill()
                                 .frame(maxWidth: 350, maxHeight: 400)
                                 .clipped()
                                 .cornerRadius(10)
-                        case .failure(_) :
+                        case .failure(_):
                             Image(systemName: "photo")
                                 .resizable()
                                 .scaledToFit()
@@ -98,39 +58,48 @@ struct PostView: View {
                     Spacer()
                 }
                 
-                Text(posts.caption)
+                Text(post.caption)
                     .font(.title2)
                     .padding(.leading)
                 
-                HStack{
+                HStack {
                     Button {
-                        //TODO:adds 1 like to the posts like count
+                        // Adds 1 like to the post in Firestore
+                        feedVM.likePost(post: post)
                     } label: {
-                        interactionBtn(icon: "heart.fill", count: 124, color: .pink)
+                        interactionBtn(icon: "heart.fill", count: post.likes, color: .pink)
                     }
-
-//                    NavigationLink {
-//                        CommentsSheetView(comments: comments)
-//                    } label: {
-//                        interactionBtn(icon: "bubble.fill", count: 124, color: .blue) //i dont think we gonna do share
-//                    }
-//                    
+ 
                     Button {
                         showComments = true
                     } label: {
-                        interactionBtn(icon: "bubble.fill", count: 124, color: .blue) //i dont think we gonna do share
+                        //relpaced 0 with post.commentCount so it will count the real comments
+                        interactionBtn(icon: "bubble.fill", count: post.commentCount, color: .blue)
                     }
-
-
+                    
                 }.padding(.leading)
             }
             .sheet(isPresented: $showComments) {
-                CommentsSheetView(comments: mockComments)
+                CommentsSheetView(post: post, feedVM: feedVM)
             }
             .padding()
-        }.frame(width: 400, height: 550)
-            
+        }
     }
+    
+    // MARK: - Helper Views
+    @ViewBuilder
+    private func interactionBtn(icon: String, count: Int, color: Color) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+            Text("\(count)")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(15)
 }
 
 struct interactionBtn : View {
@@ -154,5 +123,19 @@ struct interactionBtn : View {
     }
 }
 
-#Preview { PostView(posts: Post(userId: "001", caption: "Delicious home made sourdough", imageUrl: "https://picsum.photos/400", createdAt: Date(), likes: 0), comments: mockComments)
+// MARK: - Preview
+
+#Preview {
+    PostView(
+        post: Post(
+            userId: "001",
+            userName: "N/A",
+            caption: "Delicious home made sourdough",
+            imageUrl: "https://picsum.photos/400",
+            createdAt: Date(),
+            likes: 12,
+            commentCount: 5 
+        ),
+        feedVM: FeedViewModel()
+    )
 }

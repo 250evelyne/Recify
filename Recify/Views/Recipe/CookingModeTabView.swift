@@ -1,29 +1,39 @@
 //
 //  CookingModeTabView.swift
+//
+//  CalendarView.swift
 //  Recify
 //
-//  Created by mac on 2026-02-09.
+//  Created by mac on 2026-03-07.
 //
 
 import SwiftUI
 
-struct CookingModeTabView: View {
-    @State private var currentStep: Int = 3
-    let totalSteps: Int = 8
+struct CookingModeTabView: View { //
+    let recipeTitle: String
+    let steps: [String]
+    
+    @Environment(\.dismiss) var dismiss
+    @State private var currentStepIndex = 0
+    
+    var progress: Double {
+        Double(currentStepIndex + 1) / Double(steps.count)
+    }
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
+                // Progress Hdr
                 VStack(alignment: .leading, spacing: 8) {
                     Text("OVERALL PROGRESS")
                         .font(.caption)
                         .foregroundColor(.gray)
                     
                     HStack {
-                        ProgressView(value: Double(currentStep), total: Double(totalSteps))
+                        ProgressView(value: progress, total: 1.0)
                             .progressViewStyle(LinearProgressViewStyle(tint: .pink))
                         
-                        Text("Step \(currentStep) of \(totalSteps)")
+                        Text("Step \(currentStepIndex + 1) of \(steps.count)")
                             .font(.caption)
                             .foregroundColor(.pink)
                             .fontWeight(.semibold)
@@ -32,8 +42,10 @@ struct CookingModeTabView: View {
                 .padding()
                 .background(Color.white)
                 
-                ScrollView {
+                
+                ScrollView { //TODO: only scroll for the instructions not the button i wanna keep it so its always visible
                     VStack(spacing: 20) {
+                        // Recipe IMG
                         Image(systemName: "fork.knife.circle.fill")
                             .resizable()
                             .scaledToFit()
@@ -43,17 +55,15 @@ struct CookingModeTabView: View {
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(12)
                         
+                        // Step Content
+                        //the only placeholder that changes
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("STEP \(currentStep)")
+                            Text("STEP \(currentStepIndex + 1)")
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundColor(.pink)
                             
-                            Text("Whisk the wet ingredients")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            
-                            Text("In a medium bowl, whisk together the large eggs, whole milk, and melted butter until the mixture is light and bubbly.")
+                            Text(steps[currentStepIndex])
                                 .font(.body)
                                 .foregroundColor(.gray)
                                 .lineSpacing(6)
@@ -63,6 +73,8 @@ struct CookingModeTabView: View {
                         .background(Color.white)
                         .cornerRadius(12)
                         
+                        // Voice Commands
+                        //TODO: delee this if its pk with evelyne
                         HStack {
                             Image(systemName: "mic.fill")
                                 .foregroundColor(.pink)
@@ -79,21 +91,39 @@ struct CookingModeTabView: View {
                         .background(Color.pink.opacity(0.1))
                         .cornerRadius(12)
                         
+                        // Navigation Buttons
                         HStack(spacing: 16) {
-                            Button(action: {}) {
+                            // Previous Button
+                            Button(action: {
+                                if currentStepIndex > 0 {
+                                    withAnimation {
+                                        currentStepIndex -= 1
+                                    }
+                                }
+                            }) {
                                 Image(systemName: "arrow.left")
-                                    .foregroundColor(.pink)
+                                    .foregroundColor(currentStepIndex > 0 ? .pink : .gray)
                                     .frame(width: 50, height: 50)
                                     .background(Color.white)
                                     .cornerRadius(12)
                                     .shadow(color: Color.black.opacity(0.1), radius: 4)
                             }
+                            .disabled(currentStepIndex == 0)
                             
-                            Button(action: {}) {
+                            // Next/Finish Button
+                            Button(action: {
+                                if currentStepIndex < steps.count - 1 {
+                                    withAnimation {
+                                        currentStepIndex += 1
+                                    }
+                                } else {
+                                    dismiss()
+                                }
+                            }) {
                                 HStack {
-                                    Text("Next Step")
+                                    Text(currentStepIndex < steps.count - 1 ? "Next Step" : "Finish Cooking")
                                         .fontWeight(.semibold)
-                                    Image(systemName: "arrow.right")
+                                    Image(systemName: currentStepIndex < steps.count - 1 ? "arrow.right" : "checkmark")
                                 }
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -107,9 +137,16 @@ struct CookingModeTabView: View {
                 }
                 .background(Color(.systemGroupedBackground))
             }
-            .navigationTitle("Cooking: Strawberry Crepes")
+            .navigationTitle("Cooking: \(recipeTitle)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) { //TODO: remove the bnavigation back 
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.gray)
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {}) {
                         Image(systemName: "bell.fill")
@@ -123,6 +160,18 @@ struct CookingModeTabView: View {
 
 struct CookingModeTabView_Previews: PreviewProvider {
     static var previews: some View {
-        CookingModeTabView()
+        CookingModeTabView(
+            recipeTitle: "Strawberry Crepes",
+            steps: [
+                "In a medium bowl, whisk together the large eggs, whole milk, and melted butter until the mixture is light and bubbly.",
+                "In another bowl, sift together the all-purpose flour, granulated sugar, and a pinch of salt.",
+                "Gradually add the dry ingredients to the wet ingredients, whisking constantly to avoid lumps.",
+                "Heat a non-stick pan over medium heat and lightly grease with butter.",
+                "Pour a small amount of batter into the pan and swirl to coat evenly.",
+                "Cook for 1-2 minutes until the edges start to lift, then flip and cook for another 30 seconds.",
+                "Transfer to a plate and fill with fresh strawberries and whipped cream.",
+                "Fold the crepe and dust with powdered sugar. Serve immediately."
+            ]
+        )
     }
 }
