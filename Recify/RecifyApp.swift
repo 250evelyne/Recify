@@ -19,17 +19,16 @@ struct RecifyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if authManager.isAuthenticated {
+            if !hasSeenOnboarding {
+                OnboardingView()
+                    .environmentObject(authManager)
+            } else if authManager.isAuthenticated {
+                
                 TabBarView()
                     .environmentObject(authManager)
             } else {
-                if hasSeenOnboarding {
-                    LoginView()
-                        .environmentObject(authManager)
-                } else {
-                    OnboardingView()
-                        .environmentObject(authManager)
-                }
+                LoginView()
+                    .environmentObject(authManager)
             }
         }
     }
