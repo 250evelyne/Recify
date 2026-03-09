@@ -12,6 +12,13 @@ struct ShoppingList: View {
     @StateObject var firebaseManager = FirebaseViewModel.shared
     @State private var checkedItems: Set<String> = []
     
+    //to create the  groups o show all the items together
+    var groupedItems: [Filters: [Ingredients]] {
+        Dictionary(grouping: firebaseManager.shoppingItems) { item in
+            item.category ?? .other
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -45,23 +52,37 @@ struct ShoppingList: View {
                 .overlay(Color.orange.opacity(0.3))
                 .padding(.top, 10)
             
-            HStack {
-                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
-                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.top)
-            
-            Divider()
-                .overlay(Color.orange.opacity(0.3))
+            //i dont think we gonna implement this
+//            HStack {
+//                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
+//                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
+//                Spacer()
+//            }
+//            .padding(.horizontal)
+//            .padding(.top)
+//            
+//            Divider()
+//                .overlay(Color.orange.opacity(0.3))
             
             //foreach item the user added to thier shopping list
             
             ScrollView {
                 VStack(spacing: 15) {
-                    ForEach(firebaseManager.shoppingItems) { item in
-                        ShoppingListItemRow(item: item, checkedItems: $checkedItems)
+                    ForEach(groupedItems.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { category in
+                        
+                        VStack(alignment: .leading) {
+                            
+                            Text(category.rawValue)
+                                .foregroundStyle(.blue)
+                                .bold()
+                                .font(.system(size: 20))
+                                .padding(.horizontal)
+                                .padding(.top)
+                            
+                            ForEach(groupedItems[category] ?? []) { item in
+                                ShoppingListItemRow(item: item, checkedItems: $checkedItems)
+                            }
+                        }
                     }
                 }
                 .padding(.top)
@@ -97,7 +118,7 @@ struct ShoppingListItemRow: View {
     
     var body: some View {
         shopItemView(
-            category: item.category ?? .other,
+            //category: item.category ?? .other,
             title: item.name,
             quantity: item.quantity ?? 1,
             unit: item.unit ?? .pcs,
@@ -117,7 +138,6 @@ struct ShoppingListItemRow: View {
     }
 }
 
-// MARK: - Missing Helper Views
 
 struct tabView: View {
     let index: Int
@@ -143,7 +163,6 @@ struct tabView: View {
 }
 
 struct shopItemView: View {
-    let category: Filters
     let title: String
     let quantity: Int
     let unit: units
@@ -151,12 +170,7 @@ struct shopItemView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(category.rawValue)
-                .foregroundStyle(.blue)
-                .bold()
-                .font(.system(size: 20))
-                .padding(.top)
-                .opacity(isSelected ? 0.5 : 1.0)
+
             
             RoundedRectangle(cornerRadius: 18)
                 .frame(maxWidth: .infinity)

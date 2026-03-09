@@ -23,7 +23,7 @@ struct CommunityFeedView: View {
                     Text("Community Feed")
                         .bold()
                     Spacer()
-                    Circle() //TODO: need to make a page for the creation of a post
+                    Circle()
                         .shadow(color: .pink, radius: 3, y: 2)
                         .foregroundColor(.pink)
                         .frame(width: 50, height: 50)
@@ -37,7 +37,7 @@ struct CommunityFeedView: View {
                         }
                 }
                 .padding()
-                .background(.blue.opacity(0.2))
+                .background(.blue.opacity(0.08))
                 
                 ScrollView(.vertical, showsIndicators: false){
                     //ForEach //fecth all the psots in the firebase

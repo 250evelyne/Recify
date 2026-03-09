@@ -149,7 +149,8 @@ struct interactionBtn : View {
                     
                     Text("\(count)") .foregroundStyle(color)
                 }
-            }
+            }.background(color.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
 

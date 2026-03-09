@@ -21,7 +21,7 @@ struct AdvanceSearchFiltersView: View {
 
     var body: some View {
         ZStack{
-            Color.purple.opacity(0.04)
+            Color.purple.opacity(0.04).ignoresSafeArea()
             
             VStack(alignment: .leading){
                 
@@ -147,9 +147,9 @@ struct AdvanceSearchFiltersView: View {
                 
                 HStack{
                     Spacer()
-                    Button {
-                        //TODO: TAKE ALL THE filters and search recipes
-                    } label: {
+                    
+                    
+                    NavigationLink(destination: SearchResults(oldSearch: searchedIngredient)) {
                         Label("Show Results", systemImage: "chevron.right")
                             .font(.title3)
                             .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
@@ -157,6 +157,19 @@ struct AdvanceSearchFiltersView: View {
                         .tint(.pink)
                         .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
                     Spacer()
+                    
+                    
+                    
+//                    Button {
+//                        //TODO: TAKE ALL THE filters and search recipes
+//                    } label: {
+//                        Label("Show Results", systemImage: "chevron.right")
+//                            .font(.title3)
+//                            .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
+//                    }.buttonStyle(.bordered)
+//                        .tint(.pink)
+//                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
+//                    Spacer()
                 }
                 
             }
