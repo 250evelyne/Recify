@@ -225,7 +225,7 @@ struct SettingsRowContent: View {
                 .font(.system(size: 20))
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
-                .background(iconColor.opacity(0.5)) //i just though that the coloor looked to muted and it looked disbaled
+                .background(iconColor.opacity(0.8)) //i just though that the coloor looked to muted and it looked disbaled
                 .cornerRadius(8)
             
             VStack(alignment: .leading, spacing: 2) {

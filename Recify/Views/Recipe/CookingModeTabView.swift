@@ -21,140 +21,127 @@ struct CookingModeTabView: View { //
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Progress Hdr
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("OVERALL PROGRESS")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+        VStack(spacing: 0) {
+            // Progress Hdr
+            VStack(alignment: .leading, spacing: 8) {
+                Text("OVERALL PROGRESS")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                
+                HStack {
+                    ProgressView(value: progress, total: 1.0)
+                        .progressViewStyle(LinearProgressViewStyle(tint: .pink))
                     
-                    HStack {
-                        ProgressView(value: progress, total: 1.0)
-                            .progressViewStyle(LinearProgressViewStyle(tint: .pink))
-                        
-                        Text("Step \(currentStepIndex + 1) of \(steps.count)")
-                            .font(.caption)
-                            .foregroundColor(.pink)
-                            .fontWeight(.semibold)
-                    }
+                    Text("Step \(currentStepIndex + 1) of \(steps.count)")
+                        .font(.caption)
+                        .foregroundColor(.pink)
+                        .fontWeight(.semibold)
                 }
-                .padding()
-                .background(Color.white)
-                
-                
-                ScrollView { //TODO: only scroll for the instructions not the button i wanna keep it so its always visible
-                    VStack(spacing: 20) {
-                        // Recipe IMG
-                        Image(systemName: "fork.knife.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 200)
-                            .foregroundColor(.pink.opacity(0.3))
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(12)
-                        
-                        // Step Content
-                        //the only placeholder that changes
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("STEP \(currentStepIndex + 1)")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.pink)
-                            
-                            Text(steps[currentStepIndex])
-                                .font(.body)
-                                .foregroundColor(.gray)
-                                .lineSpacing(6)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding()
+            .background(Color.white)
+            
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Recipe IMG
+                    Image(systemName: "fork.knife.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 200)
+                        .foregroundColor(.pink.opacity(0.3))
                         .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                    
+                    // Step Content
+                    //the only placeholder that changes
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("STEP \(currentStepIndex + 1)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.pink)
+                        
+                        Text(steps[currentStepIndex])
+                            .font(.body)
+                            .foregroundColor(.gray)
+                            .lineSpacing(6)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    
+                }
+            }
+            
+            
+            // Navigation Buttons
+            HStack(spacing: 16) {
+                // Previous Button
+                Button(action: {
+                    if currentStepIndex > 0 {
+                        withAnimation {
+                            currentStepIndex -= 1
+                        }
+                    }
+                }) {
+                    Image(systemName: "arrow.left")
+                        .foregroundColor(currentStepIndex > 0 ? .pink : .gray)
+                        .frame(width: 50, height: 50)
                         .background(Color.white)
                         .cornerRadius(12)
-                        
-                        // Voice Commands
-                        //TODO: delee this if its pk with evelyne
-                        HStack {
-                            Image(systemName: "mic.fill")
-                                .foregroundColor(.pink)
-                            Text("Voice Commands")
-                                .fontWeight(.semibold)
-                            Spacer()
-                            Text("Say 'Next' to skip steps")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Image(systemName: "waveform")
-                                .foregroundColor(.pink)
-                        }
-                        .padding()
-                        .background(Color.pink.opacity(0.1))
-                        .cornerRadius(12)
-                        
-                        // Navigation Buttons
-                        HStack(spacing: 16) {
-                            // Previous Button
-                            Button(action: {
-                                if currentStepIndex > 0 {
-                                    withAnimation {
-                                        currentStepIndex -= 1
-                                    }
-                                }
-                            }) {
-                                Image(systemName: "arrow.left")
-                                    .foregroundColor(currentStepIndex > 0 ? .pink : .gray)
-                                    .frame(width: 50, height: 50)
-                                    .background(Color.white)
-                                    .cornerRadius(12)
-                                    .shadow(color: Color.black.opacity(0.1), radius: 4)
-                            }
-                            .disabled(currentStepIndex == 0)
-                            
-                            // Next/Finish Button
-                            Button(action: {
-                                if currentStepIndex < steps.count - 1 {
-                                    withAnimation {
-                                        currentStepIndex += 1
-                                    }
-                                } else {
-                                    dismiss()
-                                }
-                            }) {
-                                HStack {
-                                    Text(currentStepIndex < steps.count - 1 ? "Next Step" : "Finish Cooking")
-                                        .fontWeight(.semibold)
-                                    Image(systemName: currentStepIndex < steps.count - 1 ? "arrow.right" : "checkmark")
-                                }
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.pink)
-                                .cornerRadius(12)
-                            }
-                        }
-                    }
-                    .padding()
+                        .shadow(color: Color.black.opacity(0.1), radius: 4)
                 }
-                .background(Color(.systemGroupedBackground))
-            }
-            .navigationTitle("Cooking: \(recipeTitle)")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { //TODO: remove the bnavigation back 
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.gray)
-                    }
-                }
+                .disabled(currentStepIndex == 0)
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
-                        Image(systemName: "bell.fill")
-                            .foregroundColor(.pink)
+                // Next/Finish Button
+                Button(action: {
+                    if currentStepIndex < steps.count - 1 {
+                        withAnimation {
+                            currentStepIndex += 1
+                        }
+                    } else {
+                        dismiss()
                     }
+                }) {
+                    HStack {
+                        Text(currentStepIndex < steps.count - 1 ? "Next Step" : "Finish Cooking")
+                            .fontWeight(.semibold)
+                        Image(systemName: currentStepIndex < steps.count - 1 ? "arrow.right" : "checkmark")
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.pink)
+                    .cornerRadius(12)
+                }
+            }
+            
+            .padding()
+            
+            .background(Color(.systemGroupedBackground))
+        }
+        .navigationTitle("Cooking: \(recipeTitle)")
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true) //should take off the double back bttn
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) { 
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {}) {
+                    Image(systemName: "bell.fill")
+                        .foregroundColor(.pink)
                 }
             }
         }
+        
     }
 }
 

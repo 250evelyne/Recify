@@ -38,19 +38,19 @@ struct ShoppingList: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    //this filyer the list for items that are currently checked and delete them
-                    let itemsToDelete = firebaseManager.shoppingItems.filter { $0.isChecked == true }
-                    firebaseManager.clearCompletedShoppingItems(items: itemsToDelete)
-                    
-                    checkedItems.removeAll()
-                }) {
-                    Text("Clear Completed")
-                        .foregroundStyle(firebaseManager.shoppingItems.filter({ $0.isChecked == true }).isEmpty ? Color.gray : Color("primaryColor"))
-                    //.opacity(0.6)
-                        .fontWeight(.semibold)
-                }
-                .disabled(firebaseManager.shoppingItems.filter({ $0.isChecked == true }).isEmpty) //button only works if something is checked
+//                Button(action: {
+//                    //this filyer the list for items that are currently checked and delete them
+//                    let itemsToDelete = firebaseManager.shoppingItems.filter { $0.isChecked == true }
+//                    firebaseManager.clearCompletedShoppingItems(items: itemsToDelete)
+//                    
+//                    checkedItems.removeAll()
+//                }) {
+//                    Text("Clear Completed")
+//                        .foregroundStyle(firebaseManager.shoppingItems.filter({ $0.isChecked == true }).isEmpty ? Color.gray : Color("primaryColor"))
+//                    //.opacity(0.6)
+//                        .fontWeight(.semibold)
+//                }
+//                .disabled(firebaseManager.shoppingItems.filter({ $0.isChecked == true }).isEmpty) //button only works if something is checked
             }
             .padding(.horizontal)
             .padding(.top)
@@ -59,23 +59,22 @@ struct ShoppingList: View {
                 .overlay(Color.orange.opacity(0.3))
                 .padding(.top, 10)
             
-            //i dont think we gonna implement this
-//            HStack {
-//                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
-//                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
-//                Spacer()
-//            }
-//            .padding(.horizontal)
-//            .padding(.top)
-//            
-//            Divider()
-//                .overlay(Color.orange.opacity(0.3))
+            HStack {
+                tabView(index: 0, title: "By Type", selectedTab: $selectedTab)
+                tabView(index: 1, title: "By Recipe", selectedTab: $selectedTab)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top)
+            
+            Divider()
+                .overlay(Color.orange.opacity(0.3))
             
             //foreach item the user added to thier shopping list
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    if selectedTab == 0 {
+                    if selectedTab == 0 { //TODO: add the empty shopiing list view
                         //Show grouped by Type (Category)
                         ForEach(itemsByType.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { category in
                             VStack(alignment: .leading, spacing: 10) {
@@ -151,7 +150,7 @@ struct ShoppingList: View {
                                 
                                 ForEach(itemsByRecipe[recipeName] ?? []) { item in
                                     ShoppingListItemRow(item: item, checkedItems: $checkedItems)
-                                }
+                                } //TODO: i wanna swipe to delete
                             }
                         }
                     }
@@ -159,22 +158,24 @@ struct ShoppingList: View {
                 .padding(.top)
                 .padding(.bottom, 80) // Space for the floating button
             }
-            .overlay(
-                //the navigation button isnt working any more
-                NavigationLink(destination: SearchItemShoppingView()) { //TODO: the button is tin the middle idfk why mb bro
-                    Circle()
-                        .shadow(color: .pink.opacity(0.3), radius: 3, y: 2)
-                        .foregroundColor(.pink)
-                        .frame(width: 60, height: 60)
-                        .overlay {
-                            Image(systemName: "plus")
-                                .foregroundStyle(.white)
-                                .font(.title)
-                        }
+            .overlay(alignment: .bottom){ //Its in the middle of the page for now when there nothing idk if we should keep like that
+                HStack{
+                    Spacer()
+                    //the navigation button isnt working any more
+                    NavigationLink(destination: SearchItemShoppingView()) { 
+                        Circle()
+                            .shadow(color: .pink.opacity(0.3), radius: 3, y: 2)
+                            .foregroundColor(.pink)
+                            .frame(width: 60, height: 60)
+                            .overlay {
+                                Image(systemName: "plus")
+                                    .foregroundStyle(.white)
+                                    .font(.title)
+                            }
+                    }
                 }
-                    .padding(),
-                alignment: .bottomTrailing
-            )
+                .padding()
+            }
         }
         .background(Color.blue.opacity(0.05))
         .onAppear {

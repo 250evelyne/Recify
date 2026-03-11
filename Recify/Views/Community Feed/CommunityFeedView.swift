@@ -38,9 +38,7 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.08))
                 
-                
-                Divider()
-                
+                            
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(feedVM.posts) { post in
                         PostView(post: post, feedVM: feedVM)

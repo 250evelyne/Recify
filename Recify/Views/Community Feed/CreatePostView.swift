@@ -38,7 +38,7 @@ struct CreatePostView: View {
             Divider()
             
             Button {
-                // TODO: Add image picker later
+                // TODO: Add image picker later (anabella or me)
             } label: {
                 RoundedRectangle(cornerRadius: 15)
                     .strokeBorder(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))

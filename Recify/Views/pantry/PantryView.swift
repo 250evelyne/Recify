@@ -41,7 +41,7 @@ struct PantryView: View {
                     HStack {
                         Text("Pantry").hidden() //has to put this here cuz if i deleted the searrch button will go ramdoly go up so "hidden" until now i think would be an option
                             .bold()
-                           .font(.title)
+                            .font(.title)
                         Spacer()
                     }
                     .padding(.top, 60)
@@ -110,8 +110,15 @@ struct PantryView: View {
                             .foregroundColor(.secondary)
                             .italic()
                     } else {
-                        ForEach(filteredIngredients) { ingredient in
+                        ForEach(filteredIngredients) { ingredient in //TODO: add a swipe to delete
                             IngredientPantryView(ingredient: ingredient)
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        deleteIngredient(ingredient)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                         
                         if firebaseManager.canLoadMore {
@@ -120,6 +127,7 @@ struct PantryView: View {
                                     firebaseManager.fetchIngredients()
                                 }
                         }
+                        
                     }
                 }
                 .onAppear {
@@ -144,7 +152,14 @@ struct PantryView: View {
             isLoading = false
         }
     }
+    
+    
+    func deleteIngredient(_ ingredient: Ingredients) {
+        firebaseManager.deleteIngredient(ingredient)
+    }
+    
 }
+
 #Preview {
     PantryView()
 }

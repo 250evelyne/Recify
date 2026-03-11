@@ -143,7 +143,7 @@ struct AdvanceSearchFiltersView: View {
                         }
                     }.frame(height: 400)
                     
-                }.padding(.horizontal) //TODO: remove random enptyr space on top
+                }.padding(.horizontal) //TODO: remove random enptyr space on top (alexanne) low priority
                 
                 HStack{
                     Spacer()
@@ -155,7 +155,7 @@ struct AdvanceSearchFiltersView: View {
                             .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
                     }.buttonStyle(.bordered)
                         .tint(.pink)
-                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
+                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to disable the buttons after annabella finsh making the page work
                     Spacer()
                     
                     

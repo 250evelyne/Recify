@@ -50,9 +50,9 @@ struct IngredientPantryView: View {
                         Button {
                             firebaseVM.updateQuantity(ingredient: ingredient, change: -1)
                             
-                            if ingredient.quantity != 0 {
-                                
-                            }
+//                            if ingredient.quantity != 0 {
+//                                
+//                            }
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
                                 .frame(width: 40, height: 40)

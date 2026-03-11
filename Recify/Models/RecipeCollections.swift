@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct RecipeCollection: Identifiable, Codable {
+    var id: String?   // Firestore documentID
+    var name: String
+    var recipes: [Recipe]
+}

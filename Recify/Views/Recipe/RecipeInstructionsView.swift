@@ -5,9 +5,9 @@
 //  Created by mac on 2026-03-07.
 //
 
-import SwiftUI  //TODO: add the calendar button that envlyne did was working but idk what happend (sheet)
+import SwiftUI
 
-struct RecipeInstructionsView: View { //
+struct RecipeInstructionsView: View {
     let mealId: String
     let recipeTitle: String
     let recipeImage: String
@@ -17,6 +17,8 @@ struct RecipeInstructionsView: View { //
     let calories: String = "450 kcal"
     let difficulty: String = "Medium"
     let isEditorChoice: Bool = false
+    
+    @State private var isAdded: Bool = false
     
     @Environment(\.dismiss) var dismiss
     @State private var showCalendar = false
@@ -57,6 +59,8 @@ struct RecipeInstructionsView: View { //
     }
     
     var body: some View {
+        
+
         ScrollView {
             if viewModel.isLoading {
                 VStack {
@@ -67,7 +71,7 @@ struct RecipeInstructionsView: View { //
             } else {
                 VStack(spacing: 0) {
                     // Recipe Img
-                    ZStack(alignment: .bottomLeading) {
+                    ZStack(alignment: .bottomLeading) { //TODO: chnage to be with out white space, maybe look at how i did for the backgorud of pantry view on top
                         AsyncImage(url: URL(string: recipeImage)) { image in
                             image.resizable().aspectRatio(contentMode: .fill)
                         } placeholder: {
@@ -98,37 +102,58 @@ struct RecipeInstructionsView: View { //
                         HStack(spacing: 12) {
                             InfoCard(title: "PREP TIME", value: prepTime, color: Color(red: 0.68, green: 0.85, blue: 0.90))
                             InfoCard(title: "CALORIES", value: calories, color: Color(red: 1.0, green: 0.95, blue: 0.95))
-                            InfoCard(title: "LEVEL", value: difficulty, color: Color(red: 0.88, green: 0.98, blue: 0.88))
+                            InfoCard(title: "LEVEL", value: difficulty, color: Color(red: 0.88, green: 0.98, blue: 0.88)) //TODO: add an enum for the level and change the color based on the level (anabella)
                         }
                         
                         // Ingredients Section
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Text("Ingredients")
+                                Text("Ingredients (\(viewModel.ingredients.count))")
                                     .font(.title2)
                                     .fontWeight(.bold)
                                 Spacer()
                                 
-                                if pantryCount < viewModel.ingredients.count {//TODO: make it so that it cant be lcikced twice
-                                    Button(action: addMissingIngredientsToCart) {
+                                if pantryCount < viewModel.ingredients.count {//TODO: the oanrty that the user has dosnt load automaticaly, only after i go to ptnary or wtv (anabella)
+                                    
+                                    Button {
+                                        addMissingIngredientsToCart()
+                                        isAdded = true
+                                    } label: {
                                         HStack(spacing: 4) {
                                             Image(systemName: "cart.badge.plus")
                                             Text("Add Missing")
-                                        }
-                                        .font(.caption)
-                                        .fontWeight(.bold)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 6)
-                                        .background(Color.pink.opacity(0.1))
-                                        .foregroundColor(.pink)
-                                        .cornerRadius(20)
-                                    }
+                                        }.font(.caption)
+                                            .fontWeight(.bold)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(Color.pink.opacity(0.1))
+                                            .foregroundColor(.pink)
+                                            .cornerRadius(20)
+                                    }.disabled(isAdded)
+                                    
+                                    
+                                    //                                    Button(action: addMissingIngredientsToCart) {
+                                    //                                        HStack(spacing: 4) {
+                                    //                                            Image(systemName: "cart.badge.plus")
+                                    //                                            Text("Add Missing")
+                                    //                                        }
+                                    //                                        .font(.caption)
+                                    //                                        .fontWeight(.bold)
+                                    //                                        .padding(.horizontal, 10)
+                                    //                                        .padding(.vertical, 6)
+                                    //                                        .background(Color.pink.opacity(0.1))
+                                    //                                        .foregroundColor(.pink)
+                                    //                                        .cornerRadius(20)
+                                    //                                    }
                                 }
                             }
                             
-                            ForEach(viewModel.ingredients) { ingredient in
-                                IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
-                            }
+                            ScrollView{
+                                ForEach(viewModel.ingredients) { ingredient in
+                                    IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
+                                }
+                            }.frame(maxHeight: 330)
+                            
                         }
                         
                         // Instructions Section...
@@ -155,6 +180,26 @@ struct RecipeInstructionsView: View { //
                             .background(Color.pink)
                             .cornerRadius(12)
                         }
+                        
+                        // Add to Calendar Button
+                        Button(action: {
+                            showCalendar = true
+                        }) {
+                            HStack {
+                                Image(systemName: "calendar")
+                                Text("Add to Planner")
+                                    .fontWeight(.semibold)
+                            }
+                            .foregroundColor(.green)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green.opacity(0.1))
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
+                        
+                        
+                        
                     }
                     .padding()
                 }
@@ -169,10 +214,13 @@ struct RecipeInstructionsView: View { //
                 Button(action: {
                     FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
                 }) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                    Image(systemName: isFavorite ? "heart.fill" : "heart") //TODO: change the hart to fill after u click it
                         .foregroundColor(.pink)
                 }
             }
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarView()
         }
         .alert("Added to Cart!", isPresented: $showAddedAlert) {
             Button("OK", role: .cancel) { }
@@ -221,7 +269,7 @@ struct IngredientRow: View {
     var body: some View {
         HStack {
             Image(systemName: inPantry ? "checkmark.circle.fill" : "plus.circle.fill")
-                .foregroundColor(inPantry ? .green : .pink)
+                .foregroundColor(inPantry ? Color("myGreen") : .pink)
                 .font(.title3)
             
             Text(name)
@@ -232,10 +280,10 @@ struct IngredientRow: View {
             Text(inPantry ? "IN PANTRY" : "TO BUY")
                 .font(.caption)
                 .fontWeight(.bold)
-                .foregroundColor(inPantry ? .green : .pink)
+                .foregroundColor(inPantry ? Color("myGreen") : .pink)
         }
         .padding()
-        .background(inPantry ? Color.green.opacity(0.1) : Color.pink.opacity(0.1))
+        .background(inPantry ? Color("myGreen").opacity(0.1) : Color.pink.opacity(0.1))
         .cornerRadius(12)
     }
 }

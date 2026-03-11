@@ -12,7 +12,7 @@ struct searchResultCard: View {
     let imageURL: String
     let time: Int
     let difficulty: String
-    @State var isFavorite : Bool = true //TODO:fecth from firebase if the recipi is in thier favories
+    @State var isFavorite : Bool = true //TODO:fecth from firebase if the recipi is in thier favories (anabella)
     
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
@@ -36,7 +36,7 @@ struct searchResultCard: View {
                     .overlay(alignment: .topTrailing){
                         
                         Button {
-                            //TODO: add to favoties
+                            //TODO: add to favoties (anabella)
                             isFavorite.toggle()
                         } label: {
                             Image(systemName: "suit.heart.fill")

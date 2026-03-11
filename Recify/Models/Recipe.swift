@@ -36,7 +36,8 @@ enum Difficulty: String, Codable, CaseIterable{
     case easy = "Easy"
     case medium = "Medium"
     case hard = "Hard"
-    case beginner = "Beginner" //TODO: idk if i should make a new enum for thsi as like levels or wtv
-    case intermidiate = "Intermidiate"
-    case advanced = "Advanced"
+// idk if i should make a new enum for thsi as like levels or wtv
+//    case beginner = "Beginner"
+//    case intermidiate = "Intermidiate"
+//    case advanced = "Advanced"
 }

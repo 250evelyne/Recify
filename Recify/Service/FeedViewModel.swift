@@ -13,6 +13,8 @@ class FeedViewModel: ObservableObject {
     @Published var posts: [Post] = []
     @Published var userPosts: [Post] = []
     @Published var currentComments: [Comment] = []
+    @Published var recipes: [Recipe] = []
+
     
     private var commentsListener: ListenerRegistration?
     private let db = Firestore.firestore()

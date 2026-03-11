@@ -44,7 +44,7 @@ struct CalendarView: View { //
                                     .foregroundColor(selectedMeal == meal ? .white : .black)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 10)
-                                    .background(selectedMeal == meal ? Color.green : Color.gray.opacity(0.2))
+                                    .background(selectedMeal == meal ? Color("myGreen") : Color.gray.opacity(0.2))
                                     .cornerRadius(20)
                             }
                         }

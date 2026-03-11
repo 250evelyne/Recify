@@ -37,12 +37,21 @@ class FirebaseViewModel: ObservableObject {
 
                 guard let documents = snapshot?.documents else { return }
 
-                self.recipes = documents.compactMap { doc in
-                    try? doc.data(as: Recipe.self)
+                self.savedRecipes = documents.compactMap { doc in
+                    try? doc.data(as: SavedRecipe.self)
                 }
             }
     }
     
+    //TODO: see if it works
+    func deleteIngredient(_ ingredient: Ingredients) {
+        if let id = ingredient.id {
+            Firestore.firestore()
+                .collection("ingredients")
+                .document(id)
+                .delete()
+        }
+    }
     
     func fetchIngredients() {
         guard let collection = userCollection, !isLoading && canLoadMore else { return }

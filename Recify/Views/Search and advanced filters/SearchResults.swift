@@ -15,7 +15,10 @@ struct SearchResults: View {
     
     
     var body: some View {
-        let filteredRecipes = firebaseManager.recipes.filter { $0.title.lowercased().contains(oldSearch.lowercased()) }
+        /*
+        let filteredRecipes = firebaseManager.recipes.filter {
+            $0.title.lowercased().contains(oldSearch.lowercased())
+        }
         
         VStack{
             
@@ -63,7 +66,7 @@ struct SearchResults: View {
                         Image(systemName: "person.circle") //TODO: make user profile image
                     }
                 }
-            }
+            }*/
     }
     
     var headerSearchSection: some View {

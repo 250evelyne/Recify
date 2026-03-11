@@ -13,6 +13,8 @@ struct PostView: View {
     
     @State private var showComments: Bool = false
     
+    @State private var isLiked : Bool = false //TODO: anabella get from database if the user has already lieked this post and hmake the bool true ofr flase based on that
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
@@ -66,10 +68,13 @@ struct PostView: View {
                     Button {
                         // Adds 1 like to the post in Firestore
                         feedVM.likePost(post: post)
+                        if (isLiked != true){
+                            isLiked = true
+                        }
                     } label: {
                         interactionBtn(icon: "heart.fill", count: post.likes, color: .pink)
-                    }
- 
+                    }.disabled(isLiked) //TODO: Alexanne should find a away to change the color
+                    
                     Button {
                         showComments = true
                     } label: {
@@ -86,43 +91,27 @@ struct PostView: View {
         }
     }
     
-    // MARK: - Helper Views
-    @ViewBuilder
-    private func interactionBtn(icon: String, count: Int, color: Color) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: icon)
-                .foregroundColor(color)
-            Text("\(count)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+    struct interactionBtn : View {
+        var icon : String
+        var count : Int
+        var color : Color
+        var body: some View {
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(color, lineWidth: 1)
+            //.foregroundStyle(color.opacity(0.3)) //so aparently its stroke or the abckground color no inbetween
+                .frame(width: 80, height: 40)
+                .overlay {
+                    HStack{
+                        Image(systemName: icon)
+                            .foregroundStyle(color)
+                        
+                        Text("\(count)") .foregroundStyle(color)
+                    }
+                }.background(color.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(15)
-}
-
-struct interactionBtn : View {
-    var icon : String
-    var count : Int
-    var color : Color
-    var body: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .stroke(color, lineWidth: 1)
-        //.foregroundStyle(color.opacity(0.3)) //so aparently its stroke or the abckground color no inbetween
-            .frame(width: 80, height: 40)
-            .overlay {
-                HStack{
-                    Image(systemName: icon)
-                        .foregroundStyle(color)
-                    
-                    Text("\(count)") .foregroundStyle(color)
-                }
-            }.background(color.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
-
 // MARK: - Preview
 
 #Preview {

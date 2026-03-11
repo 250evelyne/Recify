@@ -145,7 +145,7 @@ struct addItemShoppingList: View {
             }
             .padding(5)
             
-            //toast TODO??
+
             if showToast {
                 VStack {
                     Spacer()
