@@ -26,6 +26,8 @@ struct RecipeInstructionsView: View {
     @StateObject private var ingredientViewModel = IngredientViewModel()
     @State private var showAddedAlert = false
     
+    @State private var isShowingSheet = false
+    
     var pantryCount: Int {
         viewModel.ingredients.filter { $0.inPantry }.count
     }
@@ -213,12 +215,18 @@ struct RecipeInstructionsView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+                    isShowingSheet = true
                 }) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart") //TODO: change the hart to fill after u click it
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(.pink)
                 }
             }
         }
+        .sheet(isPresented: $isShowingSheet, content: {
+            SaveToCollectionView(recipeId: mealId)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        })
         .sheet(isPresented: $showCalendar) {
             CalendarView()
         }

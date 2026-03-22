@@ -76,7 +76,7 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            NavigationLink(destination: FavoriteRecipesView()) {
+                            NavigationLink(destination: savedCollectionsView()) {
                                 SettingsRowContent(
                                     icon: "heart.fill",
                                     iconColor: .pink,

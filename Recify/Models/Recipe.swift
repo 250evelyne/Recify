@@ -10,10 +10,11 @@ import FirebaseFirestore
 struct Recipe: Identifiable, Codable {
     @DocumentID var id: String?
     var title: String
-    var category: String
+    var category: String //whys this a strings? and not an enum 
     var ingredients: [String]
     var instructions: [String]
     //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
+    var imageUrl : String?
     var servings: Int
     var timeMinutes: Int
     var userId: String
