@@ -35,6 +35,17 @@ class RecipeDetailViewModel: ObservableObject {
                         .filter { !$0.isEmpty }
                 }
                 
+                self.instructions = instructionsString
+                    .components(separatedBy: CharacterSet.newlines)
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .map {
+                        $0.replacingOccurrences(
+                            of: "^(?i)step\\s*\\d+[:\\.-]?\\s*",
+                            with: "",
+                            options: .regularExpression
+                        ).trimmingCharacters(in: .whitespaces)
+                    }
                 
                 var fetchedIngredients: [RecipeIngredient] = []
                 let userPantry = FirebaseViewModel.shared.ingredients.map { $0.name.lowercased() }

@@ -19,6 +19,7 @@ struct Ingredients: Identifiable, Codable{ //, Codable , says its not conforming
     var isChecked: Bool? = false //have to add this to make the shooping work
     var timestamp: Date? //same here
     var recipeName: String?
+    var inPantry: Bool? = false //
 }
 
 
