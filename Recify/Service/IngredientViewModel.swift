@@ -10,6 +10,7 @@ import Foundation
 class IngredientViewModel: ObservableObject {
     @Published var pagedIngredients: [Ingredients] = []
     @Published var isLoading: Bool = false
+    @Published var pantryIngredients: [Ingredients] = []
     
     private var activeFilter: Filters = .all
     private var allFetchedResults: [Ingredients] = []
@@ -110,4 +111,18 @@ class IngredientViewModel: ObservableObject {
     }
 
     
+    // This function checks if the user has the items needed
+    func canMake(recipeIngredients: [String]) -> Bool {
+        let pantryNames = pantryIngredients.compactMap {
+            $0.name.lowercased().trimmingCharacters(in: .whitespaces)
+        }
+        
+        if pantryNames.isEmpty { return false }
+        
+        let matches = recipeIngredients.filter { ingredient in
+            pantryNames.contains(where: { $0.contains(ingredient.lowercased().trimmingCharacters(in: .whitespaces)) })
+        }
+        
+        return matches.count >= (recipeIngredients.count / 2)
+    }
 }

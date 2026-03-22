@@ -17,6 +17,7 @@ class FirebaseViewModel: ObservableObject {
     @Published var ingredients : [Ingredients] = []
     @Published var isLoading: Bool = false
     @Published var canLoadMore: Bool = true
+    @Published var recipes: [Recipe] = []
     @Published var shoppingItems: [Ingredients] = []
     @Published var savedRecipes: [SavedRecipe] = []
 

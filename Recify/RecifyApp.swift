@@ -13,23 +13,25 @@ struct RecifyApp: App {
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @StateObject private var authManager = AuthManager()
     
+    @StateObject private var homeViewModel = HomeViewModel()
+    
     init() {
         FirebaseApp.configure()
     }
     
     var body: some Scene {
         WindowGroup {
-            if !hasSeenOnboarding {
-                OnboardingView()
-                    .environmentObject(authManager)
-            } else if authManager.isAuthenticated {
-                
-                TabBarView()
-                    .environmentObject(authManager)
-            } else {
-                LoginView()
-                    .environmentObject(authManager)
+            Group {
+                if !hasSeenOnboarding {
+                    OnboardingView()
+                } else if authManager.isAuthenticated {
+                    TabBarView()
+                } else {
+                    LoginView()
+                }
             }
+            .environmentObject(authManager)
+            .environmentObject(homeViewModel)
         }
     }
 }

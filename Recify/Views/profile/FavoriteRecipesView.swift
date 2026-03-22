@@ -15,55 +15,17 @@ struct FavoriteRecipesView: View {
         SavedRecipe(mealId: "3", title: "Beef Tacos", imageURL: "https://www.themealdb.com/images/media/meals/birtwx1438941521.jpg"),
         SavedRecipe(mealId: "4", title: "Margherita Pizza", imageURL: "https://www.themealdb.com/images/media/meals/x0lk931587671539.jpg"),
     ]
+    
     var body: some View {
         ScrollView {
-            //Empty State
-//            if firebaseManager.savedRecipes.isEmpty {
-//                VStack(spacing: 16) {
-//                    Image(systemName: "heart.slash")
-//                        .font(.system(size: 60))
-//                        .foregroundColor(.gray.opacity(0.4))
-//                    
-//                    Text("No Favorites Yet")
-//                        .font(.title2)
-//                        .fontWeight(.bold)
-//                    
-//                    Text("Tap the heart icon on any recipe to save it here for later!")
-//                        .font(.subheadline)
-//                        .foregroundColor(.gray)
-//                        .multilineTextAlignment(.center)
-//                        .padding(.horizontal, 40)
-//                }
-//                .frame(maxWidth: .infinity, alignment: .center)
-//                .padding(.top, 100)
-                
-            //} else {
-                // MARK: - Saved Recipes Grid
-                LazyVGrid(
-                    columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)],
-                    spacing: 16
-                ) {
-                    //ForEach(firebaseManager.savedRecipes) { recipe in
-                    ForEach(mockRecipes) { recipe in
-                        NavigationLink(destination: RecipeInstructionsView(
-                            mealId: recipe.mealId,
-                            recipeTitle: recipe.title,
-                            recipeImage: recipe.imageURL
-                        )) {
-                            RecipeCard(
-                                title: recipe.title,
-                                imageURL: recipe.imageURL,
-                                time: "30m",
-                                difficulty: "Medium",
-                                rating: 4.8,
-                                matchPercentage: nil
-                            )
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                .padding()
-            //}
+            //check if we have saved recipes or use mock data for testing
+            let recipesToDisplay = firebaseManager.savedRecipes.isEmpty ? mockRecipes : firebaseManager.savedRecipes
+            
+            if recipesToDisplay.isEmpty {
+                emptyStateView
+            } else {
+                recipesGrid(recipes: recipesToDisplay)
+            }
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Favorite Recipes")
@@ -73,6 +35,74 @@ struct FavoriteRecipesView: View {
             firebaseManager.fetchSavedRecipes()
         }
     }
+    
+    // MARK: - Subviews
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "heart.slash")
+                .font(.system(size: 60))
+                .foregroundColor(.gray.opacity(0.4))
+            
+            Text("No Favorites Yet")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Tap the heart icon on any recipe to save it here for later!")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.top, 100)
+    }
+    
+    private func recipesGrid(recipes: [SavedRecipe]) -> some View {
+        LazyVGrid(
+            columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)],
+            spacing: 16
+        ) {
+            ForEach(recipes) { recipe in
+                
+                let placeholderRecipe = Recipe(
+                    id: recipe.mealId,
+                    title: recipe.title,
+                    category: "General",
+                    ingredients: [],
+                    instructions: "",
+                    imageURL: recipe.imageURL,
+                    servings: 1,
+                    userId: "",
+                    inPantry: false,
+                    prepTime: 30,
+                    calories: 0,
+                    level: "Medium"
+                )
+                
+                NavigationLink(destination: RecipeInstructionsView(
+                    mealId: recipe.mealId,
+                    recipeTitle: recipe.title,
+                    recipeImage: recipe.imageURL,
+                    prepTime: 30,
+                    difficulty: "Medium"
+                )) {
+                    RecipeCard(
+                        title: recipe.title,
+                        imageURL: recipe.imageURL,
+                        time: "30m",
+                        difficulty: "Medium",
+                        //rating: 4.8,
+                        matchPercentage: nil,
+                        recipe: placeholderRecipe
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding()
+    }
+    
 }
 
 struct FavoriteRecipesView_Previews: PreviewProvider {

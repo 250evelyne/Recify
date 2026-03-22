@@ -4,40 +4,83 @@
 //
 //  Created by eve on 2026-02-02.
 //
+
 import Foundation
 import FirebaseFirestore
+import SwiftUI
 
 struct Recipe: Identifiable, Codable {
     @DocumentID var id: String?
     var title: String
     var category: String
     var ingredients: [String]
-    var instructions: [String]
+    var instructions: String
     //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
+    var imageURL: String
     var servings: Int
-    var timeMinutes: Int
     var userId: String
-    var dificulty : Difficulty? //ig they dont need to put it
+    var inPantry: Bool
     
-    init(id: String? = nil, title: String, category: String, ingredients: [String], instructions: [String], servings: Int, timeMinutes: Int, userId: String) {
+    let prepTime: Int
+    let calories: Int
+    let level: String
+    
+    init(id: String? = nil,
+         title: String,
+         category: String,
+         ingredients: [String],
+         instructions: String,
+         imageURL: String,
+         servings: Int,
+         userId: String,
+         inPantry: Bool,
+         prepTime: Int,
+         calories: Int,
+         level: String) {
         self.id = id
         self.title = title
         self.category = category
         self.ingredients = ingredients
         self.instructions = instructions
+        self.imageURL = imageURL
         self.servings = servings
-        self.timeMinutes = timeMinutes
         self.userId = userId
+        self.inPantry = inPantry
+        self.prepTime = prepTime
+        self.calories = calories
+        self.level = level
     }
 }
 
-
-enum Difficulty: String, Codable, CaseIterable{
-    case easy = "Easy"
-    case medium = "Medium"
-    case hard = "Hard"
-// idk if i should make a new enum for thsi as like levels or wtv
-//    case beginner = "Beginner"
-//    case intermidiate = "Intermidiate"
-//    case advanced = "Advanced"
+enum RecipeDetailAttribute: String, CaseIterable {
+    case prepTime = "PREP TIME"
+    case calories = "CALORIES"
+    case level = "LEVEL"
+    
+    func color(for value: String) -> Color {
+        switch self {
+        case .prepTime:
+            return Color(red: 0.68, green: 0.85, blue: 0.90)
+        case .calories:
+            return Color(red: 1.0, green: 0.95, blue: 0.95)
+        case .level:
+            switch value.lowercased(){
+            case "easy": return Color.green.opacity(0.2)
+            case "medium": return Color.blue.opacity(0.2)
+            case "hard": return Color.orange.opacity(0.2)
+            default: return Color.gray.opacity(0.2)
+            }
+        }
+    }
+    
+    //enum Difficulty: String, Codable, CaseIterable {
+    //    case easy = "Easy"
+    //    case medium = "Medium"
+    //    case hard = "Hard"
+    //    // idk if i should make a new enum for thsi as like levels or wtv
+    //    //    case beginner = "Beginner"
+    //    //    case intermidiate = "Intermidiate"
+    //    //    case advanced = "Advanced"
+    //}
+    
 }

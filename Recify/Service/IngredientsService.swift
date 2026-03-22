@@ -8,7 +8,10 @@
 import Foundation
 
 enum HttpMethod: String {
-    case GET, POST, PUT, DELETE
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
 }
 
 class IngredientsService {
@@ -22,7 +25,7 @@ class IngredientsService {
             return cachedIngredients
         }
         
-        let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: .GET)
+        let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: .get)
         let rawMeals = result?.meals ?? []
         
         self.cachedIngredients = []
