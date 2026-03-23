@@ -17,6 +17,7 @@ class FirebaseViewModel: ObservableObject {
     @Published var ingredients : [Ingredients] = []
     @Published var isLoading: Bool = false
     @Published var canLoadMore: Bool = true
+    @Published var recipes: [Recipe] = []
     @Published var shoppingItems: [Ingredients] = []
     @Published var savedRecipes: [SavedRecipe] = []
     @Published var userFavCollections: [RecipeCollection] = [] //i added this to save the collections th users have made for thiere fav recipes
