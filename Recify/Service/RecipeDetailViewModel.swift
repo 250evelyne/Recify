@@ -73,6 +73,8 @@ class RecipeDetailViewModel: ObservableObject {
                 }
                 self.ingredients = fetchedIngredients
                 
+                self.checkPantryStatus()
+                
                 let meta = generateMetadata(
                     instructionCount: self.instructions.count,
                     ingredientCount: ingredientCount

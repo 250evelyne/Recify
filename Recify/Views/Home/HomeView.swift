@@ -143,21 +143,24 @@ struct HomeView: View {
         .padding(.top, 60)
     }
     
+    // MARK: - Updated Search Results Grid
     private var searchResultsGrid: some View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeader(title: "Search Results", subtitle: "Found \(viewModel.searchResults.count) recipes", icon: "magnifyingglass", iconColor: .pink)
+            
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                 ForEach(viewModel.searchResults) { recipe in
+                    // FIX: Use 'recipe' instead of 'meal'
                     NavigationLink(destination: RecipeInstructionsView(
-                        mealId: recipe.id ?? "",
+                        mealId: recipe.id ?? "", // Assuming Recipe model uses 'id'
                         recipeTitle: recipe.title,
-                        recipeImage: recipe.imageURL,
+                        recipeImage: recipe.imageURL ?? "",
                         prepTime: recipe.prepTime,
                         difficulty: recipe.level
                     )){
                         RecipeCard(
                             title: recipe.title,
-                            imageURL: recipe.imageURL,
+                            imageURL: recipe.imageURL ?? "",
                             time: "\(recipe.prepTime)m",
                             difficulty: recipe.level,
                             matchPercentage: nil,
@@ -170,9 +173,12 @@ struct HomeView: View {
             .padding(.horizontal)
         }
     }
+    
+    // MARK: - Updated Pantry Match Section
     private var pantryMatchSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeader(title: "Perfect for your Pantry", subtitle: viewModel.pantrySubtitle, icon: "sparkles", iconColor: .yellow)
+            
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(viewModel.pantryMeals) { meal in
@@ -189,7 +195,7 @@ struct HomeView: View {
                                 time: "30m",
                                 difficulty: "Medium",
                                 matchPercentage: 85,
-                                recipe: nil
+                                recipe: nil // Pass nil if this is a MealApi object and not a Recipe model
                             )
                         }
                         .buttonStyle(PlainButtonStyle())

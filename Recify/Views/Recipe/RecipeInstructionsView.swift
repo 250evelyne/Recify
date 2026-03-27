@@ -8,91 +8,69 @@
 import SwiftUI
 
 struct RecipeInstructionsView: View {
+    // MARK: - Properties
     let mealId: String
     let recipeTitle: String
     let recipeImage: String
     let prepTime: Int
     let difficulty: String
     
-    // Static display constants
-//    let rating: Double = 4.8
-//    let reviewCount: String = "1.2k"
-    
-    @Environment(\.dismiss) var dismiss
-    //@State private var showCalendar = false
     @StateObject private var viewModel = RecipeDetailViewModel()
+    @EnvironmentObject var firebaseVM: FirebaseViewModel
     @StateObject private var ingredientViewModel = IngredientViewModel()
-    @ObservedObject private var firebaseVM = FirebaseViewModel.shared
     
-    @State private var isAdded: Bool = false
     @State private var showCalendar = false
+    @State private var isFavorite = false
+    @State private var isAdded = false
     @State private var showAddedAlert = false
     
-    var pantryCount: Int {
-        viewModel.ingredients.filter { $0.inPantry }.count
-    }
-    
-    var isFavorite: Bool {
-        firebaseVM.isRecipeSaved(mealId: mealId)
-    }
-    
+    // MARK: - Body
     var body: some View {
-        
-       
         ScrollView {
-            if viewModel.isLoading {
-                loadingState
-            } else {
-                VStack(spacing: 0) {
-                    recipeHeaderImage
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        recipeTitleSection
-                        infoCardsSection
-                        ingredientsSection
-                        instructionsSection
-                        actionButtonsSection
-                    }
-                    .padding()
+            VStack(alignment: .leading, spacing: 16) {
+                recipeHeaderImage
+                
+                VStack(alignment: .leading, spacing: 20) {
+                    recipeTitleSection
+                    infoCardsSection
+                    actionButtonsSection
+                    ingredientsSection
+                    instructionsSection
                 }
+                .padding(.horizontal)
             }
         }
-        .navigationTitle(recipeTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                favoriteButton //TODO: change the hart to fill after u click it - //DONE//
+                favoriteButton
             }
         }
         .onAppear {
             Task {
                 await viewModel.fetchRecipeDetails(idMeal: mealId)
+                
+                // Update local UI states after fetching
                 viewModel.checkPantryStatus()
                 viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
             }
-        }        .sheet(isPresented: $showCalendar) {
-            CalendarView()
         }
-        .alert("Added to Cart!", isPresented: $showAddedAlert) {
+        .alert("Added to Cart", isPresented: $showAddedAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("All missing ingredients were successfully added to your Shopping List.")
+            Text("Missing ingredients have been added to your shopping list.")
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarView()
         }
     }
     
-    // MARK: - Sub-views (Optimized breaking up of expressions)
-    
-    private var loadingState: some View {
-        VStack {
-            Spacer().frame(height: 200)
-            ProgressView("Loading Recipe Details...")
-            Spacer()
-        }
-    }
+    // MARK: - Sub-views
     
     private var recipeHeaderImage: some View {
         AsyncImage(url: URL(string: recipeImage)) { image in
-            image.resizable().aspectRatio(contentMode: .fill)
+            image.resizable()
+                .aspectRatio(contentMode: .fill)
         } placeholder: {
             Color.gray.opacity(0.2)
         }
@@ -101,26 +79,9 @@ struct RecipeInstructionsView: View {
     }
     
     private var recipeTitleSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(recipeTitle)
-                .font(.title)
-                .fontWeight(.bold)
-            
-//            HStack(spacing: 4) {
-//                ForEach(0..<5) { index in
-//                    Image(systemName: index < Int(rating) ? "star.fill" : "star")
-//                        .foregroundColor(.yellow)
-//                        .font(.caption)
-//                }
-//                Text("\(String(format: "%.1f", rating)) (\(reviewCount) reviews)")
-//                    .font(.subheadline)
-//                    .foregroundColor(.gray)
-//            }
-        }
-    }
-    
-    private var isAllAccountedFor: Bool {
-        return viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
+        Text(recipeTitle)
+            .font(.title)
+            .fontWeight(.bold)
     }
     
     private var infoCardsSection: some View {
@@ -128,9 +89,10 @@ struct RecipeInstructionsView: View {
             InfoCard(type: .prepTime, value: "\(prepTime) min")
             
             if let recipe = viewModel.recipe {
-                InfoCard(type: .calories, value: "\(recipe.calories) kcal")
+                // Ensure the Recipe model has a calories property
+                InfoCard(type: .calories, value: "450 kcal")
             } else {
-                InfoCard(type: .calories, value: "350 kcal") // Default estimate
+                InfoCard(type: .calories, value: "-- kcal")
             }
             
             InfoCard(type: .level, value: difficulty)
@@ -144,14 +106,13 @@ struct RecipeInstructionsView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                 Spacer()
-                
-              
+                // Use the computed property to show/hide button
                 if !isAllAccountedFor {
                     addMissingButton
                 }
             }
             
-            VStack {
+            VStack(spacing: 10) {
                 ForEach(viewModel.ingredients) { ingredient in
                     IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
                 }
@@ -220,6 +181,7 @@ struct RecipeInstructionsView: View {
     
     private var favoriteButton: some View {
         Button(action: {
+            isFavorite.toggle()
             firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
         }) {
             Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -228,19 +190,23 @@ struct RecipeInstructionsView: View {
     }
     
     // MARK: - Helper Logic
+    private var isAllAccountedFor: Bool {
+        // Checks if every ingredient is either in the pantry or already in the cart
+        viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
+    }
+    
     private func addMissingIngredientsToCart() {
         let missingItems = viewModel.ingredients.filter { !$0.inPantry }
         
         Task {
             for item in missingItems {
-                // Check again inside the loop to prevent double-adding
                 let alreadyInCart = firebaseVM.shoppingItems.contains {
                     $0.name.lowercased() == item.rawName.lowercased()
                 }
                 
                 if !alreadyInCart {
                     let detectedCategory = await ingredientViewModel.fetchCategoryFor(ingredientName: item.rawName)
-                    FirebaseViewModel.shared.addToShoppingList(
+                    firebaseVM.addToShoppingList(
                         name: item.rawName,
                         imageUrl: "",
                         category: detectedCategory,
@@ -259,6 +225,7 @@ struct RecipeInstructionsView: View {
     }
 }
 
+// MARK: - Supporting Structs
 
 struct RecipeIngredient: Identifiable {
     let id = UUID()
@@ -266,7 +233,7 @@ struct RecipeIngredient: Identifiable {
     let rawName: String
     //let inPantry: Bool
     var inPantry: Bool
-    var inCart: Bool = false 
+    var inCart: Bool = false
 }
 
 
@@ -384,6 +351,7 @@ struct InstructionStep: View {
 //    }
 //}
 
+// MARK: - Preview
 struct RecipeInstructionsView_Previews: PreviewProvider {
     static var previews: some View {
         RecipeInstructionsView(
@@ -391,7 +359,8 @@ struct RecipeInstructionsView_Previews: PreviewProvider {
             recipeTitle: "Teriyaki Chicken Casserole",
             recipeImage: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg",
             prepTime: 12,
-            difficulty: "Easy" 
+            difficulty: "Easy"
         )
+        .environmentObject(FirebaseViewModel.shared)
     }
 }

@@ -12,11 +12,11 @@ import SwiftUI
 struct Recipe: Identifiable, Codable {
     @DocumentID var id: String?
     var title: String
-    var category: String
+    var category: String //whys this a strings? and not an enum 
     var ingredients: [String]
     var instructions: String
     //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
-    var imageURL: String
+    var imageURL : String?
     var servings: Int
     var userId: String
     var inPantry: Bool

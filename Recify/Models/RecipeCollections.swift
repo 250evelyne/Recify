@@ -6,9 +6,14 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct RecipeCollection: Identifiable, Codable {
-    var id: String?   // Firestore documentID
+//    let id = UUID()   // Firestore documentID
+    @DocumentID var id : String?
     var name: String
-    var recipes: [Recipe]
+    var imageUrl: String
+//    var recipes: [Recipe]
+    var userId: String 
+    var recipeIds: [String]
 }
