@@ -73,6 +73,8 @@ class RecipeDetailViewModel: ObservableObject {
                 }
                 self.ingredients = fetchedIngredients
                 
+                self.checkPantryStatus()
+                
                 let meta = generateMetadata(
                     instructionCount: self.instructions.count,
                     ingredientCount: ingredientCount
@@ -85,7 +87,7 @@ class RecipeDetailViewModel: ObservableObject {
                     category: mealCategory,
                     ingredients: fetchedIngredients.map { $0.rawName },
                     instructions: meal["strInstructions"] as? String ?? "",
-                    imageUrl: thumbURL,
+                    imageURL: thumbURL, //anebells
                     servings: 4,
                     userId: "",
                     inPantry: false,

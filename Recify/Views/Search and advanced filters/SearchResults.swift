@@ -62,14 +62,14 @@ struct SearchResults: View {
                     NavigationLink(destination: RecipeInstructionsView(
                         mealId: recipe.id ?? "",
                         recipeTitle: recipe.title,
-                        recipeImage: recipe.imageUrl ?? "",
+                        recipeImage: recipe.imageURL ?? "",
                         prepTime: recipe.prepTime,
                         difficulty: recipe.level
                     )) {
                         searchResultCard(
                             mealId: recipe.id ?? "",
                             title: recipe.title,
-                            imageURL: recipe.imageUrl ?? "",
+                            imageURL: recipe.imageURL ?? "",
                             time: recipe.prepTime,
                             difficulty: recipe.level
                         )

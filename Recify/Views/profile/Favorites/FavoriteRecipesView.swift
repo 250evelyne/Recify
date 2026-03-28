@@ -75,7 +75,7 @@ struct FavoriteRecipesView: View {
         var body: some View {
             if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
                 searchResultCard(
-                    mealId: "1",
+                    mealId: recipeId,
                     title: fullRecipe.title,
                     imageURL: fullRecipe.imageUrl ?? "", //TODO: make sure it shows somthing if the imag dosnt load
                     time: fullRecipe.prepTime,
@@ -91,9 +91,10 @@ struct FavoriteRecipesView: View {
                 }
                 .padding()
             }
+            .padding()
         }
     }
-    
+}
     
 struct FavoriteRecipesView_Previews: PreviewProvider {
     static var previews: some View {

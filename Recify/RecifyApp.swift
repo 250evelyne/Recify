@@ -14,6 +14,7 @@ struct RecifyApp: App {
     @StateObject private var authManager = AuthManager()
     
     @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var firebaseViewModel = FirebaseViewModel()
     
     init() {
         FirebaseApp.configure()
@@ -32,6 +33,7 @@ struct RecifyApp: App {
             }
             .environmentObject(authManager)
             .environmentObject(homeViewModel)
+            .environmentObject(firebaseViewModel)
         }
     }
 }

@@ -16,7 +16,9 @@ struct Recipe: Identifiable, Codable {
     var ingredients: [String]
     var instructions: String
     //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
-    var imageUrl : String? //TODO: i chcnged this make sure i chcnge it every where
+     var imageURL : String? //anabella wrote with chapitals
+    
+//     var imageUrl : String? //TODO: i chcnged this make sure i chcnge it every where
 
     var servings: Int
     var userId: String
@@ -31,7 +33,7 @@ struct Recipe: Identifiable, Codable {
          category: String,
          ingredients: [String],
          instructions: String,
-         imageUrl: String,
+         imageURL: String, //anabella
          servings: Int,
          userId: String,
          inPantry: Bool,
@@ -43,7 +45,7 @@ struct Recipe: Identifiable, Codable {
         self.category = category
         self.ingredients = ingredients
         self.instructions = instructions
-        self.imageUrl = imageUrl
+        self.imageURL = imageURL
         self.servings = servings
         self.userId = userId
         self.inPantry = inPantry
