@@ -44,7 +44,7 @@ struct ProfileView: View {
                                     )
                             }
                         }
-                        .padding(.top, 30)
+                        .padding(.top, 10)
                         
                         Text(authManager.userProfile?.userName ?? "User")
                             .font(.title2)
@@ -54,7 +54,7 @@ struct ProfileView: View {
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 10)
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text("MY ACTIVITY")
@@ -80,7 +80,7 @@ struct ProfileView: View {
                                 SettingsRowContent(
                                     icon: "heart.fill",
                                     iconColor: .pink,
-                                    title: "Favorite Recipes",
+                                    title: "Saved Collections",
                                     subtitle: "\(firebaseManager.savedRecipes.count) saved"
                                 )
                             }
@@ -90,9 +90,27 @@ struct ProfileView: View {
                             NavigationLink(destination: PantryView()) {
                                 SettingsRowContent(
                                     icon: "archivebox.fill",
-                                    iconColor: .brown,
+                                    iconColor: .pink,
                                     title: "Pantry",
                                     subtitle: "View all your saved Ingredients"
+                                )
+                            }
+                            
+                            NavigationLink(destination: MyPostsView()) {
+                                SettingsRowContent(
+                                    icon: "text.below.photo",
+                                    iconColor: .pink,
+                                    title: "Posts",
+                                    subtitle: "View all Posts you have made"
+                                )
+                            }
+                            
+                            NavigationLink(destination: MyRecipesView()) {
+                                SettingsRowContent(
+                                    icon: "fork.knife",
+                                    iconColor: .pink,
+                                    title: "Recipes",
+                                    subtitle: "View all Recipes you have made"
                                 )
                             }
                             
@@ -132,7 +150,7 @@ struct ProfileView: View {
                             
                             SettingsRow(
                                 icon: "nosign",
-                                iconColor: .blue,
+                                iconColor: .blue.opacity(0.2), //i chanhed the opacity to show we have not implimented this yet
                                 title: "Blocked Accounts",
                                 action: {}
                             )
@@ -154,7 +172,7 @@ struct ProfileView: View {
                         VStack(spacing: 0) {
                             SettingsRow(
                                 icon: "questionmark.circle.fill",
-                                iconColor: .gray,
+                                iconColor: .gray.opacity(0.2),
                                 title: "Help Center",
                                 action: {}
                             )
@@ -163,7 +181,7 @@ struct ProfileView: View {
                             
                             SettingsRow(
                                 icon: "doc.text.fill",
-                                iconColor: .gray,
+                                iconColor: .gray.opacity(0.2),
                                 title: "Terms of Service",
                                 action: {}
                             )

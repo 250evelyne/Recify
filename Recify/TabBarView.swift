@@ -22,46 +22,52 @@ struct TabBarView: View {
             //gonna move this to user profile
 //            PantryView()
 //                .tabItem {
-//                    Image(systemName: selectedTab == 2 ? "archivebox.fill" : "archivebox")
+//                    Image(systemName: selectedTab == 1 ? "archivebox.fill" : "archivebox")
 //                    Text("Pantry")
 //                }
-//                .tag(2)
+//                .tag(1)
             
             //has to be somewhere else
 //            CookingModeTabView()
 //                .tabItem {
-//                    Image(systemName: selectedTab == 1 ? "play.circle.fill" : "play.circle")
+//                    Image(systemName: selectedTab == 2 ? "play.circle.fill" : "play.circle")
 //                    Text("Cooking")
 //                }
-//                .tag(1)
+//                .tag(2)
             
             CommunityFeedView()
                 .tabItem {
-                    Image(systemName: selectedTab == 4 ? "person.3.fill" : "person.3")
+                    Image(systemName: selectedTab == 3 ? "person.3.fill" : "person.3")
                     Text("Feed")
                 }
-                .tag(2)
+                .tag(3)
+            
+            addNewRecipe()
+                .tabItem {
+                    Image(systemName: selectedTab == 4 ? "plus.circle.fill" : "plus.circle.dashed")
+                    Text("Create")
+                }.tag(4)
             
             MessagesListView()
                 .tabItem {
-                    Image(systemName: selectedTab == 3 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
+                    Image(systemName: selectedTab == 5 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
                     Text("Messages")
                 }
-                .tag(3)
+                .tag(5)
             
             //move this to home page well not sure at the moment 
 //            ShoppingList()
 //                .tabItem {
-//                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")
+//                    Image(systemName: selectedTab == 6 ? "cart.fill" : "cart")
 //                    Text("Shop")
-//                }.tag(4)
+//                }.tag(6)
             
             ProfileView()
                 .tabItem {
-                    Image(systemName: selectedTab == 4 ? "person.fill" : "person")
+                    Image(systemName: selectedTab == 7 ? "person.fill" : "person")
                     Text("Profile")
                 }
-                .tag(4)
+                .tag(7)
             
             
         }

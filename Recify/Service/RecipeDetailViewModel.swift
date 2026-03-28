@@ -85,7 +85,7 @@ class RecipeDetailViewModel: ObservableObject {
                     category: mealCategory,
                     ingredients: fetchedIngredients.map { $0.rawName },
                     instructions: meal["strInstructions"] as? String ?? "",
-                    imageURL: thumbURL,
+                    imageUrl: thumbURL,
                     servings: 4,
                     userId: "",
                     inPantry: false,

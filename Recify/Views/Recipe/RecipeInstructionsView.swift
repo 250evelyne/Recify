@@ -82,17 +82,17 @@ struct RecipeInstructionsView: View {
 //=======
                 favoriteButton //TODO: change the hart to fill after u click it - //DONE//
             }
-        }
-        .onAppear {
-            Task {
-                await viewModel.fetchRecipeDetails(idMeal: mealId)
-                viewModel.checkPantryStatus()
-                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
-            }
-        }        .sheet(isPresented: $showCalendar) {
+//        }
+//        .onAppear {
+//            Task {
+//                await viewModel.fetchRecipeDetails(idMeal: mealId)
+//                viewModel.checkPantryStatus()
+//                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
+//            }
+//        }        .sheet(isPresented: $showCalendar) {
 //>>>>>>> origin/Anabella
-            CalendarView()
-        }
+//            CalendarView()
+//        }
         .alert("Added to Cart!", isPresented: $showAddedAlert) {
             Button("OK", role: .cancel) { }
         } message: {

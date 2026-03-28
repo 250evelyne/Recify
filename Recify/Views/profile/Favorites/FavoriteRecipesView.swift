@@ -75,11 +75,13 @@ struct FavoriteRecipesView: View {
         var body: some View {
             if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
                 searchResultCard(
+                    mealId: "1",
                     title: fullRecipe.title,
                     imageURL: fullRecipe.imageUrl ?? "", //TODO: make sure it shows somthing if the imag dosnt load
-                    time: fullRecipe.timeMinutes,
-                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
-                    isFavorite: true
+                    time: fullRecipe.prepTime,
+//                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
+                    difficulty: fullRecipe.level
+//                    isFavorite: true
                 )
             } else {
                 HStack {

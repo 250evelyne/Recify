@@ -36,3 +36,14 @@ enum units: String, CaseIterable ,Identifiable, Codable{
     case oz = "oz"
     case pounds = "lbs"
 }
+
+
+//ima use this for the adding new recipe page since there to muc stuff in the top one
+extension Ingredients {
+    var displayText: String {
+        let qtyText = quantity != nil ? "\(quantity!)" : ""
+        let unitText = unit?.rawValue ?? ""
+        
+        return "\(name) \(qtyText) \(unitText)".trimmingCharacters(in: .whitespaces)
+    }
+}

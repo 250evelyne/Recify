@@ -304,6 +304,16 @@ class FirebaseViewModel: ObservableObject {
         
     }
     
+    
+    func deleteCollection(_ collection: RecipeCollection){
+        if let id = collection.id{
+            Firestore.firestore()
+                .collection("collections")
+                .document(id)
+                .delete()
+        }
+    }
+    
     func fecthUsersCollections() {
         guard let userId = Auth.auth().currentUser?.uid else {
             print("DEBUG: No User Logged In. Auth is nil.")
@@ -341,14 +351,12 @@ class FirebaseViewModel: ObservableObject {
     }
     
     func fetchRecipesForCollection(ids: [String]) {
-        // 1. Check if empty
         guard !ids.isEmpty else {
             print("DEBUG: IDs array is empty, skipping fetch.")
             self.currentCollectionRecipes = []
             return
         }
 
-        // 2. Limit to 10 (Firestore 'in' query limit)
         let limitedIds = Array(ids.prefix(10))
         print("DEBUG: Fetching full details for: \(limitedIds)")
 

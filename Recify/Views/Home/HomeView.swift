@@ -151,13 +151,13 @@ struct HomeView: View {
                     NavigationLink(destination: RecipeInstructionsView(
                         mealId: recipe.id ?? "",
                         recipeTitle: recipe.title,
-                        recipeImage: recipe.imageURL,
+                        recipeImage: recipe.imageUrl ?? "",
                         prepTime: recipe.prepTime,
                         difficulty: recipe.level
                     )){
                         RecipeCard(
                             title: recipe.title,
-                            imageURL: recipe.imageURL,
+                            imageURL: recipe.imageUrl ?? "",
                             time: "\(recipe.prepTime)m",
                             difficulty: recipe.level,
                             matchPercentage: nil,
@@ -177,7 +177,7 @@ struct HomeView: View {
                 HStack(spacing: 16) {
                     ForEach(viewModel.pantryMeals) { meal in
                         NavigationLink(destination: RecipeInstructionsView(
-                            mealId: meal.idMeal ?? "",
+                            mealId: meal.idMeal,
                             recipeTitle: meal.strMeal ?? "Unknown Recipe",
                             recipeImage: meal.strMealThumb ?? "",
                             prepTime: 30,

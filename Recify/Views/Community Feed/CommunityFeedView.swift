@@ -38,6 +38,7 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.08))
                 
+                //TODO: me or anabella find the old code to switch between community and my posts    
                             
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(feedVM.posts) { post in

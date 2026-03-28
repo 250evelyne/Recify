@@ -53,6 +53,14 @@ struct Recipe: Identifiable, Codable {
     }
 }
 
+enum RecipeCategory: String, CaseIterable {
+    case breakfast = "Breakfast"
+    case brunch = "Brunch"
+    case lunch = "Lunch"
+    case dinner = "Dinner"
+    case drinks = "Drinks"
+}
+
 enum RecipeDetailAttribute: String, CaseIterable {
     case prepTime = "PREP TIME"
     case calories = "CALORIES"
