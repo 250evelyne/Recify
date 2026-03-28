@@ -53,19 +53,23 @@ struct CookingModeTabView: View { //
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
-                    
-                    // Step Content
-                    //the only placeholder that changes
+                                        
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("STEP \(currentStepIndex + 1)")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.pink)
-                        
-                        Text(steps[currentStepIndex])
-                            .font(.body)
-                            .foregroundColor(.gray)
-                            .lineSpacing(6)
+                        if steps.indices.contains(currentStepIndex) {
+                            
+                            Text("STEP \(currentStepIndex + 1)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.pink)
+                            
+                            Text(steps[currentStepIndex])
+                                .font(.body)
+                                .foregroundColor(.gray)
+                                .lineSpacing(6)
+                        } else {
+                            Text("No steps available")
+                                .foregroundColor(.gray)
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()

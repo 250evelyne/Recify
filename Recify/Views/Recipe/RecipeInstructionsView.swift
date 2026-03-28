@@ -15,6 +15,12 @@ struct RecipeInstructionsView: View {
     let prepTime: Int
     let difficulty: String
     
+    // Static display constants
+//    let rating: Double = 4.8
+//    let reviewCount: String = "1.2k"
+    
+    @Environment(\.dismiss) var dismiss
+    //@State private var showCalendar = false
     @StateObject private var viewModel = RecipeDetailViewModel()
     @EnvironmentObject var firebaseVM: FirebaseViewModel
     @StateObject private var ingredientViewModel = IngredientViewModel()
@@ -22,6 +28,8 @@ struct RecipeInstructionsView: View {
     @State private var showCalendar = false
     @State private var isFavorite = false
     @State private var isAdded = false
+//     @ObservedObject private var firebaseVM = FirebaseViewModel.shared //idk looks like anabella has it above
+    
     @State private var showAddedAlert = false
     
     // MARK: - Body
@@ -169,6 +177,42 @@ struct RecipeInstructionsView: View {
                     Image(systemName: "calendar")
                     Text("Add to Planner")
                         .fontWeight(.semibold)
+//     var isFavorite: Bool { //me i think above is anabells new ui tho
+//         firebaseVM.isRecipeSaved(mealId: mealId)
+//     }
+    
+//     var body: some View {
+        
+       
+//         ScrollView {
+//             if viewModel.isLoading {
+//                 loadingState
+//             } else {
+//                 VStack(spacing: 0) {
+//                     recipeHeaderImage
+                    
+//                     VStack(alignment: .leading, spacing: 20) {
+//                         recipeTitleSection
+//                         infoCardsSection
+//                         ingredientsSection
+//                         instructionsSection
+//                         actionButtonsSection
+//                     }
+//                     .padding()
+//                 }
+//             }
+//         }
+//         .navigationTitle(recipeTitle)
+//         .navigationBarTitleDisplayMode(.inline)
+//         .toolbar {
+//             ToolbarItem(placement: .navigationBarTrailing) {
+// //<<<<<<< HEAD
+//                 Button(action: {
+//                     FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+//                     isShowingSheet = true
+//                 }) {
+//                     Image(systemName: isFavorite ? "heart.fill" : "heart")
+//                         .foregroundColor(.pink)
                 }
                 .foregroundColor(.green)
                 .frame(maxWidth: .infinity)
@@ -207,6 +251,208 @@ struct RecipeInstructionsView: View {
                 if !alreadyInCart {
                     let detectedCategory = await ingredientViewModel.fetchCategoryFor(ingredientName: item.rawName)
                     firebaseVM.addToShoppingList(
+                        name: item.rawName,
+                        imageUrl: "",
+                        category: detectedCategory,
+                        quantity: 1,
+                        unit: .pcs,
+                        recipeName: recipeTitle
+                    )
+                }
+            }
+            
+            await MainActor.run {
+                showAddedAlert = true
+                isAdded = true
+            }
+//         .sheet(isPresented: $isShowingSheet, content: { //me
+//             SaveToCollectionView(recipeId: mealId)
+//                 .presentationDetents([.medium, .large])
+//                 .presentationDragIndicator(.visible)
+//         })
+//         .sheet(isPresented: $showCalendar) {
+// //=======
+//                 favoriteButton //TODO: change the hart to fill after u click it - //DONE//
+//             }
+// //        }
+// //        .onAppear {
+// //            Task {
+// //                await viewModel.fetchRecipeDetails(idMeal: mealId)
+// //                viewModel.checkPantryStatus()
+// //                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
+// //            }
+// //        }        .sheet(isPresented: $showCalendar) {
+// //>>>>>>> origin/Anabella
+// //            CalendarView()
+// //        }
+//         .alert("Added to Cart!", isPresented: $showAddedAlert) {
+//             Button("OK", role: .cancel) { }
+//         } message: {
+//             Text("All missing ingredients were successfully added to your Shopping List.")
+        }
+    }
+    
+    // MARK: - Sub-views (Optimized breaking up of expressions)
+    
+    private var loadingState: some View {
+        VStack {
+            Spacer().frame(height: 200)
+            ProgressView("Loading Recipe Details...")
+            Spacer()
+        }
+    }
+    
+    private var recipeHeaderImage: some View {
+        AsyncImage(url: URL(string: recipeImage)) { image in
+            image.resizable().aspectRatio(contentMode: .fill)
+        } placeholder: {
+            Color.gray.opacity(0.2)
+        }
+        .frame(height: 280)
+        .clipped()
+    }
+    
+    private var recipeTitleSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(recipeTitle)
+                .font(.title)
+                .fontWeight(.bold)
+            
+//            HStack(spacing: 4) {
+//                ForEach(0..<5) { index in
+//                    Image(systemName: index < Int(rating) ? "star.fill" : "star")
+//                        .foregroundColor(.yellow)
+//                        .font(.caption)
+//                }
+//                Text("\(String(format: "%.1f", rating)) (\(reviewCount) reviews)")
+//                    .font(.subheadline)
+//                    .foregroundColor(.gray)
+//            }
+        }
+    }
+    
+    private var isAllAccountedFor: Bool {
+        return viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
+    }
+    
+    private var infoCardsSection: some View {
+        HStack(spacing: 12) {
+            InfoCard(type: .prepTime, value: "\(prepTime) min")
+            
+            if let recipe = viewModel.recipe {
+                InfoCard(type: .calories, value: "\(recipe.calories) kcal")
+            } else {
+                InfoCard(type: .calories, value: "350 kcal") // Default estimate
+            }
+            
+            InfoCard(type: .level, value: difficulty)
+        }
+    }
+    
+    private var ingredientsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Ingredients (\(viewModel.ingredients.count))")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Spacer()
+                
+              
+                if !isAllAccountedFor {
+                    addMissingButton
+                }
+            }
+            
+            VStack {
+                ForEach(viewModel.ingredients) { ingredient in
+                    IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
+                }
+            }
+        }
+    }
+    
+    private var addMissingButton: some View {
+        Button {
+            addMissingIngredientsToCart()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: isAdded ? "checkmark.circle" : "cart.badge.plus")
+                Text(isAdded ? "Added" : "Add Missing")
+            }
+            .font(.caption).fontWeight(.bold)
+            .padding(.horizontal, 10).padding(.vertical, 6)
+            .background(isAdded ? Color.gray.opacity(0.2) : Color.pink.opacity(0.1))
+            .foregroundColor(isAdded ? .gray : .pink)
+            .cornerRadius(20)
+        }
+        .disabled(isAdded)
+    }
+    
+    private var instructionsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Instructions")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            ForEach(Array(viewModel.instructions.enumerated()), id: \.offset) { index, instruction in
+                InstructionStep(number: index + 1, text: instruction, color: index % 2 == 0 ? .blue : .pink)
+            }
+        }
+    }
+    
+    private var actionButtonsSection: some View {
+        VStack(spacing: 12) {
+            NavigationLink(destination: CookingModeTabView(recipeTitle: recipeTitle, steps: viewModel.instructions)) {
+                HStack {
+                    Image(systemName: "flame.fill")
+                    Text("Start Cooking")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.pink)
+                .cornerRadius(12)
+            }
+            
+            Button(action: { showCalendar = true }) {
+                HStack {
+                    Image(systemName: "calendar")
+                    Text("Add to Planner")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.green)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(12)
+            }
+        }
+    }
+    
+    private var favoriteButton: some View {
+        Button(action: {
+            firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+        }) {
+            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                .foregroundColor(.pink)
+        }
+    }
+    
+    // MARK: - Helper Logic
+    private func addMissingIngredientsToCart() {
+        let missingItems = viewModel.ingredients.filter { !$0.inPantry }
+        
+        Task {
+            for item in missingItems {
+                // Check again inside the loop to prevent double-adding
+                let alreadyInCart = firebaseVM.shoppingItems.contains {
+                    $0.name.lowercased() == item.rawName.lowercased()
+                }
+                
+                if !alreadyInCart {
+                    let detectedCategory = await ingredientViewModel.fetchCategoryFor(ingredientName: item.rawName)
+                    FirebaseViewModel.shared.addToShoppingList(
                         name: item.rawName,
                         imageUrl: "",
                         category: detectedCategory,

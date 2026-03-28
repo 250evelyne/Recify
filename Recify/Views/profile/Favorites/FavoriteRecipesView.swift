@@ -69,26 +69,27 @@ struct FavoriteRecipesView: View {
     
     
     
-struct RecipeCollectionRow: View {
-    let recipeId: String
-    
-    var body: some View {
-        // Accessing the recipe from your manager's collection
-        if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
-            // FIX: Ensure the argument names match your 'searchResultCard' definition
-            searchResultCard(
-                mealId: recipeId,                   // Fixed: Added missing argument
-                title: fullRecipe.title,
-                imageURL: fullRecipe.imageURL ?? "", // Fixed: changed 'imageUrl' to 'imageURL'
-                time: fullRecipe.prepTime,          // Fixed: changed 'timeMinutes' to 'prepTime'
-                difficulty: fullRecipe.level         // Fixed: changed 'dificulty' to 'level'
-                // Removed 'isFavorite' as it was flagged as an extra argument
-            )
-        } else {
-            HStack {
-                ProgressView()
-                Text("Loading recipe details...")
-                    .foregroundColor(.gray)
+    struct RecipeCollectionRow: View {
+        let recipeId: String
+        
+        var body: some View {
+            if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
+                searchResultCard(
+                    mealId: recipeId,
+                    title: fullRecipe.title,
+                    imageURL: fullRecipe.imageUrl ?? "", //TODO: make sure it shows somthing if the imag dosnt load
+                    time: fullRecipe.prepTime,
+//                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
+                    difficulty: fullRecipe.level
+//                    isFavorite: true
+                )
+            } else {
+                HStack {
+                    ProgressView()
+                    Text("Loading recipe details...")
+                        .foregroundColor(.gray)
+                }
+                .padding()
             }
             .padding()
         }

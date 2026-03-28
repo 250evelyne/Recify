@@ -135,7 +135,7 @@ class WebService {
             category: meal.strCategory ?? "General",
             ingredients: meal.allIngredients,
             instructions: meal.strInstructions ?? "No instructions provided.",
-            imageURL: meal.strMealThumb ?? "",
+            imageURL: meal.strMealThumb ?? "", //anabella
             servings: 4,
             userId: "guest",
             inPantry: false,

@@ -155,12 +155,21 @@ struct HomeView: View {
                         mealId: recipe.id ?? "", // Assuming Recipe model uses 'id'
                         recipeTitle: recipe.title,
                         recipeImage: recipe.imageURL ?? "",
+//     private var searchResultsGrid: some View { //me
+//         VStack(alignment: .leading, spacing: 16) {
+//             SectionHeader(title: "Search Results", subtitle: "Found \(viewModel.searchResults.count) recipes", icon: "magnifyingglass", iconColor: .pink)
+//             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
+//                 ForEach(viewModel.searchResults) { recipe in
+//                     NavigationLink(destination: RecipeInstructionsView(
+//                         mealId: recipe.id ?? "",
+//                         recipeTitle: recipe.title,
+//                         recipeImage: recipe.imageUrl ?? "",
                         prepTime: recipe.prepTime,
                         difficulty: recipe.level
                     )){
                         RecipeCard(
                             title: recipe.title,
-                            imageURL: recipe.imageURL ?? "",
+                            imageURL: recipe.imageURL ?? "", //anabella
                             time: "\(recipe.prepTime)m",
                             difficulty: recipe.level,
                             matchPercentage: nil,
@@ -179,6 +188,9 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeader(title: "Perfect for your Pantry", subtitle: viewModel.pantrySubtitle, icon: "sparkles", iconColor: .yellow)
             
+//     private var pantryMatchSection: some View { //me idk what changed dosnt look like anything
+//         VStack(alignment: .leading, spacing: 16) {
+//             SectionHeader(title: "Perfect for your Pantry", subtitle: viewModel.pantrySubtitle, icon: "sparkles", iconColor: .yellow)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(viewModel.pantryMeals) { meal in

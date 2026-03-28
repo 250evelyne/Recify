@@ -9,53 +9,79 @@ import SwiftUI
 
 struct savedCollectionsView: View {
     @StateObject var firebaseManager = FirebaseViewModel.shared
-    let mockRecipes: [Recipe] = [
-        Recipe(
-            id: "1",
-            title: "Spaghetti Carbonara",
-            category: "Pasta",
-            // ingredients must be [String]
-            ingredients: ["Spaghetti", "Eggs", "Parmesan Cheese", "Pancetta", "Black Pepper"],
-            instructions: "Cook spaghetti. Fry pancetta. Whisk eggs. Combine.",
-            imageURL: "https://picsum.photos/200",
-            servings: 4,
-            userId: "mockUser",
-            inPantry: false,
-            prepTime: 25,
-            calories: 600,
-            level: "Easy"
-        ),
-        Recipe(
-            id: "2",
-            title: "Chicken Tikka Masala",
-            category: "Curry",
-            // ingredients must be [String]
-            ingredients: ["Chicken Breast", "Yogurt", "Garlic", "Ginger", "Tomato Sauce", "Cream"],
-            instructions: "Marinate chicken. Cook chicken. Prepare sauce. Simmer.",
-            imageURL: "https://picsum.photos/200",
-            servings: 4,
-            userId: "mockUser",
-            inPantry: false,
-            prepTime: 40,
-            calories: 500,
-            level: "Medium"
-        ),
-        Recipe(
-            id: "3",
-            title: "Avocado Toast",
-            category: "Breakfast",
-            // ingredients must be [String]
-            ingredients: ["Bread", "Avocado", "Salt", "Black Pepper", "Lemon Juice"],
-            instructions: "Toast bread. Mash avocado. Spread. Season.",
-            imageURL: "https://picsum.photos/200",
-            servings: 1,
-            userId: "mockUser",
-            inPantry: true,
-            prepTime: 10,
-            calories: 300,
-            level: "Easy"
-        )
-    ]
+//    let mockRecipes: [Recipe] = [
+//        Recipe(
+//            id: "1",
+//            title: "Spaghetti Carbonara",
+//            category: "Pasta",
+//            ingredients: [
+//                "Spaghetti",
+//                "Eggs",
+//                "Parmesan Cheese",
+//                "Pancetta",
+//                "Black Pepper"
+//            ],
+//            instructions: [
+//                "Cook spaghetti in salted boiling water.",
+//                "Fry pancetta until crispy.",
+//                "Whisk eggs and parmesan together.",
+//                "Combine pasta with pancetta and egg mixture.",
+//                "Serve with black pepper."
+//            ],
+//            servings: 4,
+//            timeMinutes: 25,
+//            userId: "mockUser",
+//            //difficulty: Difficulty.easy
+//        ),
+//
+//        Recipe(
+//            id: "2",
+//            title: "Chicken Tikka Masala",
+//            category: "Curry",
+//            ingredients: [
+//                "Chicken Breast",
+//                "Yogurt",
+//                "Garlic",
+//                "Ginger",
+//                "Tomato Sauce",
+//                "Cream"
+//            ],
+//            instructions: [
+//                "Marinate chicken in yogurt and spices.",
+//                "Grill or pan cook the chicken.",
+//                "Prepare tomato cream sauce.",
+//                "Add chicken to sauce and simmer.",
+//                "Serve with rice."
+//            ],
+//            servings: 4,
+//            timeMinutes: 40,
+//            userId: "mockUser",
+//            //difficulty: Difficulty.hard
+//        ),
+//
+//        Recipe(
+//            id: "3",
+//            title: "Avocado Toast",
+//            category: "Breakfast",
+//            ingredients: [
+//                "Bread",
+//                "Avocado",
+//                "Salt",
+//                "Black Pepper",
+//                "Lemon Juice"
+//            ],
+//            instructions: [
+//                "Toast the bread.",
+//                "Mash avocado with lemon juice.",
+//                "Spread avocado on toast.",
+//                "Season with salt and pepper."
+//            ],
+//            servings: 1,
+//            timeMinutes: 10,
+//            userId: "mockUser",
+//            //difficulty: Difficulty.easy
+//        )
+//    ]
     
 //    var mockCollections: [RecipeCollection] {
 //        [
@@ -77,12 +103,14 @@ struct savedCollectionsView: View {
     
     @Environment(\.dismiss) var dissmiss
     
+    @State private var showAlert : Bool = false
+    @State private var selectedCollection : RecipeCollection?
+    
     var body: some View {
-        NavigationStack{
             VStack{
                 
                 ScrollView {
-                    //Empty State
+                    //empty State
                     if firebaseManager.userFavCollections.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "heart.slash")
@@ -109,16 +137,30 @@ struct savedCollectionsView: View {
                             ForEach(firebaseManager.userFavCollections) { collection in
                                 
                                 saveFolderView(imageurl: collection.imageUrl, countRecipes: collection.recipeIds.count, name: collection.name, recipes: collection.recipeIds)
+                                    .highPriorityGesture(
+                                        LongPressGesture().onEnded { _ in
+                                            selectedCollection = collection
+                                            showAlert = true
+                                        }
+                                    )
                             }
                         }
                         .padding()
+                        
                     }
                 }
             }
+            .alert("delete this Collection", isPresented: $showAlert){
+                Button("Delete", role: .destructive) {
+                        if let collection = selectedCollection {
+                            deleteCollection(collection: collection)
+                        }
+                    }
+                Button("Cancel", role: .cancel) { }
+            }
             .navigationTitle("Saved Collections")
-            
             .navigationBarTitleDisplayMode(.large)
-            //        .navigationBarBackButtonHidden(true)
+            .navigationBarBackButtonHidden(true)
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: CreateCollection()) {
@@ -147,7 +189,11 @@ struct savedCollectionsView: View {
             .onAppear {
                 firebaseManager.fecthUsersCollections()
             }
-        }
+        
+    }
+    
+    func deleteCollection(collection: RecipeCollection){
+        firebaseManager.deleteCollection(collection)
     }
         
 }
