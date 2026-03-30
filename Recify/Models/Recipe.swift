@@ -61,6 +61,7 @@ enum RecipeCategory: String, CaseIterable {
     case lunch = "Lunch"
     case dinner = "Dinner"
     case drinks = "Drinks"
+    case dessert = "Dessert"
 }
 
 enum RecipeDetailAttribute: String, CaseIterable {

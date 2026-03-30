@@ -38,6 +38,21 @@ struct ShoppingList: View {
                 
                 Spacer()
                 
+                if #available(iOS 17.0, *) {
+                    NavigationLink(destination: GroceryMapsView()) {
+                        Image(systemName: "cart")
+                            .tint(.pink)
+                            .font(.title2)
+                            .padding(7)
+                            .background(.white)
+                            .clipShape(.circle)
+                            .shadow(radius: 5)
+                    }
+                } else {
+                    // Fallback on earlier versions
+                }
+                
+                
 //                Button(action: {
 //                    //this filyer the list for items that are currently checked and delete them
 //                    let itemsToDelete = firebaseManager.shoppingItems.filter { $0.isChecked == true }

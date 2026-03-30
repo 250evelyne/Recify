@@ -69,29 +69,28 @@ struct FavoriteRecipesView: View {
     
     
     
-    struct RecipeCollectionRow: View {
-        let recipeId: String
-        
-        var body: some View {
-            if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
-                searchResultCard(
-                    mealId: recipeId,
-                    title: fullRecipe.title,
-                    imageURL: fullRecipe.imageUrl ?? "", //TODO: make sure it shows somthing if the imag dosnt load
-                    time: fullRecipe.prepTime,
-//                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
-                    difficulty: fullRecipe.level
-//                    isFavorite: true
-                )
-            } else {
-                HStack {
-                    ProgressView()
-                    Text("Loading recipe details...")
-                        .foregroundColor(.gray)
-                }
-                .padding()
+struct RecipeCollectionRow: View {
+    let recipeId: String
+    
+    var body: some View {
+        if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
+            searchResultCard(
+                mealId: "1"/*recipeId*/,
+                title: fullRecipe.title,
+                imageURL: fullRecipe.imageURL ?? "", //TODO: make sure it shows somthing if the imag dosnt load
+                time: fullRecipe.prepTime,
+                //                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
+                difficulty: fullRecipe.level
+                //                    isFavorite: true
+            )
+        } else {
+            HStack {
+                ProgressView()
+                Text("Loading recipe details...")
+                    .foregroundColor(.gray)
             }
             .padding()
+            
         }
     }
 }

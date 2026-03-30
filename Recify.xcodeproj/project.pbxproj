@@ -50,6 +50,7 @@
 		FA06E4032F6CA3AB00595584 /* CreateCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA06E4022F6CA3AB00595584 /* CreateCollection.swift */; };
 		FA0A82652F578A0E0066A796 /* AdvanceSearchFiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */; };
 		FA18048D2F6EF677008E7D0F /* SaveToCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA18048C2F6EF677008E7D0F /* SaveToCollectionView.swift */; };
+		FA21147F2F79AB1F00700F5D /* GroceryMapsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA21147E2F79AB1F00700F5D /* GroceryMapsView.swift */; };
 		FA2FF3C62F75CDBE00DD43DF /* addNewRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2FF3C52F75CDBE00DD43DF /* addNewRecipe.swift */; };
 		FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3DB2F36A448002CB0ED /* PantryView.swift */; };
 		FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FA2F37C3B0002CB0ED /* Filters.swift */; };
@@ -137,6 +138,7 @@
 		FA06E4022F6CA3AB00595584 /* CreateCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollection.swift; sourceTree = "<group>"; };
 		FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvanceSearchFiltersView.swift; sourceTree = "<group>"; };
 		FA18048C2F6EF677008E7D0F /* SaveToCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveToCollectionView.swift; sourceTree = "<group>"; };
+		FA21147E2F79AB1F00700F5D /* GroceryMapsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryMapsView.swift; sourceTree = "<group>"; };
 		FA2FF3C52F75CDBE00DD43DF /* addNewRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addNewRecipe.swift; sourceTree = "<group>"; };
 		FA46E3DB2F36A448002CB0ED /* PantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryView.swift; sourceTree = "<group>"; };
 		FA46E3FA2F37C3B0002CB0ED /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 		040410252F311B0D00EA6C4C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FA21147D2F79AAFB00700F5D /* mapkit */,
 				FA2FF3C42F75CC3F00DD43DF /* createNewRecipe */,
 				20F7E1422F5E7BF800A9A6AC /* Recipe */,
 				20F7E13D2F5E76B900A9A6AC /* Home */,
@@ -351,6 +354,14 @@
 				FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */,
 			);
 			path = "Search and advanced filters";
+			sourceTree = "<group>";
+		};
+		FA21147D2F79AAFB00700F5D /* mapkit */ = {
+			isa = PBXGroup;
+			children = (
+				FA21147E2F79AB1F00700F5D /* GroceryMapsView.swift */,
+			);
+			path = mapkit;
 			sourceTree = "<group>";
 		};
 		FA2FF3C42F75CC3F00DD43DF /* createNewRecipe */ = {
@@ -498,7 +509,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					04040FDE2F3117E300EA6C4C = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -610,6 +621,7 @@
 				FA6CEFC22F4D36D900748A27 /* SearchItemShoppingView.swift in Sources */,
 				20EE05862F3D0F3B00930D68 /* NewChatView.swift in Sources */,
 				20EE05872F3D0F3B00930D68 /* ChatView.swift in Sources */,
+				FA21147F2F79AB1F00700F5D /* GroceryMapsView.swift in Sources */,
 				20EE05882F3D0F3B00930D68 /* MessagesListView.swift in Sources */,
 				FAA5E4AF2F509B7200F3122C /* Comment.swift in Sources */,
 				FA46E4052F37D9D1002CB0ED /* IngredientsView.swift in Sources */,
@@ -698,6 +710,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -717,6 +730,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -758,6 +772,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -770,6 +785,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -786,6 +802,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To get current location services";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -814,6 +831,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To get current location services";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -835,7 +853,6 @@
 		0404100C2F3117E600EA6C4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -854,7 +871,6 @@
 		0404100D2F3117E600EA6C4C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -873,7 +889,6 @@
 		0404100F2F3117E600EA6C4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -890,7 +905,6 @@
 		040410102F3117E600EA6C4C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
