@@ -44,7 +44,24 @@ class HomeViewModel: ObservableObject {
     }
     
     func searchMeals(query: String, filters: SearchFilters) async {
-        await MainActor.run { self.isLoading = true }
+        
+        //here are they clearing the Home search bar, or using Advanced Filters so the search works smoothly
+        let noFiltersActive = filters.cookTime == nil && filters.dietaryRestrictions.isEmpty && !filters.matchPantry
+        
+        if query.isEmpty && noFiltersActive {
+            //update results and THEN apply secondary pantry filters
+            await MainActor.run {
+                self.searchResults = []
+                self.hasNoResults = false
+                self.isSearching = false
+            }
+            return
+        }
+        
+        await MainActor.run {
+            self.isSearching = true
+            self.hasNoResults = false
+        }
         
         let results = await WebService().fetchFilteredRecipes(query: query, filters: filters)
         
@@ -57,7 +74,7 @@ class HomeViewModel: ObservableObject {
                 self.applyAdvancedFilters(filters: filters)
             }
             
-            self.isLoading = false
+            self.isSearching = false
             self.hasNoResults = self.searchResults.isEmpty
         }
     }
@@ -77,12 +94,11 @@ class HomeViewModel: ObservableObject {
             }
         }
         
-        // FALLBACK: If the pantry is empty OR the API couldn't find a meal with that ingredient
-        let fallbackUrlString = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken" // Default category
+        let fallbackUrlString = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken" 
         if let fallbackMeals = await fetchMeals(from: fallbackUrlString) {
             self.pantryMeals = Array(fallbackMeals.prefix(5))
             self.pantrySubtitle = "Add items to your pantry for custom matches!"
-        } ///notsure
+        }
     }
     
     private func fetchTrendingMeals() async {

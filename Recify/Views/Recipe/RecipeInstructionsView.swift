@@ -15,6 +15,8 @@ struct RecipeInstructionsView: View {
     let prepTime: Int
     let difficulty: String
     
+    var recipe: Recipe? = nil
+    
     // Static display constants
     //    let rating: Double = 4.8
     //    let reviewCount: String = "1.2k"
@@ -25,12 +27,17 @@ struct RecipeInstructionsView: View {
     @EnvironmentObject var firebaseVM: FirebaseViewModel
     @StateObject private var ingredientViewModel = IngredientViewModel()
     
+    @State private var isShowingSheet = false
     @State private var showCalendar = false
-    @State private var isFavorite = false
+    //@State private var isFavorite = false
     @State private var isAdded = false
     //     @ObservedObject private var firebaseVM = FirebaseViewModel.shared //idk looks like anabella has it above
     
     @State private var showAddedAlert = false
+    
+    private var isFavorite: Bool {
+        firebaseVM.isRecipeSaved(mealId: mealId)
+    }
     
     // MARK: - Body
     var body: some View {
@@ -54,27 +61,44 @@ struct RecipeInstructionsView: View {
                 favoriteButton
             }
         }
-        .onAppear {
-            Task {
-                await viewModel.fetchRecipeDetails(idMeal: mealId)
-                
-                // Update local UI states after fetching
-                viewModel.checkPantryStatus()
-                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
-            }
+        .sheet(isPresented: $isShowingSheet) {
+            SaveToCollectionView(recipeId: mealId)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarView()
         }
         .alert("Added to Cart", isPresented: $showAddedAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Missing ingredients have been added to your shopping list.")
         }
-        .sheet(isPresented: $showCalendar) {
-            CalendarView()
+        .onAppear {
+            Task {
+                if let customRecipe = recipe, !customRecipe.ingredients.isEmpty {
+                    viewModel.ingredients = customRecipe.ingredients.map {
+                        RecipeIngredient(name: $0, rawName: $0, inPantry: false)
+                    }
+                    
+                    let cleanedSteps = customRecipe.instructions
+                        .components(separatedBy: CharacterSet.newlines)
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .map { $0.replacingOccurrences(of: "^(?i)(step\\s*)?\\d+[:\\.-]?\\s*", with: "", options: .regularExpression) }
+                        .filter { !$0.isEmpty }
+                    
+                    viewModel.instructions = cleanedSteps.isEmpty ? [customRecipe.instructions] : cleanedSteps
+                    
+                } else {
+                    await viewModel.fetchRecipeDetails(idMeal: mealId)
+                }
+                
+                viewModel.checkPantryStatus()
+                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
+            }
         }
     }
-    
     // MARK: - Sub-views
-    
     private var recipeHeaderImage: some View {
         AsyncImage(url: URL(string: recipeImage)) { image in
             image.resizable()
@@ -96,9 +120,10 @@ struct RecipeInstructionsView: View {
         HStack(spacing: 12) {
             InfoCard(type: .prepTime, value: "\(prepTime) min")
             
-            if let recipe = viewModel.recipe {
-                // Ensure the Recipe model has a calories property
-                InfoCard(type: .calories, value: "450 kcal")
+            if let customRecipe = recipe {
+                InfoCard(type: .calories, value: "\(customRecipe.calories) kcal")
+            } else if let fetchedRecipe = viewModel.recipe {
+                InfoCard(type: .calories, value: "\(fetchedRecipe.calories) kcal")
             } else {
                 InfoCard(type: .calories, value: "-- kcal")
             }
@@ -222,20 +247,25 @@ struct RecipeInstructionsView: View {
             }
         }
     }
-    
+        
     private var favoriteButton: some View {
         Button(action: {
-            isFavorite.toggle()
-            firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+            if !isFavorite {
+                firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+            }
+            
+            //thiw always show the sheet so the user can manage collections
+            isShowingSheet = true
         }) {
             Image(systemName: isFavorite ? "heart.fill" : "heart")
                 .foregroundColor(.pink)
+                .font(.title3)
         }
     }
     
     // MARK: - Helper Logic
     private var isAllAccountedFor: Bool {
-        // Checks if every ingredient is either in the pantry or already in the cart
+        //checks if every ingredient is either in the pantry or already in the cart
         viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
     }
     
@@ -265,14 +295,9 @@ struct RecipeInstructionsView: View {
                 showAddedAlert = true
                 isAdded = true
             }
-            //         .sheet(isPresented: $isShowingSheet, content: { //me
-            //             SaveToCollectionView(recipeId: mealId)
-            //                 .presentationDetents([.medium, .large])
-            //                 .presentationDragIndicator(.visible)
-            //         })
+        
             //         .sheet(isPresented: $showCalendar) {
             // //=======
-            //                 favoriteButton //TODO: change the hart to fill after u click it - //DONE//
             //             }
             // //        }
             // //        .onAppear {

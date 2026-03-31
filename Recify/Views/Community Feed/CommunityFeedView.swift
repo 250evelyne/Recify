@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct CommunityFeedView: View {
+    @EnvironmentObject var authManager: AuthManager
     @StateObject private var feedVM = FeedViewModel()
     
     var body: some View {
         NavigationStack {
             VStack {
                 HStack {
-                    NavigationLink(destination: MyPostsView()) {
+                    NavigationLink(destination: MyPostsView().environmentObject(authManager)) {
                         Image(systemName: "person.fill")
                             .clipShape(.circle)
                             .font(.title)
@@ -38,8 +39,6 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.08))
                 
-                //TODO: me or anabella find the old code to switch between community and my posts    
-                            
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(feedVM.posts) { post in
                         PostView(post: post, feedVM: feedVM)

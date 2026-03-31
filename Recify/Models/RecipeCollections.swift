@@ -8,12 +8,18 @@
 import Foundation
 import FirebaseFirestore
 
-struct RecipeCollection: Identifiable, Codable {
-//    let id = UUID()   // Firestore documentID
+struct RecipeCollection: Identifiable, Codable, Hashable {
     @DocumentID var id : String?
     var name: String
     var imageUrl: String
-//    var recipes: [Recipe]
-    var userId: String 
+    var userId: String
     var recipeIds: [String]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: RecipeCollection, rhs: RecipeCollection) -> Bool {
+        lhs.id == rhs.id
+    }
 }

@@ -1,5 +1,5 @@
 //
-//  IngredientsService.swift
+//  FirebaseViewModel.swift
 //  Recify
 //
 //  Created by netblen on 2026-02-08.
@@ -21,7 +21,7 @@ class FirebaseViewModel: ObservableObject {
     @Published var shoppingItems: [Ingredients] = []
     @Published var savedRecipes: [SavedRecipe] = []
     @Published var userFavCollections: [RecipeCollection] = [] //i added this to save the collections th users have made for thiere fav recipes
-    @Published var currentCollectionRecipes: [Recipe] = [] //i added this for the favorites page i dont use saved recipes i use this to i can just gett all the saved recioes
+    @Published var currentCollectionRecipes: [SavedRecipe] = [] //i added this for the favorites page i dont use saved recipes i use this to i can just gett all the saved recioes
     
     private var lastDocument: DocumentSnapshot? = nil
     private let pageSize = 20
@@ -45,7 +45,7 @@ class FirebaseViewModel: ObservableObject {
             }
     }
     
-    //TODO: see if it works
+    //TODO: see if it works 
     func deleteIngredient(_ ingredient: Ingredients) {
         if let id = ingredient.id {
             Firestore.firestore()
@@ -224,29 +224,31 @@ class FirebaseViewModel: ObservableObject {
         return savedRecipes.contains(where: { $0.mealId == mealId })
     }
     
+
     func toggleFavorite(mealId: String, title: String, imageURL: String) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-        
         let favRef = db.collection("users").document(userId).collection("favorites").document(mealId)
         
         if let existingIndex = savedRecipes.firstIndex(where: { $0.mealId == mealId }) {
+            // 1. Remove from Master List
             savedRecipes.remove(at: existingIndex)
-            
             favRef.delete()
+            
+            // 2. FIX: Auto-cleanup all collections that contain this recipe
+            for collection in userFavCollections {
+                if collection.recipeIds.contains(mealId) {
+                    removeFromCollection(recipeId: mealId, collectionTitle: collection.name)
+                }
+            }
         } else {
-            //add to local array to update UI instantly
             let newFavorite = SavedRecipe(mealId: mealId, title: title, imageURL: imageURL)
             savedRecipes.append(newFavorite)
-            
-            do {
-                try favRef.setData(from: newFavorite)
-            } catch {
-                print("Error saving favorite: \(error)")
-            }
+            try? favRef.setData(from: newFavorite)
         }
     }
     
-
+    
+    
     func fetchSavedRecipes() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -287,21 +289,29 @@ class FirebaseViewModel: ObservableObject {
         
     }
     
-    func saveToCollection(recipedId: String, collectionId: String){
+    func saveToCollection(recipedId: String, collectionId: String) {
+        if let collection = userFavCollections.first(where: { $0.id == collectionId }),
+           collection.recipeIds.contains(recipedId) {
+            print("DEBUG: Already saved in this collection")
+            return
+        }
         
         let collectionRef = db.collection("collections").document(collectionId)
         
         collectionRef.updateData([
-            "recipeIds" : FieldValue.arrayUnion([recipedId])
-        ]){ error in
-            if let error = error{
-                
-                print("Error adding recipe to collection: \(error.localizedDescription)")
+            "recipeIds": FieldValue.arrayUnion([recipedId])
+        ]) { error in
+            if let error = error {
+                print("Error saving to collection: \(error.localizedDescription)")
             } else {
-                print("Successfully added recipe \(recipedId) to collection \(collectionId)!")
+                DispatchQueue.main.async {
+                    if let index = self.userFavCollections.firstIndex(where: { $0.id == collectionId }) {
+                        self.userFavCollections[index].recipeIds.append(recipedId)
+                        print("Successfully added \(recipedId) to collection locally")
+                    }
+                }
             }
         }
-        
     }
     
     
@@ -315,78 +325,75 @@ class FirebaseViewModel: ObservableObject {
     }
     
     func fecthUsersCollections() {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: No User Logged In. Auth is nil.")
-            return
-        }
-        
-        print("DEBUG: Starting fetch for UID: \(userId)")
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         
         db.collection("collections")
             .whereField("userId", isEqualTo: userId)
-            .addSnapshotListener { querySnapshot, error in
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
                 if let error = error {
-                    print("Firestore Error: \(error.localizedDescription)")
+                    print("DEBUG: Error fetching collections: \(error.localizedDescription)")
                     return
                 }
                 
-                guard let documents = querySnapshot?.documents else {
-                    return
+                guard let documents = querySnapshot?.documents else { return }
+                
+                let collections = documents.compactMap { document -> RecipeCollection? in
+                    try? document.data(as: RecipeCollection.self)
                 }
                 
-                
-                self.userFavCollections = documents.compactMap { document in
-                    do {
-                        // This line is the ultimate test
-                        let result = try document.data(as: RecipeCollection.self)
-                        print("af DEBUG: Successfully decoded: \(result.name)")
-                        return result
-                    } catch {
-                        print("Decoding failed for \(document.documentID): \(error)")
-                        // This print will tell us EXACTLY which field is causing the crash
-                        return nil
-                    }
+                DispatchQueue.main.async {
+                    self.userFavCollections = collections
                 }
+                
+//                self.userFavCollections = documents.compactMap { document in
+//                    do {
+//                        // This line is the ultimate test
+//                        let result = try document.data(as: RecipeCollection.self)
+//                        print("af DEBUG: Successfully decoded: \(result.name)")
+//                        return result
+//                    } catch {
+//                        print("Decoding failed for \(document.documentID): \(error)")
+//                        // This print will tell us EXACTLY which field is causing the crash
+//                        return nil
+//                    }
+//                }
             }
     }
     
+    
     func fetchRecipesForCollection(ids: [String]) {
-        guard !ids.isEmpty else {
-            print("DEBUG: IDs array is empty, skipping fetch.")
-            self.currentCollectionRecipes = []
+        self.currentCollectionRecipes = []
+        guard !ids.isEmpty else { return }
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("DEBUG: User not logged in")
             return
         }
-
-        let limitedIds = Array(ids.prefix(10))
-        print("DEBUG: Fetching full details for: \(limitedIds)")
-
-        db.collection("recipes")
-            .whereField(FieldPath.documentID(), in: limitedIds)
-            .addSnapshotListener { querySnapshot, error in
+        
+        print("DEBUG: Fetching from FAVORITES for IDs: \(ids)")
+        
+        db.collection("users").document(userId).collection("favorites")
+            .whereField(FieldPath.documentID(), in: ids)
+            .getDocuments { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
                 if let error = error {
                     print("DEBUG: Firestore Error: \(error.localizedDescription)")
                     return
                 }
-
-                guard let documents = querySnapshot?.documents else {
-                    print("DEBUG: No documents found for these IDs.")
-                    return
-                }
-
-                print("DEBUG: Successfully fetched \(documents.count) full recipe documents.")
-
-                self.currentCollectionRecipes = documents.compactMap { doc in
-                    do {
-                        return try doc.data(as: Recipe.self)
-                    } catch {
-                        print("DEBUG: Failed to decode recipe \(doc.documentID): \(error)")
-                        return nil
+                
+                if let docs = querySnapshot?.documents {
+                    let fetched = docs.compactMap { try? $0.data(as: SavedRecipe.self) }
+                    print("DEBUG: Final fetched count: \(fetched.count)")
+                    
+                    DispatchQueue.main.async {
+                        self.currentCollectionRecipes = fetched
                     }
                 }
             }
     }
-    
-    
     
     //MARK: ingredients management
     func getCategory(for ingredient: String) -> Filters {
@@ -450,7 +457,22 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
-    
+    func removeFromCollection(recipeId: String, collectionTitle: String) {
+        guard let collection = userFavCollections.first(where: { $0.name == collectionTitle }),
+              let collectionId = collection.id else { return }
+        
+        db.collection("collections").document(collectionId).updateData([
+            "recipeIds": FieldValue.arrayRemove([recipeId])
+        ]) { error in
+            if error == nil {
+                DispatchQueue.main.async {
+                    if let index = self.userFavCollections.firstIndex(where: { $0.id == collectionId }) {
+                        self.userFavCollections[index].recipeIds.removeAll { $0 == recipeId }
+                    }
+                }
+            }
+        }
+    }
     
     
 }

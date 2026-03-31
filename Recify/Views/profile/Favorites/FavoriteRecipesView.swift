@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavoriteRecipesView: View {
-    @StateObject var firebaseManager = FirebaseViewModel.shared
+    @ObservedObject var firebaseManager = FirebaseViewModel.shared
     //    let mockRecipes = [
     //        SavedRecipe(mealId: "1", title: "Spaghetti Carbonara", imageURL: "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg"),
     //        SavedRecipe(mealId: "2", title: "Chicken Tikka Masala", imageURL: "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"),
@@ -22,15 +22,32 @@ struct FavoriteRecipesView: View {
     //    let difficulty: String
     
     let collectionTitle: String
-    let recipes : [String]
+    //let recipes : [String]
     
-    @State var isFavorite : Bool = true //TODO:fecth from firebase if the recipi is in thier favories (anabella)
+    var recipes: [String] {
+        let rawList: [String]
+        
+        if collectionTitle == "Liked Recipes" {
+            rawList = firebaseManager.savedRecipes.map { $0.mealId }
+        } else {
+            rawList = firebaseManager.userFavCollections.first(where: { $0.name == collectionTitle })?.recipeIds ?? []
+        }
+        
+        var uniqueRecipes: [String] = []
+        for id in rawList {
+            if !uniqueRecipes.contains(id) {
+                uniqueRecipes.append(id)
+            }
+        }
+        
+        return uniqueRecipes
+    }
     
     var body: some View {
-        VStack{
+        VStack {
             ScrollView {
 //                Empty State
-                if firebaseManager.currentCollectionRecipes.isEmpty {
+                if recipes.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "heart.slash")
                             .font(.system(size: 60))
@@ -39,29 +56,29 @@ struct FavoriteRecipesView: View {
                         Text("No Favorites Yet")
                             .font(.title2)
                             .fontWeight(.bold)
-                        
-                        Text("Tap the heart icon on any recipe to save it here for later!")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 40)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 100)
                     
                 } else {
                     
-                    ForEach(recipes, id: \.self){ recipeId in
-                        RecipeCollectionRow(recipeId: recipeId)
+                    ForEach(recipes, id: \.self) { recipeId in
+                        RecipeCollectionRow(recipeId: recipeId, collectionTitle: collectionTitle)
                     }
                 }
             }
             .navigationTitle(collectionTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.white)
             .onAppear {
-                //ensures the page always grabs the latest favorites
-                firebaseManager.fetchRecipesForCollection(ids: recipes)
+                if !recipes.isEmpty {
+                    firebaseManager.fetchRecipesForCollection(ids: recipes)
+                }
+            }
+            //ftch again if the recipes list changes while looking at the view
+            .onChange(of: recipes) { newRecipes in
+                if !newRecipes.isEmpty {
+                    firebaseManager.fetchRecipesForCollection(ids: newRecipes)
+                }
             }
         }
     }
@@ -71,26 +88,61 @@ struct FavoriteRecipesView: View {
     
 struct RecipeCollectionRow: View {
     let recipeId: String
+    let collectionTitle: String
+    @ObservedObject var firebaseManager = FirebaseViewModel.shared
     
     var body: some View {
-        if let fullRecipe = FirebaseViewModel.shared.currentCollectionRecipes.first(where: { $0.id == recipeId }) {
-            searchResultCard(
-                mealId: "1"/*recipeId*/,
-                title: fullRecipe.title,
-                imageURL: fullRecipe.imageURL ?? "", //TODO: make sure it shows somthing if the imag dosnt load
-                time: fullRecipe.prepTime,
-                //                    difficulty: fullRecipe.dificulty?.rawValue ?? "N/A",
-                difficulty: fullRecipe.level
-                //                    isFavorite: true
-            )
+        if let savedRecipe = firebaseManager.currentCollectionRecipes.first(where: { $0.mealId == recipeId }) {
+            NavigationLink(destination: RecipeInstructionsView(
+                mealId: savedRecipe.mealId,
+                recipeTitle: savedRecipe.title,
+                recipeImage: savedRecipe.imageURL,
+                prepTime: 30,
+                difficulty: "Easy"
+            )) {
+                searchResultCard(
+                    mealId: savedRecipe.mealId,
+                    title: savedRecipe.title,
+                    imageURL: savedRecipe.imageURL,
+                    time: 30,
+                    difficulty: "Easy"
+                )
+            }
+            .buttonStyle(.plain)
+            .contextMenu {
+                if collectionTitle != "Liked Recipes" {
+                    Button(role: .destructive) {
+                        firebaseManager.removeFromCollection(recipeId: recipeId, collectionTitle: collectionTitle)
+                    } label: {
+                        Label("Remove from Collection", systemImage: "folder.badge.minus")
+                    }
+                }
+                
+                Button(role: .destructive) {
+                    firebaseManager.toggleFavorite(mealId: savedRecipe.mealId, title: savedRecipe.title, imageURL: savedRecipe.imageURL)
+                } label: {
+                    Label("Unlike Completely", systemImage: "heart.slash")
+                }
+            }
         } else {
+            // "0 count" fallback
             HStack {
-                ProgressView()
-                Text("Loading recipe details...")
+                Image(systemName: "heart.slash.fill")
                     .foregroundColor(.gray)
+                Text("Recipe removed from favorites")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Spacer()
+                Button("Clean up") {
+                    firebaseManager.removeFromCollection(recipeId: recipeId, collectionTitle: collectionTitle)
+                }
+                .font(.caption)
+                .foregroundColor(.pink)
             }
             .padding()
-            
+            .background(Color.gray.opacity(0.05))
+            .cornerRadius(10)
+            .padding(.horizontal)
         }
     }
 }
@@ -98,9 +150,7 @@ struct RecipeCollectionRow: View {
 struct FavoriteRecipesView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            FavoriteRecipesView(
-                collectionTitle: "wine dinner", recipes: ["1"]
-            )
+            FavoriteRecipesView(collectionTitle: "wine dinner")
         }
     }
 }

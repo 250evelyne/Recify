@@ -14,7 +14,7 @@ struct ProfileView: View {
     @StateObject private var ingredientVM = IngredientViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
                     
