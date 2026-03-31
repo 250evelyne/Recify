@@ -23,9 +23,12 @@ struct PostView: View {
             
             VStack(alignment: .leading) {
                 HStack(spacing: 15) {
-                    Image(systemName: "person.fill")
-                        .clipShape(.circle)
-                        .font(.title)
+                    Image(post.userAvatar ?? "cupcakeAvatar")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .shadow(radius: 1)
                     VStack(alignment: .leading) {
                         // Dynamically display the users name
                         Text(post.userName)

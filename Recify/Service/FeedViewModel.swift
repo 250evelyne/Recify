@@ -54,11 +54,14 @@ class FeedViewModel: ObservableObject {
             
             let userName = document?.data()?["userName"] as? String ?? "Unknown User"
             
+            let userAvatar = document?.data()?["avatar"] as? String ?? "cupcakeAvatar"
+            
             print("User found: \(userName). Preparing to save...")
             
             let newPost = Post(
                 userId: userId,
                 userName: userName,
+                userAvatar: userAvatar,
                 caption: caption,
                 imageUrl: imageUrl,
                 createdAt: Date(),

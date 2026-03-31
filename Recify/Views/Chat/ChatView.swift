@@ -116,9 +116,9 @@ struct ChatView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 16) {
-                    Button(action: {}) {
-                        Image(systemName: "video.fill")
-                    }
+//                    Button(action: {}) {
+//                        Image(systemName: "video.fill")
+//                    }
                     Button(action: {}) {
                         Image(systemName: "info.circle")
                     }

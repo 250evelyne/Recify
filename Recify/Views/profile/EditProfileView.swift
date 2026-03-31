@@ -18,6 +18,9 @@ struct EditProfileView: View {
     @State private var currentPassword: String = ""
     @State private var newPassword: String = ""
     @State private var confirmPassword: String = ""
+    @State private var selectedAvatar: String = ""
+    
+    let predefinedAvatars = ["cupcakeAvatar", "orangeAvatar", "strawberryAvatar", "peachAvatar", "pancakeAvatar", "friesAvatar", "cookieAvatar", "tomatoAvatar"]
     
     @State private var isLoading: Bool = false
     @State private var showAlert: Bool = false
@@ -26,6 +29,44 @@ struct EditProfileView: View {
     
     var body: some View {
         Form {
+            Section {
+                VStack {
+                    Image(selectedAvatar.isEmpty ? "tomatoAvatar" : selectedAvatar)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .shadow(radius: 3)
+                        .padding(.bottom, 10)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(predefinedAvatars, id: \.self) { avatar in
+                                Image(avatar)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(Circle())
+                                    .overlay(
+                                        Circle()
+                                            .stroke(selectedAvatar == avatar ? Color.pink : Color.clear, lineWidth: 3)
+                                    )
+                                    .onTapGesture {
+                                        withAnimation {
+                                            selectedAvatar = avatar
+                                        }
+                                    }
+                            }
+                        }
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 5)
+                    }
+                }
+                .padding(.vertical, 5)
+            } header: {
+                Text("CHOOSE AN AVATAR")
+            }
+            
             Section {
                 HStack {
                     Text("Username")
@@ -98,6 +139,7 @@ struct EditProfileView: View {
         .onAppear {
             username = authManager.userProfile?.userName ?? ""
             email = authManager.userProfile?.email ?? ""
+            selectedAvatar = authManager.userProfile?.avatar ?? "avatar1"
         }
         .alert(alertTitle, isPresented: $showAlert) {
             Button("OK") {
@@ -113,8 +155,9 @@ struct EditProfileView: View {
     var hasChanges: Bool {
         let usernameChanged = username != (authManager.userProfile?.userName ?? "")
         let passwordChanged = !newPassword.isEmpty
+        let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         
-        return usernameChanged || passwordChanged
+        return usernameChanged || passwordChanged || avatarChanged
     }
     
     func saveChanges() {
@@ -124,6 +167,7 @@ struct EditProfileView: View {
         isLoading = true
         
         let usernameChanged = username.trimmingCharacters(in: .whitespaces) != authManager.userProfile?.userName
+        let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         let passwordChanged = !newPassword.isEmpty
         
         // Validate password if changing
@@ -155,17 +199,20 @@ struct EditProfileView: View {
         
         var successMessages: [String] = []
         
-        // Update username in Firestore
-        if usernameChanged {
+        if usernameChanged || avatarChanged {
             let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
             
             let db = Firestore.firestore()
             db.collection("users").document(userId).updateData([
-                "userName": trimmedUsername
+                "userName": trimmedUsername,
+                "avatar": selectedAvatar // Saving the selected avatar
             ]) { error in
                 if error == nil {
                     authManager.userProfile?.userName = trimmedUsername
-                    successMessages.append("Username updated")
+                    authManager.userProfile?.avatar = selectedAvatar // Update local object
+                    
+                    if usernameChanged { successMessages.append("Username updated") }
+                    if avatarChanged { successMessages.append("Profile picture updated") }
                 }
                 
                 // If also changing password, do that next
@@ -176,13 +223,13 @@ struct EditProfileView: View {
                 }
             }
         } else if passwordChanged {
-            // Only chang e password
+            // Only change password
             updatePassword(user: currentUser, successMessages: successMessages)
         } else {
             isLoading = false
         }
     }
-    
+        
     func updatePassword(user: FirebaseAuth.User, successMessages: [String]) {
         guard let currentEmail = authManager.userProfile?.email else {
             isLoading = false
