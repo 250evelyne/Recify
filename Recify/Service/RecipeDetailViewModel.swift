@@ -28,7 +28,15 @@ class RecipeDetailViewModel: ObservableObject {
     
     func fetchRecipeDetails(idMeal: String) async {
         isLoading = true
-        let urlString = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=\(idMeal)"
+        
+        let urlString: String
+        if idMeal.rangeOfCharacter(from: CharacterSet.letters) != nil {
+            let encodedName = idMeal.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? idMeal
+            urlString = "https://www.themealdb.com/api/json/v1/1/search.php?s=\(encodedName)"
+        } else {
+            urlString = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=\(idMeal)"
+        }
+        
         guard let url = URL(string: urlString) else { return }
         
         do {
@@ -46,8 +54,7 @@ class RecipeDetailViewModel: ObservableObject {
                     self.instructions = instructionsString
                         .components(separatedBy: CharacterSet.newlines)
                         .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    // This regex removes "Step 1:", "STEP 2.", etc.
-                        .map { $0.replacingOccurrences(of: "^(?i)step\\s*\\d+[:\\.-]?\\s*", with: "", options: .regularExpression) }
+                        .map { $0.replacingOccurrences(of: "^(?i)(step\\s*)?\\d+[:\\.-]?\\s*", with: "", options: .regularExpression) }
                         .filter { !$0.isEmpty }
                 }
                 
@@ -82,12 +89,11 @@ class RecipeDetailViewModel: ObservableObject {
                 
                 //recipe object
                 self.recipe = Recipe(
-                    id: idMeal,
                     title: mealTitle,
                     category: mealCategory,
                     ingredients: fetchedIngredients.map { $0.rawName },
                     instructions: meal["strInstructions"] as? String ?? "",
-                    imageURL: thumbURL, //anebells
+                    imageURL: thumbURL,
                     servings: 4,
                     userId: "",
                     inPantry: false,

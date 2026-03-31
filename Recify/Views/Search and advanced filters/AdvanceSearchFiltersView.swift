@@ -25,17 +25,14 @@ struct AdvanceSearchFiltersView: View {
                 
                 headerSearchSection.padding(.horizontal)
                 
-                // --- Section 1: Cooking Time ---
                 Text("Cooking Time")
                     .bold()
                     .font(.title3)
                 
                 cookingTimeScrollView
                 
-                // --- Section 2: Pantry Toggle ---
                 pantryToggleView
                 
-                // --- Section 3: Dietary Restrictions ---
                 Text("Dietary Restrictions")
                     .bold()
                     .font(.title3)
@@ -45,7 +42,6 @@ struct AdvanceSearchFiltersView: View {
                 
                 Spacer()
                 
-                // --- Section 4: Bottom Button ---
                 resultsButtonSection
                 
             }//TODO: add the others to disable the buttons after annabella finsh making the page work

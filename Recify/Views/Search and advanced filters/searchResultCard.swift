@@ -14,9 +14,9 @@ struct searchResultCard: View {
     let time: Int
     let difficulty: String
     
-    var isFavorite: Bool {
-        FirebaseViewModel.shared.isRecipeSaved(mealId: mealId)
-    }
+//    var isFavorite: Bool {
+//        FirebaseViewModel.shared.isRecipeSaved(mealId: mealId)
+//    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -29,22 +29,22 @@ struct searchResultCard: View {
                     .fill(Color.gray.opacity(0.1))
                     .overlay(Image(systemName: "fork.knife").foregroundColor(.gray))
             }
-            .frame(height: 140) // Fixed height for all images in the grid
+            .frame(height: 140)
             .clipShape(RoundedRectangle(cornerRadius: 15))
-            .overlay(alignment: .topTrailing) {
-                Button {
-                    FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: title, imageURL: imageURL)
-                    //TODO: add to favoties (anabella)
-                } label: {
-                    Image(systemName: isFavorite ? "suit.heart.fill" : "suit.heart")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(isFavorite ? .pink : .gray)
-                        .padding(6)
-                        .background(.white.opacity(0.9))
-                        .clipShape(Circle())
-                }
-                .padding(8)
-            }
+//            .overlay(alignment: .topTrailing) {
+//                Button {
+//                    FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: title, imageURL: imageURL)
+//                    
+//                } label: {
+//                    Image(systemName: isFavorite ? "suit.heart.fill" : "suit.heart")
+//                        .font(.system(size: 14, weight: .bold))
+//                        .foregroundStyle(isFavorite ? .pink : .gray)
+//                        .padding(6)
+//                        .background(.white.opacity(0.9))
+//                        .clipShape(Circle())
+//                }
+//                .padding(8)
+//            }
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)

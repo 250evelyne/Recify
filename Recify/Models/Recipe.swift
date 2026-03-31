@@ -2,24 +2,21 @@
 //  Recipe.swift
 //  Recify
 //
-//  Created by eve on 2026-02-02.
+//  Created by netblen on 2026-02-02.
 //
 
 import Foundation
 import FirebaseFirestore
 import SwiftUI
 
-struct Recipe: Identifiable, Codable {
+struct Recipe: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var title: String
-    var category: String //whys this a strings? and not an enum 
+    var category: String //whys this a strings? and not an enum
     var ingredients: [String]
     var instructions: String
-    //TODO: we need to add ijages to the firebaseif there aisnt nay why of saving them yeyt idk
-     var imageURL : String? //anabella wrote with chapitals
+    var imageURL : String?
     
-//     var imageUrl : String? //TODO: i chcnged this make sure i chcnge it every where
-
     var servings: Int
     var userId: String
     var inPantry: Bool
@@ -28,19 +25,17 @@ struct Recipe: Identifiable, Codable {
     let calories: Int
     let level: String
     
-    init(id: String? = nil,
-         title: String,
+    init(title: String,
          category: String,
          ingredients: [String],
          instructions: String,
-         imageURL: String, //anabella
+         imageURL: String?,
          servings: Int,
          userId: String,
          inPantry: Bool,
          prepTime: Int,
          calories: Int,
          level: String) {
-        self.id = id
         self.title = title
         self.category = category
         self.ingredients = ingredients
@@ -52,6 +47,17 @@ struct Recipe: Identifiable, Codable {
         self.prepTime = prepTime
         self.calories = calories
         self.level = level
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id ?? title)
+    }
+    
+    static func == (lhs: Recipe, rhs: Recipe) -> Bool {
+        if let lid = lhs.id, let rid = rhs.id {
+            return lid == rid
+        }
+        return lhs.title == rhs.title
     }
 }
 

@@ -130,7 +130,7 @@ class WebService {
         }
         
         return Recipe(
-            id: meal.idMeal,
+            //id: meal.idMeal,
             title: meal.strMeal ?? "Unknown Recipe",
             category: meal.strCategory ?? "General",
             ingredients: meal.allIngredients,

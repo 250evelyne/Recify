@@ -58,16 +58,17 @@ struct SearchResults: View {
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16)
             ], spacing: 20) {
-                ForEach(viewModel.searchResults) { recipe in
+                ForEach(Array(viewModel.searchResults.enumerated()), id: \.offset) { index, recipe in
                     NavigationLink(destination: RecipeInstructionsView(
-                        mealId: recipe.id ?? "",
+                        mealId: recipe.id ?? recipe.title,
                         recipeTitle: recipe.title,
                         recipeImage: recipe.imageURL ?? "",
                         prepTime: recipe.prepTime,
-                        difficulty: recipe.level
+                        difficulty: recipe.level,
+                        recipe: recipe
                     )) {
                         searchResultCard(
-                            mealId: recipe.id ?? "",
+                            mealId: recipe.id ?? recipe.title,
                             title: recipe.title,
                             imageURL: recipe.imageURL ?? "",
                             time: recipe.prepTime,

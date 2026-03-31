@@ -16,7 +16,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    // MARK: - Search Bar & Filter (Always Visible)
+                    // MARK: - Search Bar & Filter
                     searchBarSection
                     
                     // MARK: - Dynamic Content Area
@@ -160,27 +160,18 @@ struct HomeView: View {
             SectionHeader(title: "Search Results", subtitle: "Found \(viewModel.searchResults.count) recipes", icon: "magnifyingglass", iconColor: .pink)
             
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
-                ForEach(viewModel.searchResults) { recipe in
-                    // FIX: Use 'recipe' instead of 'meal'
+                ForEach(Array(viewModel.searchResults.enumerated()), id: \.offset) { index, recipe in
                     NavigationLink(destination: RecipeInstructionsView(
-                        mealId: recipe.id ?? "", // Assuming Recipe model uses 'id'
+                        mealId: recipe.id ?? recipe.title, // Better fallback so favorites work
                         recipeTitle: recipe.title,
                         recipeImage: recipe.imageURL ?? "",
-//     private var searchResultsGrid: some View { //me
-//         VStack(alignment: .leading, spacing: 16) {
-//             SectionHeader(title: "Search Results", subtitle: "Found \(viewModel.searchResults.count) recipes", icon: "magnifyingglass", iconColor: .pink)
-//             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
-//                 ForEach(viewModel.searchResults) { recipe in
-//                     NavigationLink(destination: RecipeInstructionsView(
-//                         mealId: recipe.id ?? "",
-//                         recipeTitle: recipe.title,
-//                         recipeImage: recipe.imageUrl ?? "",
                         prepTime: recipe.prepTime,
-                        difficulty: recipe.level
+                        difficulty: recipe.level,
+                        recipe: recipe // <--- PASS THE RECIPE DATA HERE!
                     )){
                         RecipeCard(
                             title: recipe.title,
-                            imageURL: recipe.imageURL ?? "", //anabella
+                            imageURL: recipe.imageURL ?? "",
                             time: "\(recipe.prepTime)m",
                             difficulty: recipe.level,
                             matchPercentage: nil,
