@@ -69,7 +69,18 @@ struct HomeView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: ShoppingList()) {
-                        Image(systemName: "cart.fill")
+                        Image(systemName: "basket.fill")
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if #available(iOS 17.0, *) {
+                        NavigationLink(destination: GroceryMapsView()) {
+                            Image(systemName: "cart")
+                                .foregroundStyle(.blue)
+                        }
+                    } else {
+                        // Fallback on earlier versions
                     }
                 }
             }

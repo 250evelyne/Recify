@@ -75,7 +75,7 @@ struct ProfileView: View {
                                     icon: "heart.fill",
                                     iconColor: .pink,
                                     title: "Saved Collections",
-                                    subtitle: "\(firebaseManager.savedRecipes.count) saved"
+                                    subtitle: "\(firebaseManager.userFavCollections .count) saved"
                                 )
                             }
                             
@@ -90,6 +90,8 @@ struct ProfileView: View {
                                 )
                             }
                             
+                            Divider().padding(.leading, 60)
+
                             NavigationLink(destination: MyPostsView()) {
                                 SettingsRowContent(
                                     icon: "text.below.photo",
@@ -99,6 +101,8 @@ struct ProfileView: View {
                                 )
                             }
                             
+                            Divider().padding(.leading, 60)
+
                             NavigationLink(destination: MyRecipesView()) {
                                 SettingsRowContent(
                                     icon: "fork.knife",
@@ -211,7 +215,7 @@ struct ProfileView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Account Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.automatic)
             .toolbarRole(.editor)
             .alert("Logout", isPresented: $showLogoutConfirm) {
                 Button("Cancel", role: .cancel) {}

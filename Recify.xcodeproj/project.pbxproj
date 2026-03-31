@@ -296,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				203652C72F7A06EF00661D82 /* TabBarView.swift */,
+				FA46E4022F37D794002CB0ED /* floatingButtonLabel.swift */,
 				20F7E1422F5E7BF800A9A6AC /* Recipe */,
 				20F7E13D2F5E76B900A9A6AC /* Home */,
 				FA0A82632F5789CF0066A796 /* Search and advanced filters */,
@@ -303,7 +304,6 @@
 				FA6CEFBC2F4D35E900748A27 /* shopping */,
 				FA6CEFBF2F4D365900748A27 /* on bording */,
 				FA6CEFBD2F4D362400748A27 /* pantry */,
-				FA46E4022F37D794002CB0ED /* floatingButtonLabel.swift */,
 				20EE05832F3D0F3B00930D68 /* Chat */,
 				FA6CEFC02F4D367A00748A27 /* profile */,
 				203652D32F7A07E500661D82 /* createNewRecipe */,

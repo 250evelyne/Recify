@@ -11,7 +11,8 @@ struct addNewRecipe: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var recipeTitle: String = ""
-    @State private var selectedCategory: RecipeCategory?
+    @State private var calories: String = ""
+    @State private var selectedDifficulty: DifficultyLevel?
     @State private var prepTime: Int = 0
     @State private var instructions: [String] = []
     @State private var ingredients: [Ingredients] = []
@@ -140,22 +141,37 @@ struct addNewRecipe: View {
                         }
                     }
                     
-                    //TODO:for category i can also make a others and allow users to add a cateogry of thier own since the recipe cateogry is in string idk making it string dosnt make sense
-                    Text("Category")
-                        .foregroundStyle(.gray)
-                    GroupBox{
-                        Menu {
-                            ForEach(RecipeCategory.allCases, id: \.self) { category in
-                                Button(category.rawValue.capitalized) {
-                                    selectedCategory = category
+                    HStack{
+                        VStack(alignment: .leading){
+                            Text("Difficulty")
+                                .foregroundStyle(.gray)
+                            GroupBox{
+                                Menu {
+                                    ForEach(DifficultyLevel.allCases, id: \.self) { difficulty in
+                                        Button(difficulty.rawValue.capitalized) {
+                                            selectedDifficulty = difficulty
+                                        }
+                                    }
+                                } label: {
+                                    Text(selectedDifficulty?.rawValue.capitalized ?? "Select Difficulty")
+                                        .foregroundColor(.pink)
+                                    Image(systemName: "chevron.down")                        .foregroundColor(.gray)
+                                    
                                 }
                             }
-                        } label: {
-                            Text(selectedCategory?.rawValue.capitalized ?? "Select Category")
-                                .foregroundColor(.pink)
-                            Image(systemName: "chevron.down")                        .foregroundColor(.gray)
-                            
                         }
+                        
+                        VStack(alignment: .leading){
+                            Text("Calories")
+                                .foregroundStyle(.gray)
+                            GroupBox{
+                                Section {
+                                    TextField("e.g. 450 kcals", text: $calories)
+                                }
+                            }
+                        }
+                        
+                        
                     }
                     
                     Text("Prep Time")
