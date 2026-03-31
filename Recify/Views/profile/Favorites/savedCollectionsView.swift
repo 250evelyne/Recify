@@ -102,7 +102,7 @@ struct savedCollectionsView: View {
     
     let colums = [GridItem(.flexible()), GridItem(.flexible())]
     
-    @Environment(\.dismiss) var dissmiss
+//    @Environment(\.dismiss) var dissmiss
     
     @State private var showAlert : Bool = false
     @State private var selectedCollection : RecipeCollection?
@@ -223,18 +223,6 @@ struct savedCollectionsView: View {
                 } label: {
                     Image(systemName: "plus")
                         .padding(10)
-                        .foregroundStyle(.pink)
-                        .bold()
-                }
-            }
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dissmiss()
-                } label: {
-                    Image(systemName: "carrot.fill")
-                        .padding(10)
-                        .frame(width: 40, height: 40)
                         .foregroundStyle(.pink)
                         .bold()
                 }

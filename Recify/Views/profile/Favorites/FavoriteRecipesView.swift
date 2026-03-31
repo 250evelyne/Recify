@@ -44,40 +44,53 @@ struct FavoriteRecipesView: View {
     }
     
     var body: some View {
-        VStack {
-            ScrollView {
-//                Empty State
-                if recipes.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "heart.slash")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray.opacity(0.4))
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color.orange.opacity(0.1),
+                    Color.clear,
+                    Color.pink.opacity(0.3)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            VStack {
+                ScrollView {
+                    //                Empty State
+                    if recipes.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "heart.slash")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray.opacity(0.4))
+                            
+                            Text("No Favorites Yet")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                        }
+                        .padding(.top, 100)
                         
-                        Text("No Favorites Yet")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-                    .padding(.top, 100)
-                    
-                } else {
-                    
-                    ForEach(recipes, id: \.self) { recipeId in
-                        RecipeCollectionRow(recipeId: recipeId, collectionTitle: collectionTitle)
+                    } else {
+                        
+                        ForEach(recipes, id: \.self) { recipeId in
+                            RecipeCollectionRow(recipeId: recipeId, collectionTitle: collectionTitle)
+                        }
                     }
                 }
-            }
-            .navigationTitle(collectionTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .background(Color.white)
-            .onAppear {
-                if !recipes.isEmpty {
-                    firebaseManager.fetchRecipesForCollection(ids: recipes)
+                .navigationTitle(collectionTitle)
+                .navigationBarTitleDisplayMode(.inline)
+//                .background(Color.white)
+                .onAppear {
+                    if !recipes.isEmpty {
+                        firebaseManager.fetchRecipesForCollection(ids: recipes)
+                    }
                 }
-            }
-            //ftch again if the recipes list changes while looking at the view
-            .onChange(of: recipes) { newRecipes in
-                if !newRecipes.isEmpty {
-                    firebaseManager.fetchRecipesForCollection(ids: newRecipes)
+                //ftch again if the recipes list changes while looking at the view
+                .onChange(of: recipes) { newRecipes in
+                    if !newRecipes.isEmpty {
+                        firebaseManager.fetchRecipesForCollection(ids: newRecipes)
+                    }
                 }
             }
         }
@@ -105,7 +118,8 @@ struct RecipeCollectionRow: View {
                     title: savedRecipe.title,
                     imageURL: savedRecipe.imageURL,
                     time: 30,
-                    difficulty: "Easy"
+                    difficulty: "Easy",
+                    height: 200
                 )
             }
             .buttonStyle(.plain)

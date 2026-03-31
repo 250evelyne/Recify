@@ -13,7 +13,21 @@ struct SearchResults: View {
     let filters: SearchFilters
     
     var body: some View {
-        mainContentView
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color.orange.opacity(0.3),
+                    Color.clear,
+                    Color.pink.opacity(0.3)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            mainContentView
+        }
+//        mainContentView
             .navigationTitle("Results")
             .task {
                 await viewModel.searchMeals(query: query, filters: filters)
@@ -54,10 +68,17 @@ struct SearchResults: View {
     
     private var resultsListView: some View {
         ScrollView {
-            LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: 16),
-                GridItem(.flexible(), spacing: 16)
-            ], spacing: 20) {
+            Text("\(viewModel.searchResults.count) recipes round for '\(query)'")
+                    .font(.title3)
+                    .foregroundColor(.black)
+                    .padding(.horizontal)
+                    .fontWeight(.semibold)
+            
+//            LazyVGrid(columns: [
+//                GridItem(.flexible(), spacing: 16),
+//                GridItem(.flexible(), spacing: 16)
+//            ], spacing: 20) {
+            
                 ForEach(Array(viewModel.searchResults.enumerated()), id: \.offset) { index, recipe in
                     NavigationLink(destination: RecipeInstructionsView(
                         mealId: recipe.id ?? recipe.title,
@@ -72,15 +93,17 @@ struct SearchResults: View {
                             title: recipe.title,
                             imageURL: recipe.imageURL ?? "",
                             time: recipe.prepTime,
-                            difficulty: recipe.level
+                            difficulty: recipe.level,
+                            height: 200
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
-            }
+//            }
             .padding(.horizontal, 16)
             .padding(.top, 10)
         }
+//        .background(Color(.systemGroupedBackground))
     }
 }
 

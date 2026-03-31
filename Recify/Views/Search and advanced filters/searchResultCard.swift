@@ -13,13 +13,12 @@ struct searchResultCard: View {
     let imageURL: String
     let time: Int
     let difficulty: String
-    
-//    var isFavorite: Bool {
-//        FirebaseViewModel.shared.isRecipeSaved(mealId: mealId)
-//    }
+//    let difficulty: DifficultyLevel
+    var height : CGFloat?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            
             AsyncImage(url: URL(string: imageURL)) { image in
                 image
                     .resizable()
@@ -29,26 +28,15 @@ struct searchResultCard: View {
                     .fill(Color.gray.opacity(0.1))
                     .overlay(Image(systemName: "fork.knife").foregroundColor(.gray))
             }
-            .frame(height: 140)
+            .frame(height: height ?? 140)
             .clipShape(RoundedRectangle(cornerRadius: 15))
-//            .overlay(alignment: .topTrailing) {
-//                Button {
-//                    FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: title, imageURL: imageURL)
-//                    
-//                } label: {
-//                    Image(systemName: isFavorite ? "suit.heart.fill" : "suit.heart")
-//                        .font(.system(size: 14, weight: .bold))
-//                        .foregroundStyle(isFavorite ? .pink : .gray)
-//                        .padding(6)
-//                        .background(.white.opacity(0.9))
-//                        .clipShape(Circle())
-//                }
-//                .padding(8)
-//            }
+            .padding(.horizontal)
+            .padding(.top)
+            .padding(.bottom, 4)
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
@@ -58,22 +46,28 @@ struct searchResultCard: View {
                 }
                 .font(.system(size: 10))
                 .foregroundColor(.secondary)
-            }            .padding(.top, 8)
-            .padding(.horizontal, 4)
+            }
+//            .padding(.top, 8)
+            .padding(.horizontal, 10)
             .padding(.bottom, 10)
         }
-        .background(Color.white)
+//        .background(Color.white)
+        .background(.ultraThinMaterial)
         .cornerRadius(15)
+        .padding()
+        .shadow(radius: 2, x:4, y:4)
        
+        
     }
 }
 
 #Preview {
     searchResultCard(
-        mealId: "52772", 
+        mealId: "52772",
         title: "Zesty Avocado Quinoa",
         imageURL: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
         time: 25,
+//        difficulty: DifficultyLevel.easy
         difficulty: "Easy"
     )
 }
