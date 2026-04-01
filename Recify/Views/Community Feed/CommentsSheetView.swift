@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct CommentsSheetView: View {
-    
     let post: Post
     @ObservedObject var feedVM: FeedViewModel
     
     @State private var text : String = ""
     
     @Environment(\.dismiss) private var dissmiss
+    
     var body: some View {
         VStack{
             
             HStack{
                 Button {
-                    dissmiss() //clsoe the page, see if it works
+                    dissmiss() //close the page, see if it works
                 } label: {
                     Image(systemName: "xmark")
                 }
@@ -39,31 +39,16 @@ struct CommentsSheetView: View {
                     ForEach(feedVM.currentComments){ comment in
                         
                         HStack{
-                            
-                            AsyncImage(url: URL(string: "comment.imageUrl")){ phase in //TODO: we need to go fecth the user pfp with the user id
-                                switch phase{
-                                case .empty:
-                                    ProfileView()
-                                case .success(let image) :
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(maxWidth: 40, maxHeight: 40)
-                                        .clipShape(.circle)
-                                case .failure(_) :
-                                    Image(systemName: "photo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(.circle)
-                                        .frame(height: 30)
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
+                            Image(comment.userAvatar)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(.circle)
+                                .shadow(radius: 1)
                             
                             VStack(alignment: .leading){
                                 HStack{
-                                    Text(comment.userName) //TODO: smae thing fecth the users name with the id
+                                    Text(comment.userName)
                                         .fontWeight(.semibold)
                                     Text(RelativeDateTimeFormatter().localizedString(for: comment.createdAt ,relativeTo: Date()))
                                         .foregroundStyle(.gray)
@@ -96,7 +81,7 @@ struct CommentsSheetView: View {
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())
                             .shadow(radius: 1)
-                            .font(.title) //TODO: change this to the user, with that actual avatar pfp ;;;;;TEST""
+                            .font(.title)
                         
                         TextField("Add a comment...", text: $text)
                         
