@@ -110,13 +110,11 @@ class RecipeDetailViewModel: ObservableObject {
     }
     
     private func generateMetadata(instructionCount: Int, ingredientCount: Int) -> (time: Int, kcal: Int, level: String) {
-        // Estimate time: 5 mins base + 3 mins per instruction step
+        //estimate
         let estimatedMinutes = 5 + (instructionCount * 3)
-        
-        // Estimate calories: randomrange based on ingredient count ig
+        //estimate
         let estimatedKcal = 150 + (ingredientCount * 45)
         
-        // Determine level:
         var difficulty = "Easy"
         if instructionCount > 10 || ingredientCount > 12 {
             difficulty = "Hard"

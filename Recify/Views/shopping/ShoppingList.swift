@@ -128,7 +128,6 @@ struct ShoppingList: View {
                             }
                         }
                     } else {
-                        //Show grouped by Recipe Name
                         ForEach(itemsByRecipe.keys.sorted(), id: \.self) { recipeName in
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
@@ -165,13 +164,13 @@ struct ShoppingList: View {
                                 
                                 ForEach(itemsByRecipe[recipeName] ?? []) { item in
                                     ShoppingListItemRow(item: item, checkedItems: $checkedItems)
-                                } //TODO: i wanna swipe to delete
+                                } //TODO: i wanna swipe to delete. -why??
                             }
                         }
                     }
                 }
                 .padding(.top)
-                .padding(.bottom, 80) // Space for the floating button
+                .padding(.bottom, 80)
             }
             .overlay(alignment: .bottom){ //Its in the middle of the page for now when there nothing idk if we should keep like that
                 HStack{
@@ -200,7 +199,6 @@ struct ShoppingList: View {
 }
 
 // MARK: - Helper Views
-
 struct ShoppingListItemRow: View {
     let item: Ingredients
     @StateObject var firebaseManager = FirebaseViewModel.shared

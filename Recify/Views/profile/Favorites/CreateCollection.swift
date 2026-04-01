@@ -25,6 +25,7 @@ struct CreateCollection: View {
             Text("COLLECTION NAME")
                 .foregroundStyle(.gray)
                 .font(.system(size: 13))
+                .foregroundColor(.pink)
             
             GroupBox{
                 Section {
@@ -35,6 +36,7 @@ struct CreateCollection: View {
             Text("CHOSE A COVER")
                 .foregroundStyle(.gray)
                 .font(.system(size: 13))
+                .foregroundColor(.pink)
             
             
             ScrollView(showsIndicators: false) {
@@ -132,6 +134,8 @@ struct CreateCollection: View {
                         dismiss()
                     } label: {
                         Text("Cancel")
+                            .foregroundColor(.pink)
+
                     }
                     
                 }
@@ -141,6 +145,7 @@ struct CreateCollection: View {
                         saveAction()
                     } label: {
                         Text("Create")
+                            .foregroundColor(.pink)
                     }.disabled(collectionName.isEmpty || httpChosen.isEmpty)
                 }
                 
@@ -172,12 +177,12 @@ struct coverView : View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } else if phase.error != nil {
-                    Color.red.opacity(0.1) // Show error state
+                    Color.red.opacity(0.1)
                 } else {
                     ProgressView()
                 }
             }
-            .frame(width: 160, height: 160) // Fixed size for the container
+            .frame(width: 160, height: 160)
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .overlay(
                 RoundedRectangle(cornerRadius: 15)

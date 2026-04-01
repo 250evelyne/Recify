@@ -262,7 +262,8 @@ struct addNewRecipe: View {
             }//end of vstack
             .padding()
         }//end of scroll view
-        // MARK: - Modifiers (Attached to the root View, not the NavStack content)
+        
+        // MARK: - Modifiers
         .sheet(isPresented: $showAddIngredient) {
             AddIngredient { selected in
                 ingredients.append(contentsOf: selected)

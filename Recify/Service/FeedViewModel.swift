@@ -78,7 +78,7 @@ class FeedViewModel: ObservableObject {
     }
     
     
-    // Increment the like count
+    //increments the like count
     func likePost(post: Post) {
         guard let postId = post.id else { return }
         db.collection("posts").document(postId).updateData([
@@ -88,7 +88,7 @@ class FeedViewModel: ObservableObject {
     
     
     
-    // Fetch posts for a specific user
+    //fetch posts for a specific user
     func fetchUserPosts(userId: String) {
         db.collection("posts")
             .whereField("userId", isEqualTo: userId)
@@ -108,7 +108,7 @@ class FeedViewModel: ObservableObject {
     }
     
     
-    // Fetch live comments for a specific post
+    //fetch live comments for a specific post
     func fetchComments(for postId: String) {
         commentsListener?.remove()
         

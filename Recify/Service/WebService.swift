@@ -76,7 +76,7 @@ class WebService {
         print("✅ Found \(apiRecipes.count) API recipes and \(firebaseRecipes.count) user recipes.")
         
         return combinedRecipes.filter { recipe in
-            // --- Filter by Cook Time ---
+            //Filter by Cook Time
             let matchesTime: Bool
             if let selectedTime = filters.cookTime {
                 switch selectedTime {
@@ -88,7 +88,7 @@ class WebService {
                 matchesTime = true
             }
             
-            // --- Filter by Dietary Restrictions ---
+            //Filter by Dietary Restrictions
             let matchesDiet: Bool
             if filters.dietaryRestrictions.isEmpty {
                 matchesDiet = true

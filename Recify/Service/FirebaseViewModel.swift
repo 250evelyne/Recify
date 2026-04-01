@@ -219,7 +219,7 @@ class FirebaseViewModel: ObservableObject {
     }
     
     //MARK: favorites
-    // Checks if the heart should be filled in or not
+    //checks if the heart should be filled in or not
     func isRecipeSaved(mealId: String) -> Bool {
         return savedRecipes.contains(where: { $0.mealId == mealId })
     }
@@ -230,11 +230,9 @@ class FirebaseViewModel: ObservableObject {
         let favRef = db.collection("users").document(userId).collection("favorites").document(mealId)
         
         if let existingIndex = savedRecipes.firstIndex(where: { $0.mealId == mealId }) {
-            // 1. Remove from Master List
             savedRecipes.remove(at: existingIndex)
             favRef.delete()
             
-            // 2. FIX: Auto-cleanup all collections that contain this recipe
             for collection in userFavCollections {
                 if collection.recipeIds.contains(mealId) {
                     removeFromCollection(recipeId: mealId, collectionTitle: collection.name)
@@ -407,7 +405,7 @@ class FirebaseViewModel: ObservableObject {
             return .vegetables
         }
         
-        return .other // Fallback for everything else
+        return .other
     }
     
     
@@ -474,7 +472,7 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Post New Recipe (BASE 64 VERSION)
+    // MARK: - Post New Recipe
     func saveNewRecipe(title: String,
                        caloriesString: String,
                        prepTime: Int,

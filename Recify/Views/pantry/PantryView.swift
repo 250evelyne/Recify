@@ -5,8 +5,6 @@
 //  Created by Macbook on 2026-02-06.
 //
 
-// pagination - fetch in chunks
-
 import SwiftUI
 
 struct PantryView: View {
@@ -131,7 +129,6 @@ struct PantryView: View {
                     }
                 }
                 .onAppear {
-                    //fetch the ingredients for the CURRENTLY logged-in user.
                     firebaseManager.refreshData()
                 }
                 
@@ -163,12 +160,3 @@ struct PantryView: View {
 #Preview {
     PantryView()
 }
-
-//struct ingredient: View {
-//    var body: some View {
-//        RoundedRectangle(cornerRadius: 20)
-//            .overlay {
-//                Image(systemName: "")
-//            }
-//    }
-//}

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct AdvanceSearchFiltersView: View {
     
     @StateObject private var viewModel = IngredientViewModel()
@@ -75,7 +74,6 @@ struct AdvanceSearchFiltersView: View {
     }
     
     // MARK: - Extracted Sections
-    
     private var cookingTimeScrollView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
@@ -163,7 +161,6 @@ struct AdvanceSearchFiltersView: View {
                 matchPantry: matchPantry
             )
             
-            // Logic: Enable if user typed a search OR if they turned on Match Pantry
             let canSearch = !searchedIngredient.isEmpty || matchPantry
             
             NavigationLink(destination: SearchResults(query: searchedIngredient, filters: currentFilters)) {
@@ -199,7 +196,6 @@ struct AdvanceSearchFiltersView: View {
     }
 }
 
-// Ensure your helper functions (getIconForRestriction, etc.) remain outside or inside the struct correctly.
 
 struct cookTimeView : View {
     var title : String

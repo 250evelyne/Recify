@@ -20,13 +20,11 @@ struct HomeView: View {
                     searchBarSection
                     
                     // MARK: - Dynamic Content Area
-                    // If searching, show the search loader
                     if viewModel.isSearching {
                         ProgressView("Searching...")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.top, 40)
                         
-                        // If we have search results, ONLY show the search results grid
                     }
                     else if viewModel.hasNoResults {
                         noResultsView
@@ -43,12 +41,12 @@ struct HomeView: View {
                                 .padding(.top, 40)
                         }
                         
-                        // Pantry Match Section
+                        //Pantry Match Section
                         if !viewModel.pantryMeals.isEmpty {
                             pantryMatchSection
                         }
                         
-                        // Trending Now Section
+                        //Trending Now Section
                         if !viewModel.trendingMeals.isEmpty {
                             trendingSection
                         }
@@ -74,17 +72,18 @@ struct HomeView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    //TODO: change this normal
                     if #available(iOS 17.0, *) {
                         NavigationLink(destination: GroceryMapsView()) {
                             Image(systemName: "cart")
-                                .foregroundStyle(.blue)
+                                .foregroundColor(.pink)
                         }
                     } else {
                         // Fallback on earlier versions
                     }
                 }
             }
-            // Fetch data when the view appears
+            //fetch data when the view appears
             .task {
                 if viewModel.pantryMeals.isEmpty && viewModel.trendingMeals.isEmpty {
                     await viewModel.fetchHomeData()
@@ -94,7 +93,6 @@ struct HomeView: View {
     }
     
     // MARK: - Extracted Subviews
-    
     private var searchBarSection: some View {
         HStack(spacing: 12) {
             HStack {
@@ -162,12 +160,12 @@ struct HomeView: View {
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                 ForEach(Array(viewModel.searchResults.enumerated()), id: \.offset) { index, recipe in
                     NavigationLink(destination: RecipeInstructionsView(
-                        mealId: recipe.id ?? recipe.title, // Better fallback so favorites work
+                        mealId: recipe.id ?? recipe.title,
                         recipeTitle: recipe.title,
                         recipeImage: recipe.imageURL ?? "",
                         prepTime: recipe.prepTime,
                         difficulty: recipe.level,
-                        recipe: recipe // <--- PASS THE RECIPE DATA HERE!
+                        recipe: recipe
                     )){
                         RecipeCard(
                             title: recipe.title,
@@ -209,7 +207,7 @@ struct HomeView: View {
                                 time: "30m",
                                 difficulty: "Medium",
                                 matchPercentage: 85,
-                                recipe: nil // Pass nil if this is a MealApi object and not a Recipe model
+                                recipe: nil
                             )
                         }
                         .buttonStyle(PlainButtonStyle())

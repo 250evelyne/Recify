@@ -128,7 +128,7 @@ class HomeViewModel: ObservableObject {
                 let pantryNames = pantryIngredients.compactMap {
                     $0.name.lowercased()
                 }
-                // Check if recipe ingredients exist in pantry
+                //check if recipe ingredients exist in pantry
                 let matches = recipe.ingredients.filter { ing in
                     pantryNames.contains(where: { $0.contains(ing.lowercased()) })
                 }
@@ -154,7 +154,6 @@ class HomeViewModel: ObservableObject {
     
     
     func applyAdvancedFilters(filters: SearchFilters) {
-        // If the toggle is OFF, stop here and keep all results
         guard filters.matchPantry else {
             print("✅ Filters are OFF, skipping filtering logic")
             return

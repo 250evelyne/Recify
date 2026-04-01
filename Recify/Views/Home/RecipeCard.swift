@@ -21,30 +21,47 @@ struct RecipeCard: View {
             
             // MARK: - Image Section
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: imageURL)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill) //fills the box without squishing
-                    case .failure:
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                    @unknown default:
-                        EmptyView()
+                Group {
+                    if imageURL.hasPrefix("http") {
+                        AsyncImage(url: URL(string: imageURL)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(Color.gray.opacity(0.1))
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill) //fills the box without squishing
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .foregroundColor(.gray)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(Color.gray.opacity(0.1))
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    } else {
+                        let cleanString = imageURL.components(separatedBy: "base64,").last ?? imageURL
+                        
+                        if let imageData = Data(base64Encoded: cleanString, options: .ignoreUnknownCharacters),
+                           let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Image(systemName: "photo")
+                                .foregroundColor(.gray)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(Color.gray.opacity(0.1))
+                        }
                     }
                 }
-                .frame(height: 140) //all images will be exactly 140pt tall
+                .frame(height: 140)
                 .clipped()
                 .cornerRadius(12)
                 
-                // Optional Pantry Match Badge
                 if let match = matchPercentage {
                     Text("\(match)% Match")
                         .font(.caption2)
@@ -62,7 +79,7 @@ struct RecipeCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
-                    .lineLimit(1) //prevents titles from wrapping endlessly
+                    .lineLimit(1)
                 
                 HStack(spacing: 10) {
                     HStack(spacing: 4) {
@@ -71,7 +88,6 @@ struct RecipeCard: View {
                         Text(recipe != nil ? "\(recipe!.prepTime) min" : time)
                     }
                     
-                    // Difficulty Label
                     HStack(spacing: 4) {
                         Image(systemName: "chart.bar")
                         Text(recipe != nil ? recipe!.level : difficulty)
@@ -104,7 +120,7 @@ struct RecipeCard_Previews: PreviewProvider {
             difficulty: "Easy",
             //rating: 4.5,
             matchPercentage: 90,
-            recipe: nil // Previews can now handle nil!
+            recipe: nil 
         )
         .padding()
         .previewLayout(.sizeThatFits)

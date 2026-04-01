@@ -17,7 +17,6 @@ struct searchResultCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // --- SMART IMAGE LOADER ---
             ZStack {
                 if imageURL.hasPrefix("http") {
                     AsyncImage(url: URL(string: imageURL)) { image in
@@ -26,7 +25,7 @@ struct searchResultCard: View {
                     } placeholder: {
                         ProgressView()
                     }
-                } else if let imageData = Data(base64Encoded: imageURL, options: .ignoreUnknownCharacters),
+                } else if let imageData = Data(base64Encoded: imageURL),
                           let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()

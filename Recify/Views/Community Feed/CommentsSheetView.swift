@@ -90,8 +90,13 @@ struct CommentsSheetView: View {
                 .shadow(color: .gray, radius: 5)
                 .overlay {
                     HStack{
-                        Image(systemName: "person.fill") //TODO: change this to the user pfp
-                            .clipShape(.circle) .font(.title)
+                        Image(post.userAvatar ?? "tomatoAvatar")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                            .shadow(radius: 1)
+                            .font(.title) //TODO: change this to the user, with that actual avatar pfp ;;;;;TEST""
                         
                         TextField("Add a comment...", text: $text)
                         

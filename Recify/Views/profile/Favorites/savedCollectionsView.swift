@@ -11,95 +11,6 @@ struct savedCollectionsView: View {
     //for the lazy v grid
     @ObservedObject var firebaseManager = FirebaseViewModel.shared
     
-    //    let mockRecipes: [Recipe] = [
-    //        Recipe(
-    //            id: "1",
-    //            title: "Spaghetti Carbonara",
-    //            category: "Pasta",
-    //            ingredients: [
-    //                "Spaghetti",
-    //                "Eggs",
-    //                "Parmesan Cheese",
-    //                "Pancetta",
-    //                "Black Pepper"
-    //            ],
-    //            instructions: [
-    //                "Cook spaghetti in salted boiling water.",
-    //                "Fry pancetta until crispy.",
-    //                "Whisk eggs and parmesan together.",
-    //                "Combine pasta with pancetta and egg mixture.",
-    //                "Serve with black pepper."
-    //            ],
-    //            servings: 4,
-    //            timeMinutes: 25,
-    //            userId: "mockUser",
-    //            //difficulty: Difficulty.easy
-    //        ),
-    //
-    //        Recipe(
-    //            id: "2",
-    //            title: "Chicken Tikka Masala",
-    //            category: "Curry",
-    //            ingredients: [
-    //                "Chicken Breast",
-    //                "Yogurt",
-    //                "Garlic",
-    //                "Ginger",
-    //                "Tomato Sauce",
-    //                "Cream"
-    //            ],
-    //            instructions: [
-    //                "Marinate chicken in yogurt and spices.",
-    //                "Grill or pan cook the chicken.",
-    //                "Prepare tomato cream sauce.",
-    //                "Add chicken to sauce and simmer.",
-    //                "Serve with rice."
-    //            ],
-    //            servings: 4,
-    //            timeMinutes: 40,
-    //            userId: "mockUser",
-    //            //difficulty: Difficulty.hard
-    //        ),
-    //
-    //        Recipe(
-    //            id: "3",
-    //            title: "Avocado Toast",
-    //            category: "Breakfast",
-    //            ingredients: [
-    //                "Bread",
-    //                "Avocado",
-    //                "Salt",
-    //                "Black Pepper",
-    //                "Lemon Juice"
-    //            ],
-    //            instructions: [
-    //                "Toast the bread.",
-    //                "Mash avocado with lemon juice.",
-    //                "Spread avocado on toast.",
-    //                "Season with salt and pepper."
-    //            ],
-    //            servings: 1,
-    //            timeMinutes: 10,
-    //            userId: "mockUser",
-    //            //difficulty: Difficulty.easy
-    //        )
-    //    ]
-    
-    //    var mockCollections: [RecipeCollection] {
-    //        [
-    //            RecipeCollection(
-    //                name: "Weeknight Dinners",
-    //                imageurl: "https://picsum.photos/400",
-    //                recipes: ["1"]
-    //            ),
-    //            RecipeCollection(
-    //                name: "Weekend lunch",
-    //                imageurl: "https://picsum.photos/400",
-    //                recipes: ["1"]
-    //            )
-    //        ]
-    //    }
-    
     let colums = [GridItem(.flexible()), GridItem(.flexible())]
     
 //    @Environment(\.dismiss) var dissmiss
@@ -158,7 +69,6 @@ struct savedCollectionsView: View {
                         }
                         .buttonStyle(.plain)
                         
-                        // User's Custom Collections
                         ForEach(firebaseManager.userFavCollections) { collection in
                             VStack {
                                 saveFolderView(

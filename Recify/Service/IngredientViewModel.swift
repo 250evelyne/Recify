@@ -99,10 +99,10 @@ class IngredientViewModel: ObservableObject {
     }
     
     func fetchCategoryFor(ingredientName: String) async -> Filters {
-        // Search the API for this specific ingredient name
+        //search the API for this specific ingredient name
         await searchIngredients(query: ingredientName)
         
-        // Look at the results and see if we find a match
+        //the results and see if we find a match
         if let match = pagedIngredients.first(where: { $0.name.lowercased() == ingredientName.lowercased() }) {
             return match.category ?? .other
         }
@@ -111,7 +111,7 @@ class IngredientViewModel: ObservableObject {
     }
 
     
-    // This function checks if the user has the items needed
+    //this function checks if the user has the items needed
     func canMake(recipeIngredients: [String]) -> Bool {
         let pantryNames = pantryIngredients.compactMap {
             $0.name.lowercased().trimmingCharacters(in: .whitespaces)

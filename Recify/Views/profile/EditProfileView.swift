@@ -170,7 +170,7 @@ struct EditProfileView: View {
         let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         let passwordChanged = !newPassword.isEmpty
         
-        // Validate password if changing
+        //validate password if changing
         if passwordChanged {
             if newPassword != confirmPassword {
                 isLoading = false
@@ -205,17 +205,16 @@ struct EditProfileView: View {
             let db = Firestore.firestore()
             db.collection("users").document(userId).updateData([
                 "userName": trimmedUsername,
-                "avatar": selectedAvatar // Saving the selected avatar
+                "avatar": selectedAvatar
             ]) { error in
                 if error == nil {
                     authManager.userProfile?.userName = trimmedUsername
-                    authManager.userProfile?.avatar = selectedAvatar // Update local object
+                    authManager.userProfile?.avatar = selectedAvatar
                     
                     if usernameChanged { successMessages.append("Username updated") }
                     if avatarChanged { successMessages.append("Profile picture updated") }
                 }
                 
-                // If also changing password, do that next
                 if passwordChanged {
                     updatePassword(user: currentUser, successMessages: successMessages)
                 } else {
@@ -223,7 +222,6 @@ struct EditProfileView: View {
                 }
             }
         } else if passwordChanged {
-            // Only change password
             updatePassword(user: currentUser, successMessages: successMessages)
         } else {
             isLoading = false

@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct CookingModeTabView: View { //
+struct CookingModeTabView: View {
     let recipeTitle: String
     let steps: [String]
     
@@ -22,7 +22,6 @@ struct CookingModeTabView: View { //
     
     var body: some View {
         VStack(spacing: 0) {
-            // Progress Hdr
             VStack(alignment: .leading, spacing: 8) {
                 Text("OVERALL PROGRESS")
                     .font(.caption)
@@ -44,7 +43,7 @@ struct CookingModeTabView: View { //
             
             ScrollView {
                 VStack(spacing: 20) {
-                    // Recipe IMG
+                    // TODO: Recipe IMG
                     Image(systemName: "fork.knife.circle.fill")
                         .resizable()
                         .scaledToFit()
@@ -80,9 +79,7 @@ struct CookingModeTabView: View { //
             }
             
             
-            // Navigation Buttons
             HStack(spacing: 16) {
-                // Previous Button
                 Button(action: {
                     if currentStepIndex > 0 {
                         withAnimation {
@@ -99,7 +96,6 @@ struct CookingModeTabView: View { //
                 }
                 .disabled(currentStepIndex == 0)
                 
-                // Next/Finish Button
                 Button(action: {
                     if currentStepIndex < steps.count - 1 {
                         withAnimation {

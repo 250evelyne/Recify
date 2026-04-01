@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CalendarView: View { //
+struct CalendarView: View {
     @Environment(\.dismiss) var dismiss
     @State private var selectedDate = Date()
     @State private var selectedMeal: String = "Lunch"
@@ -17,7 +17,7 @@ struct CalendarView: View { //
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Calendar
+                //calendar
                 DatePicker(
                     "Select Date",
                     selection: $selectedDate,
@@ -28,7 +28,7 @@ struct CalendarView: View { //
                 .background(Color(red: 0.68, green: 0.85, blue: 0.90).opacity(0.3))
                 .cornerRadius(16)
                 
-                // Meal Selection
+                //meal Selection
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Select Meal")
                         .font(.headline)
@@ -54,7 +54,7 @@ struct CalendarView: View { //
                 
                 Spacer()
                 
-                // Add Button
+                //add Button
                 Button(action: {
                     dismiss()
                 }) {
