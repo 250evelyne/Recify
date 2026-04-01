@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Ingredients: Identifiable, Codable{ //, Codable , says its not conforming to decodable rn so add later when i do the fetch for the api
+struct Ingredients: Identifiable, Codable, Equatable{ //, Codable , says its not conforming to decodable rn so add later when i do the fetch for the api
     @DocumentID var id: String? //for firestore
     var apiId: String?
     var name: String
@@ -16,9 +16,10 @@ struct Ingredients: Identifiable, Codable{ //, Codable , says its not conforming
     var unit : units?
     var imageUrl: String
     var category: Filters? //check if i have top ut this as nil for when i first get the list of ingredients since they dont have cateogries?
-    var isChecked: Bool? = false //have to add this to make the shooping work
+    var isChecked: Bool = false //have to add this to make the shooping work
     var timestamp: Date? //same here
     var recipeName: String?
+    var inPantry: Bool? = false //
 }
 
 
@@ -34,4 +35,15 @@ enum units: String, CaseIterable ,Identifiable, Codable{
     case cups = "cups"
     case oz = "oz"
     case pounds = "lbs"
+}
+
+
+//ima use this for the adding new recipe page since there to muc stuff in the top one
+extension Ingredients {
+    var displayText: String {
+        let qtyText = quantity != nil ? "\(quantity!)" : ""
+        let unitText = unit?.rawValue ?? ""
+        
+        return "\(name) \(qtyText) \(unitText)".trimmingCharacters(in: .whitespaces)
+    }
 }

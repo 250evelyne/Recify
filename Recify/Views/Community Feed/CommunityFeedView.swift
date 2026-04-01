@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct CommunityFeedView: View {
+    @EnvironmentObject var authManager: AuthManager
     @StateObject private var feedVM = FeedViewModel()
     
     var body: some View {
         NavigationStack {
             VStack {
                 HStack {
-                    NavigationLink(destination: MyPostsView()) {
-                        Image(systemName: "person.fill")
-                            .clipShape(.circle)
-                            .font(.title)
+                    NavigationLink(destination: MyPostsView().environmentObject(authManager)) {
+                        Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 35, height: 35)
+                            .clipShape(Circle())
                     }
                     Spacer()
                     Text("Community Feed")
@@ -38,7 +41,6 @@ struct CommunityFeedView: View {
                 .padding()
                 .background(.blue.opacity(0.08))
                 
-                            
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(feedVM.posts) { post in
                         PostView(post: post, feedVM: feedVM)

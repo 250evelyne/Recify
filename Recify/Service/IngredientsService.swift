@@ -8,7 +8,10 @@
 import Foundation
 
 enum HttpMethod: String {
-    case GET, POST, PUT, DELETE
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
 }
 
 class IngredientsService {
@@ -22,7 +25,7 @@ class IngredientsService {
             return cachedIngredients
         }
         
-        let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: .GET)
+        let result: IngredientResponse? = await webService.sendRequest(toUrl: baseUrl, method: .get)
         let rawMeals = result?.meals ?? []
         
         self.cachedIngredients = []
@@ -78,41 +81,6 @@ class IngredientsService {
     }
 }
 
-//    let id: Int?
-//    let name: String
-//    var quantity : Int?
-//    var unit : units?
-//    let imageUrl: String
-//    let category: Filters?
-    
-    
-    /* wrong i dont need this
-    func createIngredient(name: String, imageUrl: String, category: Filters) async -> Ingredients? {
-        
-        let newIngredient = Ingredients(id: nil, name: name, imageUrl: imageUrl, category: category)
-        
-        
-        let created : Ingredients? = await webService.sendRequest(toUrl: baseUrl, method: .POST, body: newIngredient)
-        
-        return created
-    }*/
-    
-    
-    /* wrong i dont need this
-    func updateIngredient(_ ingredient: Ingredients) async -> Ingredients? {
-        
-        guard let id = ingredient.id else{
-            print("Missing id for update")
-            return nil
-        }
-        
-        let url = "\(baseUrl)/\(id)"
-        
-        let updated : Ingredients? = await webService.sendRequest(toUrl: url, method: .PUT, body: ingredient)
-        
-        return updated
-    }*/
-    
     
     
 

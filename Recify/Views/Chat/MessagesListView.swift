@@ -27,7 +27,7 @@ struct MessagesListView: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                    TextField("Search cooks or recipes", text: $searchText)
+                    TextField("Search any user", text: $searchText)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
@@ -80,12 +80,12 @@ struct MessagesListView: View {
             }
             .navigationTitle("Messages")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {}) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.pink)
-                    }
-                }
+//                ToolbarItem(placement: .navigationBarLeading) {
+//                    Button(action: {}) {
+//                        Image(systemName: "gearshape.fill")
+//                            .foregroundColor(.pink)
+//                    }
+//                }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showNewChat = true }) {

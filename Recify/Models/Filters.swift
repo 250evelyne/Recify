@@ -50,3 +50,45 @@ enum Filters: String, CaseIterable, Identifiable, Codable{ //codable for the api
     
     /// im thinking of add a color var for each icon 
 }
+
+enum RecipeInfoType: String, CaseIterable {
+    case prepTime = "Prep Time"
+    case calories = "Calories"
+    case difficulty = "Level"
+}
+
+enum DifficultyLevel: String, CaseIterable {
+    case easy = "Easy"
+    case medium = "Medium"
+    case hard = "Hard"
+}
+
+
+struct SearchFilters {
+    var cookTime: CookTime?
+    var dietaryRestrictions: [DietaryRestriction] = []
+    var matchPantry: Bool = false
+    
+    var queryItems: [URLQueryItem] {
+        var items = [URLQueryItem]()
+        
+        // Map Dietary Restrictions to API string
+        if !dietaryRestrictions.isEmpty {
+            let value = dietaryRestrictions.map { $0.rawValue.lowercased() }.joined(separator: ",")
+            items.append(URLQueryItem(name: "diet", value: value))
+        }
+        
+        // Map CookTime Enum to minutes for API
+        if let time = cookTime {
+            let minutes: String
+            switch time {
+            case .under15: minutes = "15"
+            case .between15And30: minutes = "30"
+            case .over30: minutes = "60"
+            }
+            items.append(URLQueryItem(name: "maxReadyTime", value: minutes))
+        }
+        
+        return items
+    }
+}

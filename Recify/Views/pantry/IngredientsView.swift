@@ -25,12 +25,10 @@ struct IngredientsView: View {
     
     var body: some View {
         ZStack {
-            // Background Card
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white)
                 .shadow(color: .gray.opacity(0.2), radius: 5)
             
-            // Border
             RoundedRectangle(cornerRadius: 20)
                 .stroke(ingredientSelected ? Color.pink : Color.gray.opacity(0.1),
                         lineWidth: ingredientSelected ? 3 : 1)
@@ -54,7 +52,6 @@ struct IngredientsView: View {
     }
     
     // MARK: - Subviews
-    
     private var mainRow: some View {
         HStack {
             imageSection
@@ -133,7 +130,6 @@ struct IngredientsView: View {
                 
                 Spacer()
                 
-                // Unit Picker
                 RoundedRectangle(cornerRadius: 10)
                     .foregroundColor(.gray.opacity(0.1))
                     .frame(width: 100, height: 45)

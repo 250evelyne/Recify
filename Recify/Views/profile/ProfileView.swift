@@ -14,24 +14,18 @@ struct ProfileView: View {
     @StateObject private var ingredientVM = IngredientViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
                     
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
-                            Circle()
-                                .fill(LinearGradient(
-                                    colors: [Color.orange.opacity(0.6), Color.pink.opacity(0.6)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ))
+                            Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                                .resizable()
+                                .scaledToFill()
                                 .frame(width: 120, height: 120)
-                                .overlay(
-                                    Image(systemName: "person.fill")
-                                        .font(.system(size: 50))
-                                        .foregroundColor(.white)
-                                )
+                                .clipShape(Circle())
+                                .shadow(radius: 3)
                             
                             NavigationLink(destination: EditProfileView().environmentObject(authManager)) {
                                 Circle()
@@ -44,7 +38,7 @@ struct ProfileView: View {
                                     )
                             }
                         }
-                        .padding(.top, 30)
+                        .padding(.top, 10)
                         
                         Text(authManager.userProfile?.userName ?? "User")
                             .font(.title2)
@@ -54,7 +48,7 @@ struct ProfileView: View {
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 10)
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text("MY ACTIVITY")
@@ -76,12 +70,12 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            NavigationLink(destination: FavoriteRecipesView()) {
+                            NavigationLink(destination: savedCollectionsView()) {
                                 SettingsRowContent(
                                     icon: "heart.fill",
                                     iconColor: .pink,
-                                    title: "Favorite Recipes",
-                                    subtitle: "\(firebaseManager.savedRecipes.count) saved"
+                                    title: "Saved Collections",
+                                    subtitle: "\(firebaseManager.userFavCollections .count) saved"
                                 )
                             }
                             
@@ -90,9 +84,31 @@ struct ProfileView: View {
                             NavigationLink(destination: PantryView()) {
                                 SettingsRowContent(
                                     icon: "archivebox.fill",
-                                    iconColor: .brown,
+                                    iconColor: .pink,
                                     title: "Pantry",
                                     subtitle: "View all your saved Ingredients"
+                                )
+                            }
+                            
+                            Divider().padding(.leading, 60)
+
+                            NavigationLink(destination: MyPostsView()) {
+                                SettingsRowContent(
+                                    icon: "text.below.photo",
+                                    iconColor: .pink,
+                                    title: "Posts",
+                                    subtitle: "View all Posts you have made"
+                                )
+                            }
+                            
+                            Divider().padding(.leading, 60)
+
+                            NavigationLink(destination: MyRecipesView()) {
+                                SettingsRowContent(
+                                    icon: "fork.knife",
+                                    iconColor: .pink,
+                                    title: "Recipes",
+                                    subtitle: "View all Recipes you have made"
                                 )
                             }
                             
@@ -112,12 +128,12 @@ struct ProfileView: View {
                             .padding(.bottom, 8)
                         
                         VStack(spacing: 0) {
-                            SettingsToggleRow(
-                                icon: "eye.slash.fill",
-                                iconColor: .blue,
-                                title: "Private Profile",
-                                isOn: .constant(false)
-                            )
+//                            SettingsToggleRow(
+//                                icon: "eye.slash.fill",
+//                                iconColor: .blue,
+//                                title: "Private Profile",
+//                                isOn: .constant(false)
+//                            )
                             
                             Divider().padding(.leading, 60)
                             
@@ -130,12 +146,12 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            SettingsRow(
-                                icon: "nosign",
-                                iconColor: .blue,
-                                title: "Blocked Accounts",
-                                action: {}
-                            )
+//                            SettingsRow(
+//                                icon: "nosign",
+//                                iconColor: .blue.opacity(0.2), //i chanhed the opacity to show we have not implimented this yet
+//                                title: "Blocked Accounts",
+//                                action: {}
+//                            )
                         }
                         .background(Color.white)
                         .cornerRadius(12)
@@ -143,36 +159,36 @@ struct ProfileView: View {
                     }
                     .padding(.bottom, 24)
                     
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("SUPPORT")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                            .padding(.bottom, 8)
-                        
-                        VStack(spacing: 0) {
-                            SettingsRow(
-                                icon: "questionmark.circle.fill",
-                                iconColor: .gray,
-                                title: "Help Center",
-                                action: {}
-                            )
-                            
-                            Divider().padding(.leading, 60)
-                            
-                            SettingsRow(
-                                icon: "doc.text.fill",
-                                iconColor: .gray,
-                                title: "Terms of Service",
-                                action: {}
-                            )
-                        }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom, 24)
+//                    VStack(alignment: .leading, spacing: 0) {
+//                        Text("SUPPORT")
+//                            .font(.caption)
+//                            .fontWeight(.semibold)
+//                            .foregroundColor(.gray)
+//                            .padding(.horizontal)
+//                            .padding(.bottom, 8)
+//                        
+//                        VStack(spacing: 0) {
+//                            SettingsRow(
+//                                icon: "questionmark.circle.fill",
+//                                iconColor: .gray.opacity(0.2),
+//                                title: "Help Center",
+//                                action: {}
+//                            )
+//                            
+//                            Divider().padding(.leading, 60)
+//                            
+//                            SettingsRow(
+//                                icon: "doc.text.fill",
+//                                iconColor: .gray.opacity(0.2),
+//                                title: "Terms of Service",
+//                                action: {}
+//                            )
+//                        }
+//                        .background(Color.white)
+//                        .cornerRadius(12)
+//                        .padding(.horizontal)
+//                    }
+//                    .padding(.bottom, 24)
                     
                     Button(action: {
                         showLogoutConfirm = true
@@ -199,7 +215,7 @@ struct ProfileView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Account Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.automatic)
             .toolbarRole(.editor)
             .alert("Logout", isPresented: $showLogoutConfirm) {
                 Button("Cancel", role: .cancel) {}

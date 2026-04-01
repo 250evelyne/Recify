@@ -1,5 +1,5 @@
 //
-//  CalendarView.swift
+//  RecipeInstructionsView.swift
 //  Recify
 //
 //  Created by mac on 2026-03-07.
@@ -8,257 +8,304 @@
 import SwiftUI
 
 struct RecipeInstructionsView: View {
+    // MARK: - Properties
     let mealId: String
     let recipeTitle: String
     let recipeImage: String
-    let rating: Double = 4.8
-    let reviewCount: String = "1.2k"
-    let prepTime: String = "25 min"
-    let calories: String = "450 kcal"
-    let difficulty: String = "Medium"
-    let isEditorChoice: Bool = false
+    let prepTime: Int
+    let difficulty: String
     
-    @State private var isAdded: Bool = false
+    var recipe: Recipe? = nil
     
     @Environment(\.dismiss) var dismiss
-    @State private var showCalendar = false
     @StateObject private var viewModel = RecipeDetailViewModel()
+    @EnvironmentObject var firebaseVM: FirebaseViewModel
     @StateObject private var ingredientViewModel = IngredientViewModel()
+    
+    @State private var isShowingSheet = false
+    @State private var showCalendar = false
+    @State private var isAdded = false
     @State private var showAddedAlert = false
     
-    var pantryCount: Int {
-        viewModel.ingredients.filter { $0.inPantry }.count
+    private var isFavorite: Bool {
+        firebaseVM.isRecipeSaved(mealId: mealId)
     }
     
-    var isFavorite: Bool {
-        FirebaseViewModel.shared.isRecipeSaved(mealId: mealId)
+    // MARK: - Body
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                recipeHeaderImage
+                
+                VStack(alignment: .leading, spacing: 20) {
+                    recipeTitleSection
+                    infoCardsSection
+                    actionButtonsSection
+                    ingredientsSection
+                    instructionsSection
+                }
+                .padding(.horizontal)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                favoriteButton
+            }
+        }
+        .sheet(isPresented: $isShowingSheet) {
+            SaveToCollectionView(recipeId: mealId)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showCalendar) {
+            CalendarView()
+        }
+        .alert("Added to Cart", isPresented: $showAddedAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Missing ingredients have been added to your shopping list.")
+        }
+        .onAppear {
+            Task {
+                if let customRecipe = recipe {
+                    viewModel.ingredients = customRecipe.ingredients.map {
+                        RecipeIngredient(name: $0, rawName: $0, inPantry: false)
+                    }
+                    
+                    let cleanedSteps = customRecipe.instructions
+                        .components(separatedBy: CharacterSet.newlines)
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .map { $0.replacingOccurrences(of: "^(?i)(step\\s*)?\\d+[:\\.-]?\\s*", with: "", options: .regularExpression) }
+                        .filter { !$0.isEmpty }
+                    
+                    viewModel.instructions = cleanedSteps.isEmpty ? [customRecipe.instructions] : cleanedSteps
+                    
+                } else {
+                    await viewModel.fetchRecipeDetails(idMeal: mealId)
+                }
+                
+                viewModel.checkPantryStatus()
+                viewModel.checkShoppingListStatus(shoppingListItems: firebaseVM.shoppingItems)
+            }
+        }
     }
     
-    // MARK: - Helper Functions
+    // MARK: - Sub-views
+    private var recipeHeaderImage: some View {
+        ZStack {
+            if recipeImage.hasPrefix("http") {
+                AsyncImage(url: URL(string: recipeImage)) { image in
+                    image.resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Color.gray.opacity(0.2)
+                }
+            } else if let imageData = Data(base64Encoded: recipeImage),
+                      let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else {
+                Color.gray.opacity(0.2)
+                    .overlay(Image(systemName: "photo").foregroundColor(.white))
+            }
+        }
+        .frame(height: 280)
+        .clipped()
+    }
+    
+    private var recipeTitleSection: some View {
+        Text(recipeTitle)
+            .font(.title)
+            .fontWeight(.bold)
+    }
+    
+    private var infoCardsSection: some View {
+        HStack(spacing: 12) {
+            InfoCard(type: .prepTime, value: "\(prepTime) min")
+            
+            if let customRecipe = recipe {
+                InfoCard(type: .calories, value: "\(customRecipe.calories) kcal")
+            } else if let fetchedRecipe = viewModel.recipe {
+                InfoCard(type: .calories, value: "\(fetchedRecipe.calories) kcal")
+            } else {
+                InfoCard(type: .calories, value: "-- kcal")
+            }
+            
+            InfoCard(type: .level, value: difficulty)
+        }
+    }
+    
+    private var ingredientsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Ingredients (\(viewModel.ingredients.count))")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Spacer()
+                if !isAllAccountedFor {
+                    addMissingButton
+                }
+            }
+            
+            VStack(spacing: 10) {
+                ForEach(viewModel.ingredients) { ingredient in
+                    IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
+                }
+            }
+        }
+    }
+    
+    private var addMissingButton: some View {
+        Button {
+            addMissingIngredientsToCart()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: isAdded ? "checkmark.circle" : "cart.badge.plus")
+                Text(isAdded ? "Added" : "Add Missing")
+            }
+            .font(.caption).fontWeight(.bold)
+            .padding(.horizontal, 10).padding(.vertical, 6)
+            .background(isAdded ? Color.gray.opacity(0.2) : Color.pink.opacity(0.1))
+            .foregroundColor(isAdded ? .gray : .pink)
+            .cornerRadius(20)
+        }
+        .disabled(isAdded)
+    }
+    
+    private var instructionsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Instructions")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            ForEach(Array(viewModel.instructions.enumerated()), id: \.offset) { index, instruction in
+                InstructionStep(number: index + 1, text: instruction, color: index % 2 == 0 ? .blue : .pink)
+            }
+        }
+    }
+    
+    private var actionButtonsSection: some View {
+        VStack(spacing: 12) {
+            NavigationLink(destination: CookingModeTabView(
+                recipeTitle: recipeTitle,
+                steps: viewModel.instructions,
+                imageURL: recipeImage
+            )) {
+                HStack {
+                    Image(systemName: "flame.fill")
+                    Text("Start Cooking")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.pink)
+                .cornerRadius(12)
+            }
+            
+            Button(action: { showCalendar = true }) {
+                HStack {
+                    Image(systemName: "calendar")
+                    Text("Add to Planner")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.green)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(12)
+            }
+        }
+    }
+    
+    private var favoriteButton: some View {
+        Button(action: {
+            if !isFavorite {
+                firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
+            }
+            isShowingSheet = true
+        }) {
+            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                .foregroundColor(.pink)
+                .font(.title3)
+        }
+    }
+    
+    // MARK: - Helper Logic
+    private var isAllAccountedFor: Bool {
+        viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
+    }
+    
     private func addMissingIngredientsToCart() {
         let missingItems = viewModel.ingredients.filter { !$0.inPantry }
         
         Task {
             for item in missingItems {
-                // This uses the Search API logic to match categories automatically
-                let detectedCategory = await ingredientViewModel.fetchCategoryFor(ingredientName: item.rawName)
+                let alreadyInCart = firebaseVM.shoppingItems.contains {
+                    $0.name.lowercased() == item.rawName.lowercased()
+                }
                 
-                FirebaseViewModel.shared.addToShoppingList(
-                    name: item.rawName,
-                    imageUrl: "",
-                    category: detectedCategory,
-                    quantity: 1,
-                    unit: .pcs,
-                    recipeName: recipeTitle
-                )
+                if !alreadyInCart {
+                    let detectedCategory = await ingredientViewModel.fetchCategoryFor(ingredientName: item.rawName)
+                    firebaseVM.addToShoppingList(
+                        name: item.rawName,
+                        imageUrl: "",
+                        category: detectedCategory,
+                        quantity: 1,
+                        unit: .pcs,
+                        recipeName: recipeTitle
+                    )
+                }
             }
+            
             await MainActor.run {
                 showAddedAlert = true
+                isAdded = true
             }
         }
     }
     
-    var body: some View {
-        
-
-        ScrollView {
-            if viewModel.isLoading {
-                VStack {
-                    Spacer().frame(height: 200)
-                    ProgressView("Loading Recipe Details...")
-                    Spacer()
-                }
-            } else {
-                VStack(spacing: 0) {
-                    // Recipe Img
-                    ZStack(alignment: .bottomLeading) { //TODO: chnage to be with out white space, maybe look at how i did for the backgorud of pantry view on top
-                        AsyncImage(url: URL(string: recipeImage)) { image in
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            Color.gray.opacity(0.2)
-                        }
-                        .frame(height: 280)
-                        .clipped()
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text(recipeTitle)
-                            .font(.title)
-                            .fontWeight(.bold)
-                        
-                        // Rating section...
-                        HStack(spacing: 4) {
-                            ForEach(0..<5) { index in
-                                Image(systemName: index < Int(rating) ? "star.fill" : "star")
-                                    .foregroundColor(.yellow)
-                                    .font(.caption)
-                            }
-                            Text("\(String(format: "%.1f", rating)) (\(reviewCount) reviews)")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        // Info Cards...
-                        HStack(spacing: 12) {
-                            InfoCard(title: "PREP TIME", value: prepTime, color: Color(red: 0.68, green: 0.85, blue: 0.90))
-                            InfoCard(title: "CALORIES", value: calories, color: Color(red: 1.0, green: 0.95, blue: 0.95))
-                            InfoCard(title: "LEVEL", value: difficulty, color: Color(red: 0.88, green: 0.98, blue: 0.88)) //TODO: add an enum for the level and change the color based on the level (anabella)
-                        }
-                        
-                        // Ingredients Section
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Ingredients (\(viewModel.ingredients.count))")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                Spacer()
-                                
-                                if pantryCount < viewModel.ingredients.count {//TODO: the oanrty that the user has dosnt load automaticaly, only after i go to ptnary or wtv (anabella)
-                                    
-                                    Button {
-                                        addMissingIngredientsToCart()
-                                        isAdded = true
-                                    } label: {
-                                        HStack(spacing: 4) {
-                                            Image(systemName: "cart.badge.plus")
-                                            Text("Add Missing")
-                                        }.font(.caption)
-                                            .fontWeight(.bold)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 6)
-                                            .background(Color.pink.opacity(0.1))
-                                            .foregroundColor(.pink)
-                                            .cornerRadius(20)
-                                    }.disabled(isAdded)
-                                    
-                                    
-                                    //                                    Button(action: addMissingIngredientsToCart) {
-                                    //                                        HStack(spacing: 4) {
-                                    //                                            Image(systemName: "cart.badge.plus")
-                                    //                                            Text("Add Missing")
-                                    //                                        }
-                                    //                                        .font(.caption)
-                                    //                                        .fontWeight(.bold)
-                                    //                                        .padding(.horizontal, 10)
-                                    //                                        .padding(.vertical, 6)
-                                    //                                        .background(Color.pink.opacity(0.1))
-                                    //                                        .foregroundColor(.pink)
-                                    //                                        .cornerRadius(20)
-                                    //                                    }
-                                }
-                            }
-                            
-                            ScrollView{
-                                ForEach(viewModel.ingredients) { ingredient in
-                                    IngredientRow(name: ingredient.name, inPantry: ingredient.inPantry)
-                                }
-                            }.frame(maxHeight: 330)
-                            
-                        }
-                        
-                        // Instructions Section...
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Instructions")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            
-                            ForEach(Array(viewModel.instructions.enumerated()), id: \.offset) { index, instruction in
-                                InstructionStep(number: index + 1, text: instruction, color: index % 2 == 0 ? .blue : .pink)
-                            }
-                        }
-                        
-                        // Start cooking btn
-                        NavigationLink(destination: CookingModeTabView(recipeTitle: recipeTitle, steps: viewModel.instructions)) {
-                            HStack {
-                                Image(systemName: "flame.fill")
-                                Text("Start Cooking")
-                                    .fontWeight(.semibold)
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.pink)
-                            .cornerRadius(12)
-                        }
-                        
-                        // Add to Calendar Button
-                        Button(action: {
-                            showCalendar = true
-                        }) {
-                            HStack {
-                                Image(systemName: "calendar")
-                                Text("Add to Planner")
-                                    .fontWeight(.semibold)
-                            }
-                            .foregroundColor(.green)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green.opacity(0.1))
-                            .cornerRadius(12)
-                        }
-                        .padding(.top, 8)
-                        
-                        
-                        
-                    }
-                    .padding()
-                }
-            }
-        }
-        .task {
-            await viewModel.fetchRecipeDetails(idMeal: mealId)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    FirebaseViewModel.shared.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
-                }) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart") //TODO: change the hart to fill after u click it
-                        .foregroundColor(.pink)
-                }
-            }
-        }
-        .sheet(isPresented: $showCalendar) {
-            CalendarView()
-        }
-        .alert("Added to Cart!", isPresented: $showAddedAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("All missing ingredients were successfully added to your Shopping List.")
+    private var loadingState: some View {
+        VStack {
+            Spacer().frame(height: 200)
+            ProgressView("Loading Recipe Details...")
+            Spacer()
         }
     }
 }
 
+// MARK: - Supporting Structs
 
 struct RecipeIngredient: Identifiable {
     let id = UUID()
     let name: String
     let rawName: String
-    let inPantry: Bool
+    var inPantry: Bool
+    var inCart: Bool = false
 }
 
-
 //supporting views
-
 struct InfoCard: View {
-    let title: String
+    let type: RecipeDetailAttribute
     let value: String
-    let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
-            Text(title)
-                .font(.caption)
+        VStack(spacing: 4) {
+            Text(type.rawValue)
+                .font(.caption2)
+                .fontWeight(.bold)
                 .foregroundColor(.gray)
+            
             Text(value)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(type.color(for: value))
+                .cornerRadius(12)
         }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(color)
-        .cornerRadius(12)
     }
 }
 
@@ -312,45 +359,16 @@ struct InstructionStep: View {
     }
 }
 
-///sample data
-
-//struct RecipeInstructionsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RecipeInstructionsView(
-//            recipeTitle: "Creamy Avocado Pasta",
-//            recipeImage: "pasta-sample",
-//            rating: 4.8,
-//            reviewCount: "1.2k",
-//            prepTime: "15 min",
-//            calories: "450 kcal",
-//            difficulty: "Easy",
-//            ingredients: [
-//                RecipeIngredient(name: "Ripe Avocados (2)", inPantry: true),
-//                RecipeIngredient(name: "Garlic (3 cloves)", inPantry: true),
-//                RecipeIngredient(name: "Whole Grain Pasta (500g)", inPantry: false),
-//                RecipeIngredient(name: "Olive Oil (2 tbsp)", inPantry: true),
-//                RecipeIngredient(name: "Salt (1 tsp)", inPantry: true),
-//                RecipeIngredient(name: "Black Pepper (1/2 tsp)", inPantry: true),
-//                RecipeIngredient(name: "Lemon Juice (1 tbsp)", inPantry: false),
-//                RecipeIngredient(name: "Fresh Basil (optional)", inPantry: false),
-//                RecipeIngredient(name: "Parmesan Cheese (50g)", inPantry: false)
-//            ],
-//            instructions: [
-//                "Bring a large pot of salted water to a boil. Cook the pasta according to package instructions until al dente.",
-//                "While pasta cooks, blend the avocados, garlic, and olive oil in a food processor until smooth and creamy.",
-//                "Drain pasta and toss with avocado sauce. Season with salt and pepper to taste. Serve immediately."
-//            ],
-//            isEditorChoice: true
-//        )
-//    }
-//}
-
+// MARK: - Preview
 struct RecipeInstructionsView_Previews: PreviewProvider {
     static var previews: some View {
         RecipeInstructionsView(
-            mealId: "52772", 
+            mealId: "52772",
             recipeTitle: "Teriyaki Chicken Casserole",
-            recipeImage: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg"
+            recipeImage: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg",
+            prepTime: 12,
+            difficulty: "Easy"
         )
+        .environmentObject(FirebaseViewModel.shared)
     }
 }

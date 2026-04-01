@@ -12,38 +12,56 @@ struct RecipeCard: View {
     let imageURL: String
     let time: String
     let difficulty: String
-    let rating: Double
+    //let rating: Double
     let matchPercentage: Int?
+    let recipe: Recipe?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             
-         
+            // MARK: - Image Section
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: imageURL)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill) //fills the box without squishing
-                    case .failure:
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                    @unknown default:
-                        EmptyView()
+                Group {
+                    if imageURL.hasPrefix("http") {
+                        AsyncImage(url: URL(string: imageURL)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(Color.gray.opacity(0.1))
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill) //fills the box without squishing
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .foregroundColor(.gray)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(Color.gray.opacity(0.1))
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    } else {
+                        let cleanString = imageURL.components(separatedBy: "base64,").last ?? imageURL
+                        
+                        if let imageData = Data(base64Encoded: cleanString, options: .ignoreUnknownCharacters),
+                           let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Image(systemName: "photo")
+                                .foregroundColor(.gray)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(Color.gray.opacity(0.1))
+                        }
                     }
                 }
-                .frame(height: 140) //all images will be exactly 140pt tall
+                .frame(height: 140)
                 .clipped()
                 .cornerRadius(12)
                 
-                // Optional Pantry Match Badge
                 if let match = matchPercentage {
                     Text("\(match)% Match")
                         .font(.caption2)
@@ -57,33 +75,35 @@ struct RecipeCard: View {
                 }
             }
             
+            // MARK: - Details Section
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .lineLimit(1)
                 
-                    .lineLimit(2) //prevents titles from wrapping endlessly
-                    .multilineTextAlignment(.leading)
-              
-                    .frame(minHeight: 44, alignment: .topLeading)
-                
-                HStack {
-                    Image(systemName: "clock")
-                        .foregroundColor(.gray)
-                        .font(.caption)
-                    Text(time)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                HStack(spacing: 10) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                        
+                        Text(recipe != nil ? "\(recipe!.prepTime) min" : time)
+                    }
                     
-                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "chart.bar")
+                        Text(recipe != nil ? recipe!.level : difficulty)
+                    }
                     
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                        .font(.caption)
-                    Text(String(format: "%.1f", rating))
-                        .font(.caption)
-                        .fontWeight(.bold)
+                    if let calories = recipe?.calories {
+                        HStack(spacing: 4) {
+                            Image(systemName: "flame")
+                            Text("\(calories) kcal")
+                        }
+                    }
                 }
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
+            .padding(.top, 4)
             .padding(.horizontal, 4)
         }
         //will forces the card to push everything to the top, so rows stay perfectly even
@@ -93,10 +113,16 @@ struct RecipeCard: View {
 
 struct RecipeCard_Previews: PreviewProvider {
     static var previews: some View {
-        HStack {
-            RecipeCard(title: "Short Title", imageURL: "", time: "20m", difficulty: "Easy", rating: 4.5, matchPercentage: 90)
-            RecipeCard(title: "A Very Long Recipe Title That Wraps to Two Lines", imageURL: "", time: "45m", difficulty: "Hard", rating: 4.8, matchPercentage: nil)
-        }
+        RecipeCard(
+            title: "Classic Margherita Pizza",
+            imageURL: "https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg",
+            time: "20m",
+            difficulty: "Easy",
+            //rating: 4.5,
+            matchPercentage: 90,
+            recipe: nil 
+        )
         .padding()
+        .previewLayout(.sizeThatFits)
     }
 }

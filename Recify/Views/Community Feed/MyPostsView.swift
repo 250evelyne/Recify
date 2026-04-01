@@ -33,7 +33,6 @@ struct MyPostsView: View {
                 }
                 .padding(.top, 100)
             } else {
-                // Loop through the users specific posts
                 ForEach(feedVM.userPosts) { post in
                     PostView(post: post, feedVM: feedVM)
                 }
@@ -43,7 +42,6 @@ struct MyPostsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color.pink.opacity(0.05))
         .onAppear {
-            // Fetch the posts as soon as the view appears
             if let uid = currentUserId {
                 feedVM.fetchUserPosts(userId: uid)
             }

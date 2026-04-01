@@ -8,97 +8,111 @@
 import SwiftUI
 
 struct SearchResults: View {
-    @State var oldSearch : String //get the search sent form the other page
-    @State private var searchedRecipe: String = ""
-    @StateObject private var viewModel = IngredientViewModel()
-    @StateObject var firebaseManager = FirebaseViewModel.shared
-    
+    @StateObject var viewModel = HomeViewModel()
+    let query: String
+    let filters: SearchFilters
     
     var body: some View {
-        /*
-        let filteredRecipes = firebaseManager.recipes.filter {
-            $0.title.lowercased().contains(oldSearch.lowercased())
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color.orange.opacity(0.3),
+                    Color.clear,
+                    Color.pink.opacity(0.3)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            mainContentView
         }
-        
-        VStack{
-            
-            Divider().foregroundStyle(.gray.opacity(0.02))//check to see if its actually super light
-            
-            headerSearchSection.padding()
-            
-            //see if i wanna add the filters here too
-            VStack(alignment: .leading){
-                HStack{
-                    Text("Results for '\(oldSearch)'")
-                        .bold()
-                        .font(.title3)
-                    Spacer()
-                    NavigationLink {
-                        AdvanceSearchFiltersView()
-                    } label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .foregroundColor(.pink)
-                            .frame(width: 44, height: 44)
-                    }
-                    
-                }.padding(.horizontal)
-                
-                ScrollView(.vertical, showsIndicators: false) {
-                    ForEach(filteredRecipes) { recipe in
-                        searchResultCard(
-                            title: recipe.title,
-                            imageURL: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
-                            time: recipe.timeMinutes,
-                            difficulty: recipe.dificulty?.rawValue ?? "Unknown"
-                        )
-                    }
-                }.onAppear {
-                    firebaseManager.fetchRecipes(searchQuery: oldSearch)
-                }
-                Spacer()
-            }.background(Color.blue.opacity(0.08))
-            
-        }.background(Color.white.opacity(0.04))
+//        mainContentView
             .navigationTitle("Results")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: ProfileView()) {
-                        Image(systemName: "person.circle") //TODO: make user profile image
-                    }
-                }
-            }*/
+            .task {
+                await viewModel.searchMeals(query: query, filters: filters)
+            }
     }
     
-    var headerSearchSection: some View {
-        VStack {
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.blue, lineWidth: 2)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
-                .frame(height: 50)
-                .overlay(
-                    HStack {
-                        Button {
-                            Task { await viewModel.searchIngredients(query: searchedRecipe) }
-                        } label: {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.blue)
-                                .padding(.leading)
-                        }
-                        
-                        TextField("Search recipies...", text: $searchedRecipe)
-                            .foregroundColor(.black)
-                            .onSubmit {
-                                Task { await viewModel.searchIngredients(query: searchedRecipe) }
-                            }
-                    }
-                )
-                .shadow(color: Color.blue.opacity(0.2), radius: 5)
-                .padding(.bottom)
+    // MARK: - Subviews
+    
+    private var mainContentView: some View {
+        Group {
+            if viewModel.isLoading {
+                VStack {
+                    ProgressView()
+                    Text("Searching for recipes...")
+                        .foregroundColor(.secondary)
+                        .padding(.top)
+                }
+            } else if viewModel.searchResults.isEmpty {
+                emptyStateView
+            } else {
+                resultsListView
+            }
         }
     }
-
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 50))
+                .foregroundColor(.gray)
+            Text("No recipes found.")
+                .font(.headline)
+            Text("Try adjusting your filters or search terms.")
+                .foregroundColor(.secondary)
+        }
+        .frame(maxHeight: .infinity)
+    }
+    
+    private var resultsListView: some View {
+        ScrollView {
+            Text("\(viewModel.searchResults.count) recipes round for '\(query)'")
+                    .font(.title3)
+                    .foregroundColor(.black)
+                    .padding(.horizontal)
+                    .fontWeight(.semibold)
+            
+//            LazyVGrid(columns: [
+//                GridItem(.flexible(), spacing: 16),
+//                GridItem(.flexible(), spacing: 16)
+//            ], spacing: 20) {
+            
+                ForEach(Array(viewModel.searchResults.enumerated()), id: \.offset) { index, recipe in
+                    NavigationLink(destination: RecipeInstructionsView(
+                        mealId: recipe.id ?? recipe.title,
+                        recipeTitle: recipe.title,
+                        recipeImage: recipe.imageURL ?? "",
+                        prepTime: recipe.prepTime,
+                        difficulty: recipe.level,
+                        recipe: recipe
+                    )) {
+                        searchResultCard(
+                            mealId: recipe.id ?? "",
+                            title: recipe.title,
+                            imageURL: recipe.imageURL ?? "", 
+                            time: recipe.prepTime,
+                            difficulty: recipe.level
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+//            }
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+        }
+//        .background(Color(.systemGroupedBackground))
+    }
 }
 
 #Preview {
-    SearchResults(oldSearch: "Pancakes")
+    SearchResults(
+        query: "Chicken",
+        filters: SearchFilters(
+            cookTime: .under15,
+            dietaryRestrictions: [.vegan],
+            matchPantry: false
+        )
+    )
 }

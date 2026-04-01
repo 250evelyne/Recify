@@ -1,3 +1,10 @@
+//
+//  FeedViewModel.swift
+//  Recify
+//
+//  Created by netblen on 03-03-2026.
+//
+
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -38,7 +45,8 @@ class AuthManager: ObservableObject {
                     id: userId,
                     email: data["email"] as? String ?? "",
                     userName: data["userName"] as? String ?? "",
-                    favorites: data["favorites"] as? [String] ?? []
+                    favorites: data["favorites"] as? [String] ?? [],
+                    avatar: data["avatar"] as? String ?? "cupcakeAvatar"
                 )
                 print(" Profile loaded: \(self.userProfile?.userName ?? "")")
                 
@@ -93,7 +101,8 @@ class AuthManager: ObservableObject {
             self.db.collection("users").document(user.uid).setData([
                 "email": email,
                 "userName": userName,
-                "favorites": [] as [String]
+                "favorites": [] as [String],
+                "avatar": "tomatoAvatar"
             ]) { error in
                 if let error = error {
                     print(" Firestore error: \(error.localizedDescription)")

@@ -38,6 +38,21 @@ struct ShoppingList: View {
                 
                 Spacer()
                 
+                if #available(iOS 17.0, *) {
+                    NavigationLink(destination: GroceryMapsView()) {
+                        Image(systemName: "cart")
+                            .tint(.pink)
+                            .font(.title2)
+                            .padding(7)
+                            .background(.white)
+                            .clipShape(.circle)
+                            .shadow(radius: 5)
+                    }
+                } else {
+                    // Fallback on earlier versions
+                }
+                
+                
 //                Button(action: {
 //                    //this filyer the list for items that are currently checked and delete them
 //                    let itemsToDelete = firebaseManager.shoppingItems.filter { $0.isChecked == true }
@@ -113,7 +128,6 @@ struct ShoppingList: View {
                             }
                         }
                     } else {
-                        //Show grouped by Recipe Name
                         ForEach(itemsByRecipe.keys.sorted(), id: \.self) { recipeName in
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
@@ -150,13 +164,13 @@ struct ShoppingList: View {
                                 
                                 ForEach(itemsByRecipe[recipeName] ?? []) { item in
                                     ShoppingListItemRow(item: item, checkedItems: $checkedItems)
-                                } //TODO: i wanna swipe to delete
+                                } //TODO: i wanna swipe to delete. -why??
                             }
                         }
                     }
                 }
                 .padding(.top)
-                .padding(.bottom, 80) // Space for the floating button
+                .padding(.bottom, 80)
             }
             .overlay(alignment: .bottom){ //Its in the middle of the page for now when there nothing idk if we should keep like that
                 HStack{
@@ -185,7 +199,6 @@ struct ShoppingList: View {
 }
 
 // MARK: - Helper Views
-
 struct ShoppingListItemRow: View {
     let item: Ingredients
     @StateObject var firebaseManager = FirebaseViewModel.shared

@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 
 struct SavedRecipe: Identifiable, Codable {
-    @DocumentID var id: String?
+    @DocumentID var id: String? 
     let mealId: String
     let title: String
     let imageURL: String

@@ -11,52 +11,78 @@ import Foundation
 class HomeViewModel: ObservableObject {
     @Published var pantryMeals: [MealApi] = []
     @Published var trendingMeals: [MealApi] = []
-    @Published var isLoading = false
     @Published var pantrySubtitle: String = "Loading..."
-    @Published var searchResults: [MealApi] = []
     @Published var isSearching = false
-    @Published var hasNoResults = false 
+    @Published var hasNoResults = false
+    @Published var recipes: [Recipe] = []
+    @Published var searchText: String = ""
+    @Published var selectedFilters = SearchFilters()
+    @Published var filteredRecipes: [Recipe] = []
+    @Published var searchResults: [Recipe] = []
+    @Published var isLoading: Bool = false
     
-    func searchMeals(query: String) async {
-        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else {
-            self.searchResults = []
-            self.hasNoResults = false
+    var ingredientViewModel = IngredientViewModel()
+    
+    private let webService = WebService()
+
+    
+    @MainActor
+    func applySearch() {
+        self.isSearching = true
+        
+        Task {
+            let results = await webService.fetchFilteredRecipes(
+                query: searchText,
+                filters: selectedFilters
+            )
+            
+            self.recipes = results
+            self.isSearching = false
+            
+            self.hasNoResults = results.isEmpty && !searchText.isEmpty
+        }
+    }
+    
+    func searchMeals(query: String, filters: SearchFilters) async {
+        
+        //here are they clearing the Home search bar, or using Advanced Filters so the search works smoothly
+        let noFiltersActive = filters.cookTime == nil && filters.dietaryRestrictions.isEmpty && !filters.matchPantry
+        
+        if query.isEmpty && noFiltersActive {
+            //update results and THEN apply secondary pantry filters
+            await MainActor.run {
+                self.searchResults = []
+                self.hasNoResults = false
+                self.isSearching = false
+            }
             return
         }
         
-        isSearching = true
-        hasNoResults = false
-        
-        let formattedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let urlString = "https://www.themealdb.com/api/json/v1/1/search.php?s=\(formattedQuery)"
-        
-        if let meals = await fetchMeals(from: urlString), !meals.isEmpty {
-            self.searchResults = meals
+        await MainActor.run {
+            self.isSearching = true
             self.hasNoResults = false
-        } else {
-            self.searchResults = []
-            self.hasNoResults = true
         }
         
-        isSearching = false
+        let results = await WebService().fetchFilteredRecipes(query: query, filters: filters)
+        
+        //update results and THEN apply secondary pantry filters
+        await MainActor.run {
+            self.searchResults = results
+            
+            //only run pantry logic if the user actually turned it on
+            if filters.matchPantry {
+                self.applyAdvancedFilters(filters: filters)
+            }
+            
+            self.isSearching = false
+            self.hasNoResults = self.searchResults.isEmpty
+        }
     }
     
-    func fetchHomeData() async {
-        isLoading = true
-        
-        //fetch Personalized Pantry Meals
-        await fetchPantryMatch()
-        
-        //fetch Trending Meals - but we using beed section as trending
-        await fetchTrendingMeals()
-        
-        isLoading = false
-    }
     
     private func fetchPantryMatch() async {
         let userPantry = FirebaseViewModel.shared.ingredients
         
-        // If the user has ingredients, pick a random one to search with
         if let randomIngredient = userPantry.randomElement()?.name {
             let formattedIngredient = randomIngredient.replacingOccurrences(of: " ", with: "_").lowercased()
             let urlString = "https://www.themealdb.com/api/json/v1/1/filter.php?i=\(formattedIngredient)"
@@ -68,12 +94,11 @@ class HomeViewModel: ObservableObject {
             }
         }
         
-        // FALLBACK: If the pantry is empty OR the API couldn't find a meal with that ingredient
-        let fallbackUrlString = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken" // Default category
+        let fallbackUrlString = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken" 
         if let fallbackMeals = await fetchMeals(from: fallbackUrlString) {
             self.pantryMeals = Array(fallbackMeals.prefix(5))
             self.pantrySubtitle = "Add items to your pantry for custom matches!"
-        } ///notsure
+        }
     }
     
     private func fetchTrendingMeals() async {
@@ -93,5 +118,70 @@ class HomeViewModel: ObservableObject {
             print("Network request failed: \(error)")
             return nil
         }
+    }
+    
+    
+    func filterResults(results: [Recipe], filters: SearchFilters, pantryIngredients: [Ingredients]) {
+        self.filteredRecipes = results.filter { recipe in
+            let pantryMatch: Bool
+            if filters.matchPantry {
+                let pantryNames = pantryIngredients.compactMap {
+                    $0.name.lowercased()
+                }
+                //check if recipe ingredients exist in pantry
+                let matches = recipe.ingredients.filter { ing in
+                    pantryNames.contains(where: { $0.contains(ing.lowercased()) })
+                }
+                pantryMatch = !matches.isEmpty
+            } else {
+                pantryMatch = true
+            }
+            
+            //match Dietary Restrictions
+            let dietMatch = filters.dietaryRestrictions.isEmpty || filters.dietaryRestrictions.allSatisfy { diet in
+                diet.matches(category: recipe.category, ingredients: recipe.ingredients)
+            }
+            
+            return pantryMatch && dietMatch
+        }
+    }
+    
+    func searchRecipes(query: String) async {
+        self.isLoading = true
+        // self.searchResults = await WebService.shared.fetch(query: query)
+        self.isLoading = false
+    }
+    
+    
+    func applyAdvancedFilters(filters: SearchFilters) {
+        guard filters.matchPantry else {
+            print("✅ Filters are OFF, skipping filtering logic")
+            return
+        }
+        
+        let pantryIngredients = FirebaseViewModel.shared.ingredients.map { $0.name.lowercased() }
+        
+        self.searchResults = self.searchResults.filter { recipe in
+            if recipe.ingredients.isEmpty { return true }
+            
+            let recipeIngs = recipe.ingredients.map { $0.lowercased() }
+            
+            return recipeIngs.contains { recipeIng in
+                pantryIngredients.contains { pantryIng in
+                    recipeIng.contains(pantryIng) || pantryIng.contains(recipeIng)
+                }
+            }
+        }
+    }
+
+    func fetchHomeData() async {
+        self.isLoading = true
+        
+        async let pantryTask: () = fetchPantryMatch()
+        async let trendingTask: () = fetchTrendingMeals()
+        
+        _ = await [pantryTask, trendingTask]
+        
+        self.isLoading = false
     }
 }

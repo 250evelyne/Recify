@@ -7,220 +7,195 @@
 
 import SwiftUI
 
-
 struct AdvanceSearchFiltersView: View {
     
     @StateObject private var viewModel = IngredientViewModel()
     @State private var searchedIngredient: String = ""
     @State private var selectedCookTime: CookTime?
-    
-    @State private var matchPantry : Bool = false
-        
+    @State private var matchPantry: Bool = false
     @State private var selectedRestrictions: Set<DietaryRestriction> = []
 
 
     var body: some View {
-        ZStack{
+        ZStack {
             Color.purple.opacity(0.04).ignoresSafeArea()
             
-            VStack(alignment: .leading){
+            VStack(alignment: .leading) {
                 
                 headerSearchSection.padding(.horizontal)
-                
                 
                 Text("Cooking Time")
                     .bold()
                     .font(.title3)
                 
+                cookingTimeScrollView
                 
-                ScrollView(.horizontal, showsIndicators: false){ //time filters
-                    HStack{
-                        
-                        Button {
-                            selectedCookTime  = .under15
-                        } label: {
-                            cookTimeView(title: "Under 15 mins", subTitle: "Super quick", icon:  "bolt.fill", isSelected: selectedCookTime == .under15)
-
-                        }
-                        
-                        Button {
-                            selectedCookTime  = .between15And30
-                        } label: {
-                            cookTimeView(title: "15-30 mins", subTitle: "Everyday meals", icon:  "fork.knife.circle", isSelected: selectedCookTime == .between15And30)
-
-                        }
-                        
-                        Button {
-                            selectedCookTime  = .over30
-                        } label: {
-                            cookTimeView(title: "Over 30 mins", subTitle: "More involved cooking", icon:  "clock.fill", isSelected: selectedCookTime == .over30)
-
-                        }
-                        
-                    }
-                }
-                
-                
-                RoundedRectangle(cornerRadius: 10) //match pantry
-                    .frame(height: 80)
-                    .foregroundStyle(.blue.opacity(0.07))
-                    .overlay {
-                        HStack{
-                            
-                            Image(systemName: "refrigerator.fill")
-                                .font(.title)
-                                .foregroundStyle(.pink)
-                                .frame(width: 45, height: 45)
-                                .background(Color.white).clipShape(.rect(cornerRadius: 8))
-                            VStack{
-                                Text("Matching my Pantry")
-                                    .bold()
-                                Text("Use items you already have")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.gray)
-                            }
-                            
-                            Spacer()
-                            
-                            Toggle(isOn: $matchPantry) {}
-                                .frame(width: 50, height: 50)
-                                .tint(.pink)
-                                .padding()
-                                .onTapGesture {
-                                    matchPantry.toggle()
-                                }
-                            
-                        }.padding()
-                    }
+                pantryToggleView
                 
                 Text("Dietary Restrictions")
                     .bold()
                     .font(.title3)
                     .padding(.top)
-
-                ScrollView(.vertical, showsIndicators: false){
-                    ForEach(DietaryRestriction.allCases, id: \.self){ res in
-                        
-                        HStack{
-                            if (res == .vegan){
-                                dietImage(icon: "leaf.fill", iconColor: .orange)
-                                Text("\(DietaryRestriction.vegan.rawValue)")
-                            }
-                            else if(res == .dairyFree ) {
-                                dietImage(icon: "drop.fill", iconColor: .blue)
-                                Text("\(DietaryRestriction.dairyFree.rawValue)")
-                            }
-                            else if(res == .vegetarian ) {
-                                dietImage(icon: "leaf", iconColor: .pink)
-                                Text("\(DietaryRestriction.vegetarian.rawValue)")
-                            }
-                            else if(res == .nutFree ) {
-                                dietImage(icon: "cross.circle", iconColor: .brown)
-                                Text("\(DietaryRestriction.nutFree.rawValue)")
-                            }
-                            else if(res == .keto ) {
-                                dietImage(icon: "flame.fill", iconColor: .red)
-                                Text("\(DietaryRestriction.keto.rawValue)")
-                            }
-                            else if(res == .glutenFree ) {
-                                dietImage(icon: "takeoutbag.and.cup.and.straw.fill", iconColor: .yellow)
-                                Text("\(DietaryRestriction.glutenFree.rawValue)")
-                            }
-                            
-                            Spacer()
-                            
-                            Button {
-                                if selectedRestrictions.contains(res) {
-                                    selectedRestrictions.remove(res)
-                                } else {
-                                    selectedRestrictions.insert(res)
-                                }
-                            } label: {
-                                Image(systemName: selectedRestrictions.contains(res) ? "checkmark.square.fill" : "square")
-                            }
-                            
-                        }
-                    }.frame(height: 400)
-                    
-                }.padding(.horizontal) //TODO: remove random enptyr space on top (alexanne) low priority
                 
-                HStack{
-                    Spacer()
-                    
-                    
-                    NavigationLink(destination: SearchResults(oldSearch: searchedIngredient)) {
-                        Label("Show Results", systemImage: "chevron.right")
-                            .font(.title3)
-                            .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
-                    }.buttonStyle(.bordered)
-                        .tint(.pink)
-                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to disable the buttons after annabella finsh making the page work
-                    Spacer()
-                    
-                    
-                    
-//                    Button {
-//                        //TODO: TAKE ALL THE filters and search recipes
-//                    } label: {
-//                        Label("Show Results", systemImage: "chevron.right")
-//                            .font(.title3)
-//                            .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
-//                    }.buttonStyle(.bordered)
-//                        .tint(.pink)
-//                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
-//                    Spacer()
-                }
+                dietaryRestrictionsList
                 
-            }
+                Spacer()
+                
+                resultsButtonSection
+                
+            }//TODO: add the others to disable the buttons after annabella finsh making the page work
             .padding()
             .navigationTitle("Search & Filters")
-            .navigationBarTitleDisplayMode(.inline) //it was really big and ugly so i had to put this
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Reset"){
+                    Button("Reset") {
                         searchedIngredient = ""
-                        selectedCookTime = nil  //this dosnt work
+                        selectedCookTime = nil
                         matchPantry = false
                         selectedRestrictions = []
                     }.tint(.pink)
                 }
+            }//TODO: remove random enptyr space on top (alexanne) low priority
+        }
+        //Button {
+            //                        //TODO: TAKE ALL THE filters and search recipes
+            //                    } label: {
+            //                        Label("Show Results", systemImage: "chevron.right")
+            //                            .font(.title3)
+            //                            .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
+            //                    }.buttonStyle(.bordered)
+            //                        .tint(.pink)
+            //                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
+            //                    Spacer()
+       // }
+        
+        
+    }
+    
+    // MARK: - Extracted Sections
+    private var cookingTimeScrollView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                Button {
+                    selectedCookTime = (selectedCookTime == .under15) ? nil : .under15
+                } label: {
+                    cookTimeView(title: "Under 15 mins", subTitle: "Super quick", icon:  "bolt.fill", isSelected: selectedCookTime == .under15)
+                }
+                
+                Button {
+                    selectedCookTime = (selectedCookTime == .between15And30) ? nil : .between15And30
+                } label: {
+                    cookTimeView(title: "15-30 mins", subTitle: "Everyday meals", icon:  "fork.knife.circle", isSelected: selectedCookTime == .between15And30)
+                }
+                
+                Button {
+                    selectedCookTime = (selectedCookTime == .over30) ? nil : .over30
+                } label: {
+                    cookTimeView(title: "Over 30 mins", subTitle: "More involved", icon:  "clock.fill", isSelected: selectedCookTime == .over30)
+                }
             }
-
         }
     }
     
-
-    
-    var headerSearchSection: some View {
-        VStack {
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.blue, lineWidth: 2)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
-                .frame(height: 50)
-                .overlay(
-                    HStack {
-                        Button {
-                            Task { await viewModel.searchIngredients(query: searchedIngredient) }
-                        } label: {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.blue)
-                                .padding(.leading)
-                        }
-                        
-                        TextField("Search your ingredients...", text: $searchedIngredient)
-                            .foregroundColor(.black)
-                            .onSubmit {
-                                Task { await viewModel.searchIngredients(query: searchedIngredient) }
-                            }
+    private var pantryToggleView: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .frame(height: 90)
+            .foregroundStyle(.blue.opacity(0.07))
+            .overlay {
+                HStack {
+                    Image(systemName: "refrigerator.fill")
+                        .font(.title2)
+                        .foregroundStyle(.pink)
+                        .frame(width: 45, height: 45)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    
+                    VStack(alignment: .leading) {
+                        Text("Matching my Pantry")
+                            .bold()
+                        Text("Use items you already have")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                     }
-                )
-                .shadow(color: Color.blue.opacity(0.2), radius: 5)
-                .padding(.bottom)
+                    Spacer()
+                    Toggle("", isOn: $matchPantry)
+                        .labelsHidden()
+                }
+                .padding()
+            }
+    }
+    
+    private var dietaryRestrictionsList: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack {
+                ForEach(DietaryRestriction.allCases, id: \.self) { res in
+                    HStack {
+                        getIconForRestriction(res)
+                        Text(res.rawValue)
+                        Spacer()
+                        Button {
+                            if selectedRestrictions.contains(res) {
+                                selectedRestrictions.remove(res)
+                            } else {
+                                selectedRestrictions.insert(res)
+                            }
+                        } label: {
+                            Image(systemName: selectedRestrictions.contains(res) ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(selectedRestrictions.contains(res) ? .pink : .gray)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
         }
     }
-
+    
+    private var resultsButtonSection: some View {
+        HStack {
+            Spacer()
+            
+            let currentFilters = SearchFilters(
+                cookTime: selectedCookTime,
+                dietaryRestrictions: Array(selectedRestrictions),
+                matchPantry: matchPantry
+            )
+            
+            let canSearch = !searchedIngredient.isEmpty || matchPantry
+            
+            NavigationLink(destination: SearchResults(query: searchedIngredient, filters: currentFilters)) {
+                Label("Show Results", systemImage: "chevron.right")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 40)
+                    .background(canSearch ? Color.pink : Color.gray)
+                    .cornerRadius(25)
+            }
+            .disabled(!canSearch)
+            
+            Spacer()
+        }
+    }
+    
+    private var headerSearchSection: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .stroke(Color.blue.opacity(0.5), lineWidth: 2)
+            .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
+            .frame(height: 50)
+            .overlay(
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.blue)
+                        .padding(.leading)
+                    TextField("Search your ingredients...", text: $searchedIngredient)
+                        .foregroundColor(.black)
+                }
+            )
+            .padding(.bottom)
+    }
 }
+
 
 struct cookTimeView : View {
     var title : String
@@ -248,7 +223,11 @@ struct cookTimeView : View {
                         Image(systemName: icon)
                             .foregroundStyle(isSelected ? .pink : .gray)
                     }
-                }.background(Color.white).clipShape(.rect(cornerRadius: 15)) //i clip the shape to make the background corners rounded liek the rounded rectangle so the whtie dosnt show but it makes the line wieght look skinny but wtv
+                }.background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color.white)
+                ) //i clip the shape to make the background corners rounded liek the rounded rectangle so the whtie dosnt show but it makes the line wieght look skinny but wtv
+            //idk if u like this bro -ana
             
         }.padding(3)
     }
@@ -266,6 +245,17 @@ struct dietImage : View {
     }
 }
 
+func getIconForRestriction(_ res: DietaryRestriction) -> some View {
+    switch res {
+    case .vegan: return dietImage(icon: "leaf.fill", iconColor: .green)
+    case .vegetarian: return dietImage(icon: "leaf", iconColor: .orange)
+    case .dairyFree: return dietImage(icon: "drop.fill", iconColor: .blue)
+    case .nutFree: return dietImage(icon: "allergens", iconColor: .brown)
+    case .glutenFree: return dietImage(icon: "laurel.leading", iconColor: .yellow)
+    case .keto: return dietImage(icon: "flame.fill", iconColor: .red)
+    default: return dietImage(icon: "info.circle", iconColor: .gray)
+    }
+}
 
 #Preview {
     AdvanceSearchFiltersView()

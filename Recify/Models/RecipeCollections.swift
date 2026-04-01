@@ -6,9 +6,20 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
-struct RecipeCollection: Identifiable, Codable {
-    var id: String?   // Firestore documentID
+struct RecipeCollection: Identifiable, Codable, Hashable {
+    @DocumentID var id : String?
     var name: String
-    var recipes: [Recipe]
+    var imageUrl: String
+    var userId: String
+    var recipeIds: [String]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: RecipeCollection, rhs: RecipeCollection) -> Bool {
+        lhs.id == rhs.id
+    }
 }
