@@ -1,7 +1,5 @@
 //
 //  CookingModeTabView.swift
-//
-//  CalendarView.swift
 //  Recify
 //
 //  Created by mac on 2026-03-07.
@@ -12,12 +10,16 @@ import SwiftUI
 struct CookingModeTabView: View {
     let recipeTitle: String
     let steps: [String]
+    let imageURL: String?
     
     @Environment(\.dismiss) var dismiss
     @State private var currentStepIndex = 0
     
+    // MARK: - FIX 1: Clamped Progress
     var progress: Double {
-        Double(currentStepIndex + 1) / Double(steps.count)
+        guard !steps.isEmpty else { return 0.0 }
+        let calculatedProgress = Double(currentStepIndex + 1) / Double(steps.count)
+        return min(max(calculatedProgress, 0.0), 1.0)
     }
     
     var body: some View {
@@ -31,10 +33,17 @@ struct CookingModeTabView: View {
                     ProgressView(value: progress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle(tint: .pink))
                     
-                    Text("Step \(currentStepIndex + 1) of \(steps.count)")
-                        .font(.caption)
-                        .foregroundColor(.pink)
-                        .fontWeight(.semibold)
+                    if !steps.isEmpty {
+                        Text("Step \(currentStepIndex + 1) of \(steps.count)")
+                            .font(.caption)
+                            .foregroundColor(.pink)
+                            .fontWeight(.semibold)
+                    } else {
+                        Text("No steps")
+                            .font(.caption)
+                            .foregroundColor(.pink)
+                            .fontWeight(.semibold)
+                    }
                 }
             }
             .padding()
@@ -43,16 +52,55 @@ struct CookingModeTabView: View {
             
             ScrollView {
                 VStack(spacing: 20) {
-                    // TODO: Recipe IMG
-                    Image(systemName: "fork.knife.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .foregroundColor(.pink.opacity(0.3))
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
-                                        
+                    
+                    //Handle Base64 Custom Images AND API URLs
+                    if let imageString = imageURL {
+                        if imageString.hasPrefix("http"),
+                           let safeURLString = imageString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                           let url = URL(string: safeURLString) {
+                            
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView()
+                                        .frame(height: 200)
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.gray.opacity(0.1))
+                                        .cornerRadius(12)
+                                        .padding(.horizontal)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 200)
+                                        .frame(maxWidth: .infinity)
+                                        .clipped()
+                                        .cornerRadius(12)
+                                        .padding(.horizontal)
+                                case .failure:
+                                    placeholderImage
+                                @unknown default:
+                                    placeholderImage
+                                }
+                            }
+                        } else if let imageData = Data(base64Encoded: imageString),
+                                  let uiImage = UIImage(data: imageData) {
+                            
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 200)
+                                .frame(maxWidth: .infinity)
+                                .clipped()
+                                .cornerRadius(12)
+                                .padding(.horizontal)
+                        } else {
+                            placeholderImage
+                        }
+                    } else {
+                        placeholderImage
+                    }
+                    
                     VStack(alignment: .leading, spacing: 8) {
                         if steps.indices.contains(currentStepIndex) {
                             
@@ -77,7 +125,6 @@ struct CookingModeTabView: View {
                     
                 }
             }
-            
             
             HStack(spacing: 16) {
                 Button(action: {
@@ -117,17 +164,15 @@ struct CookingModeTabView: View {
                     .cornerRadius(12)
                 }
             }
-            
             .padding()
-            
             .background(Color(.systemGroupedBackground))
         }
         .navigationTitle("Cooking: \(recipeTitle)")
         .toolbar(.hidden, for: .tabBar)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true) //should take off the double back bttn
+        .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) { 
+            ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark")
                         .foregroundColor(.gray)
@@ -141,7 +186,19 @@ struct CookingModeTabView: View {
                 }
             }
         }
-        
+    }
+    
+    private var placeholderImage: some View {
+        Image(systemName: "fork.knife.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(height: 100)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 50)
+            .foregroundColor(.pink.opacity(0.3))
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            .padding(.horizontal)
     }
 }
 
@@ -151,14 +208,9 @@ struct CookingModeTabView_Previews: PreviewProvider {
             recipeTitle: "Strawberry Crepes",
             steps: [
                 "In a medium bowl, whisk together the large eggs, whole milk, and melted butter until the mixture is light and bubbly.",
-                "In another bowl, sift together the all-purpose flour, granulated sugar, and a pinch of salt.",
-                "Gradually add the dry ingredients to the wet ingredients, whisking constantly to avoid lumps.",
-                "Heat a non-stick pan over medium heat and lightly grease with butter.",
-                "Pour a small amount of batter into the pan and swirl to coat evenly.",
-                "Cook for 1-2 minutes until the edges start to lift, then flip and cook for another 30 seconds.",
-                "Transfer to a plate and fill with fresh strawberries and whipped cream.",
-                "Fold the crepe and dust with powdered sugar. Serve immediately."
-            ]
+                "In another bowl, sift together the all-purpose flour, granulated sugar, and a pinch of salt."
+            ],
+            imageURL: "https://example.com/placeholder.jpg"
         )
     }
 }

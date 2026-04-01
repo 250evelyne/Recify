@@ -1,5 +1,5 @@
 //
-//  CalendarView.swift
+//  RecipeInstructionsView.swift
 //  Recify
 //
 //  Created by mac on 2026-03-07.
@@ -17,19 +17,13 @@ struct RecipeInstructionsView: View {
     
     var recipe: Recipe? = nil
     
-    // Static display constants
-    //    let rating: Double = 4.8
-    //    let reviewCount: String = "1.2k"
-    
     @Environment(\.dismiss) var dismiss
-    //@State private var showCalendar = false
     @StateObject private var viewModel = RecipeDetailViewModel()
     @EnvironmentObject var firebaseVM: FirebaseViewModel
     @StateObject private var ingredientViewModel = IngredientViewModel()
     
     @State private var isShowingSheet = false
     @State private var showCalendar = false
-    //@State private var isFavorite = false
     @State private var isAdded = false
     @State private var showAddedAlert = false
     
@@ -74,7 +68,7 @@ struct RecipeInstructionsView: View {
         }
         .onAppear {
             Task {
-                if let customRecipe = recipe, !customRecipe.ingredients.isEmpty {
+                if let customRecipe = recipe {
                     viewModel.ingredients = customRecipe.ingredients.map {
                         RecipeIngredient(name: $0, rawName: $0, inPantry: false)
                     }
@@ -150,7 +144,6 @@ struct RecipeInstructionsView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                 Spacer()
-                //show/hide button
                 if !isAllAccountedFor {
                     addMissingButton
                 }
@@ -195,7 +188,11 @@ struct RecipeInstructionsView: View {
     
     private var actionButtonsSection: some View {
         VStack(spacing: 12) {
-            NavigationLink(destination: CookingModeTabView(recipeTitle: recipeTitle, steps: viewModel.instructions)) {
+            NavigationLink(destination: CookingModeTabView(
+                recipeTitle: recipeTitle,
+                steps: viewModel.instructions,
+                imageURL: recipeImage
+            )) {
                 HStack {
                     Image(systemName: "flame.fill")
                     Text("Start Cooking")
@@ -222,14 +219,12 @@ struct RecipeInstructionsView: View {
             }
         }
     }
-        
+    
     private var favoriteButton: some View {
         Button(action: {
             if !isFavorite {
                 firebaseVM.toggleFavorite(mealId: mealId, title: recipeTitle, imageURL: recipeImage)
             }
-            
-            //thiw always show the sheet so the user can manage collections
             isShowingSheet = true
         }) {
             Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -240,7 +235,6 @@ struct RecipeInstructionsView: View {
     
     // MARK: - Helper Logic
     private var isAllAccountedFor: Bool {
-        //checks if every ingredient is either in the pantry or already in the cart
         viewModel.ingredients.allSatisfy { $0.inPantry || $0.inCart }
     }
     
@@ -270,11 +264,8 @@ struct RecipeInstructionsView: View {
                 showAddedAlert = true
                 isAdded = true
             }
-        
         }
     }
-    
-    // MARK: - Sub-views (Optimized breaking up of expressions)
     
     private var loadingState: some View {
         VStack {
@@ -283,8 +274,6 @@ struct RecipeInstructionsView: View {
             Spacer()
         }
     }
-    
-    
 }
 
 // MARK: - Supporting Structs
@@ -293,19 +282,14 @@ struct RecipeIngredient: Identifiable {
     let id = UUID()
     let name: String
     let rawName: String
-    //let inPantry: Bool
     var inPantry: Bool
     var inCart: Bool = false
 }
 
-
 //supporting views
-
 struct InfoCard: View {
-    //let title: String
     let type: RecipeDetailAttribute
     let value: String
-    //let color: Color
     
     var body: some View {
         VStack(spacing: 4) {
@@ -322,10 +306,6 @@ struct InfoCard: View {
                 .background(type.color(for: value))
                 .cornerRadius(12)
         }
-//        .frame(maxWidth: .infinity)
-//        .padding()
-//        .background(color)
-//        .cornerRadius(12)
     }
 }
 
@@ -378,7 +358,6 @@ struct InstructionStep: View {
         }
     }
 }
-
 
 // MARK: - Preview
 struct RecipeInstructionsView_Previews: PreviewProvider {
