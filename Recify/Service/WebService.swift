@@ -66,19 +66,17 @@ class WebService {
         
         print("API Request: \(urlString)")
         
-        let response: MealResponse? = await sendRequest(toUrl: urlString, method: .get, body: nil as MealResponse?)
+        let apiResponse: MealResponse? = await sendRequest(toUrl: urlString, method: .get, body: nil as MealResponse?)
+        let apiRecipes = apiResponse?.meals?.map { mapMealToRecipe(meal: $0) } ?? []
         
-        guard let fetchedMeals = response?.meals else {
-            print("❌ API: No meals found for '\(query)'")
-            return []
-        }
+        let firebaseRecipes = await FirebaseViewModel.shared.searchUserRecipes(query: query)
         
-        // Convert API meals to our Recipe model
-        let allRecipes = fetchedMeals.map { mapMealToRecipe(meal: $0) }
-        print("✅ API: Found \(allRecipes.count) recipes. Now applying time/diet filters...")
+        let combinedRecipes = apiRecipes + firebaseRecipes
         
-        return allRecipes.filter { recipe in
-            // --- 1. Filter by Cook Time ---
+        print("✅ Found \(apiRecipes.count) API recipes and \(firebaseRecipes.count) user recipes.")
+        
+        return combinedRecipes.filter { recipe in
+            // --- Filter by Cook Time ---
             let matchesTime: Bool
             if let selectedTime = filters.cookTime {
                 switch selectedTime {
@@ -87,22 +85,17 @@ class WebService {
                 case .over30: matchesTime = recipe.prepTime > 30
                 }
             } else {
-                matchesTime = true // If no time selected, everything is a match
+                matchesTime = true
             }
             
-            // --- 2. Filter by Dietary Restrictions ---
+            // --- Filter by Dietary Restrictions ---
             let matchesDiet: Bool
             if filters.dietaryRestrictions.isEmpty {
                 matchesDiet = true
             } else {
-                // Check if any of the selected restrictions match the recipe category
                 matchesDiet = filters.dietaryRestrictions.contains { restriction in
                     recipe.category.lowercased().contains(restriction.rawValue.lowercased())
                 }
-            }
-            
-            if !matchesTime || !matchesDiet {
-                print("Filtering out '\(recipe.title)' (Time Match: \(matchesTime), Diet Match: \(matchesDiet))")
             }
             
             return matchesTime && matchesDiet
@@ -135,13 +128,14 @@ class WebService {
             category: meal.strCategory ?? "General",
             ingredients: meal.allIngredients,
             instructions: meal.strInstructions ?? "No instructions provided.",
-            imageURL: meal.strMealThumb ?? "", //anabella
+            imageURL: meal.strMealThumb ?? "", 
             servings: 4,
             userId: "guest",
             inPantry: false,
             prepTime: calculatedTime,
             calories: 350,
-            level: calculatedLevel
+            level: calculatedLevel,
+            searchTitle: (meal.strMeal ?? "Unknown Recipe").lowercased()
         )
     }
     

@@ -100,11 +100,23 @@ struct RecipeInstructionsView: View {
     }
     // MARK: - Sub-views
     private var recipeHeaderImage: some View {
-        AsyncImage(url: URL(string: recipeImage)) { image in
-            image.resizable()
-                .aspectRatio(contentMode: .fill)
-        } placeholder: {
-            Color.gray.opacity(0.2)
+        ZStack {
+            if recipeImage.hasPrefix("http") {
+                AsyncImage(url: URL(string: recipeImage)) { image in
+                    image.resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Color.gray.opacity(0.2)
+                }
+            } else if let imageData = Data(base64Encoded: recipeImage),
+                      let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else {
+                Color.gray.opacity(0.2)
+                    .overlay(Image(systemName: "photo").foregroundColor(.white))
+            }
         }
         .frame(height: 280)
         .clipped()

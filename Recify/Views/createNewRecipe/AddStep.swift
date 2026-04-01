@@ -42,33 +42,35 @@ struct AddStep: View {
                     .padding(.top, 30)
                 
                 TextField(
-                    "Preheat oven to 375F and prepare your baking sheet...", //loki cuts the text off but ima ignore that
+                    "Preheat oven to 375F and prepare your baking sheet...",
                     text: $instruction,
                     axis: .vertical
                 )
                 .font(.title3)
-                .frame(width: .infinity, height: 150, alignment: .topLeading)
+                .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 )
-
+                
                 HStack{
                     Spacer()
                     Button {
                         onAdd(instruction)
-                        print("selected ingredients \(instruction)")
+                        print("selected instruction: \(instruction)")
                         dismiss()
                     } label: {
                         Label("Save Step", systemImage: "checkmark.circle.fill")
                             .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
                     }.font(.title3)
-                        .disabled((instruction.isEmpty))
+                        .disabled(instruction.isEmpty)
                         .buttonStyle(.bordered)
                         .tint(.pink)
                     Spacer()
                 }
+                
+                Spacer()
                 
             }.padding()
                 .padding(.horizontal)
@@ -85,11 +87,13 @@ struct AddStep: View {
                     
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            //TODO: add the save func here and to the btn at the bottom
+                            onAdd(instruction)
+                            dismiss()
                         } label: {
                             Text("Save")
-                        }.buttonStyle(.bordered)
-
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(instruction.isEmpty)
                     }
                 }
         }//nav end

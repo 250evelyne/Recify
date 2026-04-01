@@ -474,5 +474,75 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Post New Recipe (BASE 64 VERSION)
+    func saveNewRecipe(title: String,
+                       caloriesString: String,
+                       prepTime: Int,
+                       difficulty: String,
+                       ingredients: [Ingredients],
+                       instructionsArray: [String],
+                       coverImage: UIImage?,
+                       completion: @escaping (Bool) -> Void) {
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: User not logged in")
+            completion(false)
+            return
+        }
+        
+        var base64String: String? = nil
+        if let image = coverImage {
+            if let imageData = image.jpegData(compressionQuality: 0.05) {
+                base64String = imageData.base64EncodedString()
+            }
+        }
+        
+        let caloriesInt = Int(caloriesString.filter { $0.isWholeNumber }) ?? 0
+        let ingredientStrings = ingredients.map { $0.displayText }
+        let formattedInstructions = instructionsArray.joined(separator: "\n")
+        
+        let newRecipe = Recipe(
+            title: title.isEmpty ? "Untitled Recipe" : title,
+            category: "General",
+            ingredients: ingredientStrings,
+            instructions: formattedInstructions,
+            imageURL: base64String,
+            servings: 2,
+            userId: userId,
+            inPantry: false,
+            prepTime: prepTime,
+            calories: caloriesInt,
+            level: difficulty.capitalized,
+            searchTitle: title.lowercased()
+        )
+        
+        do {
+            try db.collection("recipes").document().setData(from: newRecipe)
+            print("Successfully saved recipe with Base64 image!")
+            completion(true)
+        } catch {
+            print("Error saving recipe: \(error.localizedDescription)")
+            completion(false)
+        }
+    }
+    
+    
+    func searchUserRecipes(query: String) async -> [Recipe] {
+        let db = Firestore.firestore()
+        let lowerQuery = query.lowercased()
+        
+        do {
+            let snapshot = try await db.collection("recipes")
+                .whereField("searchTitle", isGreaterThanOrEqualTo: lowerQuery) 
+                .whereField("searchTitle", isLessThanOrEqualTo: lowerQuery + "\u{f8ff}")
+                .getDocuments()
+            
+            return snapshot.documents.compactMap { try? $0.data(as: Recipe.self) }
+        } catch {
+            print("Error searching Firebase: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     
 }

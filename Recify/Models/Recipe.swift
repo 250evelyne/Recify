@@ -12,7 +12,7 @@ import SwiftUI
 struct Recipe: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var title: String
-    var category: String //whys this a strings? and not an enum
+    var category: String
     var ingredients: [String]
     var instructions: String
     var imageURL : String?
@@ -25,6 +25,8 @@ struct Recipe: Identifiable, Codable, Hashable {
     let calories: Int
     let level: String
     
+    var searchTitle: String // New field for case-insensitive search
+    
     init(title: String,
          category: String,
          ingredients: [String],
@@ -35,7 +37,8 @@ struct Recipe: Identifiable, Codable, Hashable {
          inPantry: Bool,
          prepTime: Int,
          calories: Int,
-         level: String) {
+         level: String,
+         searchTitle: String) {
         self.title = title
         self.category = category
         self.ingredients = ingredients
@@ -47,6 +50,7 @@ struct Recipe: Identifiable, Codable, Hashable {
         self.prepTime = prepTime
         self.calories = calories
         self.level = level
+        self.searchTitle = searchTitle
     }
     
     func hash(into hasher: inout Hasher) {

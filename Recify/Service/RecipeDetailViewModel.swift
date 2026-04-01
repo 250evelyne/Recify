@@ -99,7 +99,8 @@ class RecipeDetailViewModel: ObservableObject {
                     inPantry: false,
                     prepTime: meta.time,
                     calories: meta.kcal,
-                    level: meta.level
+                    level: meta.level,
+                    searchTitle: (meal["strMeal"] as? String ?? "Unknown Recipe").lowercased()
                 )
             }
         } catch {
