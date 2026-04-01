@@ -2,74 +2,112 @@
 //  IngredientViewModel.swift
 //  Recify
 //
-//  Created by Macbook on 2026-02-08.
+//  Created by netblen on 2026-02-08.
 //
 
 import Foundation
 
-
 class IngredientViewModel: ObservableObject {
-    @Published var ingredients: [Ingredients] = []
+    @Published var pagedIngredients: [Ingredients] = []
+    @Published var isLoading: Bool = false
     
-//    @Published var isLoading: Bool = false ///remeber to add a cirlce porgress bar thingy to the app
-  //  @Published var errorMessage: String?
-    
+    private var activeFilter: Filters = .all
+    private var allFetchedResults: [Ingredients] = []
+    private let pageSize = 20
+    private var currentIndex = 0
     private let service = IngredientsService()
-    private let firebase = FirebaseViewModel.shared
     
-//    func loadIngredients() async {
-//        isLoading = true
-//        errorMessage = nil
-//        let result = await service.fetchIngredients()
-//        let ingredients = result
-//        isLoading = false
-//    }
+    func searchIngredients(query: String) async {
+        await MainActor.run { self.isLoading = true }
         
-    /// ima add the units and uanityty so maybe we can reuse this for when we adding the ingredients to the uers pantry
-    /// in the furture caus ei cant figure it out rn but wed just have the id of the ingredient as a foren key then wed get the name image url and cat
-    /// so when adding ingredients to the uesrs pantry idk if i should create a new func(pobably) cause i wouldnt need half the paraneters
-    
-//    func addIngredient(name: String, imageUrl: String, category: Filters) async {
-//        errorMessage = nil
-//        if let created = await service.createIngredient(name: name, imageUrl: imageUrl, category: category){
-//            ingredients.append(created)
-//        }else{
-//            errorMessage = "Failed to create ingredient"
-//        }
-//        
-//    }
-//    
-    
-    func uploadingIngredientsToFirebase() async {
-        let apiIngredients = await service.fetchIngredients()
+        let allIngredients = await service.fetchAllIngredients()
         
-        for apiIngredient in apiIngredients {
-            let name = apiIngredient.name
-            let image = apiIngredient.image
-            let category = autoAssignCategory(from: name)
+        let results = allIngredients.filter { ingredient in
+            let matchesQuery = query.isEmpty || ingredient.name.localizedCaseInsensitiveContains(query)
             
-            firebase.addIngredient(name: name, imageUrl: image, category: category)
+            let matchesFilter = (activeFilter == .all) || (ingredient.category == activeFilter)
+            
+            return matchesQuery && matchesFilter
+        }
+        
+        await MainActor.run {
+            self.allFetchedResults = results
+            self.pagedIngredients = Array(results.prefix(self.pageSize))
+            self.currentIndex = self.pagedIngredients.count
+            self.isLoading = false
         }
     }
     
-    
-    ///since the api im using doent give categories for the ingredients ina try and mapp them by looking for key words
-    func autoAssignCategory(from name: String) -> Filters {
-        let lower = name.lowercased()
 
-        if lower.contains("beef") || lower.contains("chicken") || lower.contains("pork") {
-            return .proteins
-        } else if lower.contains("milk") || lower.contains("cheese") {
-            return .dairy
-        } else if lower.contains("rice") || lower.contains("pasta") {
-            return .grains
-        } else if lower.contains("oil") {
-            return .oils
-        } else {
-            return .vegetables
+    
+    func loadNextPage() {
+        let nextIndex = min(currentIndex + pageSize, allFetchedResults.count)
+        guard currentIndex < nextIndex else { return }
+        
+        let newItems = allFetchedResults[currentIndex..<nextIndex]
+        
+        DispatchQueue.main.async {
+            for item in newItems {
+                //check if the name already exists in the paged list
+                if !self.pagedIngredients.contains(where: { $0.name == item.name }) {
+                    self.pagedIngredients.append(item)
+                }
+            }
+            self.currentIndex = nextIndex
         }
     }
     
+    
+    func filterByCategory(filter: Filters) {
+        //store the filter so the search function knows about it
+        self.activeFilter = filter
+        
+        if filter == .all {
+            self.pagedIngredients = Array(allFetchedResults.prefix(pageSize))
+        } else {
+            let filtered = allFetchedResults.filter { $0.category == filter }
+            self.pagedIngredients = Array(filtered.prefix(pageSize))
+        }
+    }
+    
+    func determineCategory(name: String) -> Filters {
+        let lowerName = name.lowercased()
+        
+        if ["water", "milk", "juice", "stock", "broth"].contains(where: lowerName.contains) {
+            return .liquids 
+        }
+        
+        if ["apple", "banana", "orange", "berry", "lemon"].contains(where: lowerName.contains) {
+            return .fruits
+        }
+        
+        return .vegetables
+    }
+    
+    
+    func refreshIngredients() async {
+        await MainActor.run { self.isLoading = true }
+        
+        let results = await service.fetchAllIngredients(forceRefresh: true)
+        
+        await MainActor.run {
+            self.allFetchedResults = results
+            self.pagedIngredients = Array(results.prefix(20))
+            self.isLoading = false
+        }
+    }
+    
+    func fetchCategoryFor(ingredientName: String) async -> Filters {
+        // Search the API for this specific ingredient name
+        await searchIngredients(query: ingredientName)
+        
+        // Look at the results and see if we find a match
+        if let match = pagedIngredients.first(where: { $0.name.lowercased() == ingredientName.lowercased() }) {
+            return match.category ?? .other
+        }
+        
+        return FirebaseViewModel.shared.getCategory(for: ingredientName)
+    }
+
     
 }
-

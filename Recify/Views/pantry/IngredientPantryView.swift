@@ -10,6 +10,7 @@ import SwiftUI
 struct IngredientPantryView: View {
     
     var ingredient : Ingredients
+    @StateObject private var firebaseVM = FirebaseViewModel.shared
     
     var body: some View {
         VStack{
@@ -47,9 +48,11 @@ struct IngredientPantryView: View {
                         Spacer()
                         
                         Button {
-                            if ingredient.quantity != 0 {
-                                //ingredient.quantity! -= 1 //dont work rn
-                            }
+                            firebaseVM.updateQuantity(ingredient: ingredient, change: -1)
+                            
+//                            if ingredient.quantity != 0 {
+//                                
+//                            }
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
                                 .frame(width: 40, height: 40)
@@ -62,12 +65,14 @@ struct IngredientPantryView: View {
                                 }
                         }
                         
-                        Text("\(ingredient.quantity!)") //i have to put the ! becuase else if shows Optional(4)
+                        Text("\(ingredient.quantity ?? 0)")
                             .fontWeight(.semibold)
                             .font(.system(size: 20))
                             .padding(5)
                         
                         Button {
+                            
+                            firebaseVM.updateQuantity(ingredient: ingredient, change: 1)
                             //ingredient.quantity += 1
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
@@ -88,5 +93,5 @@ struct IngredientPantryView: View {
 }
 
 #Preview {
-    IngredientPantryView(ingredient: Ingredients(id: "1", name: "Carrot", quantity: 4, unit: units.pcs, imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", category: Filters.vegetables))
+    IngredientPantryView(ingredient: Ingredients(id: "1", name: "Apple", quantity: 4, unit: units.pcs, imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", category: Filters.vegetables))
 }

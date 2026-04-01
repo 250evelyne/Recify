@@ -49,7 +49,7 @@ struct TabBarView: View {
                 }
                 .tag(3)
             
-            //move this to home page
+            //move this to home page well not sure at the moment 
 //            ShoppingList()
 //                .tabItem {
 //                    Image(systemName: selectedTab == 4 ? "cart.fill" : "cart")

@@ -26,22 +26,24 @@ enum Filters: String, CaseIterable, Identifiable, Codable{ //codable for the api
     case oils = "Fats & Oils"
     case sweetners = "Sweeteners"
     case condiments = "Condiments & Sauces"
+    case liquids = "Liquids"
     case other = "Other"
     
     
     var icon: String {
         switch self {
+        case .liquids: return "drop.fill"
         case .all: return "square.grid.2x2.fill"
-        case.vegetables: return "carrot.fill"
-        case.fruits: return "applelogo"
-        case.proteins: return "bolt.fill"
-        case.dairy: return "takeoutbag.and.cup.and.straw.fill"
-        case.seasoning: return "flame.fill"
-        case.grains: return "bag.fill"
-        case.oils: return "drop.fill"
-        case.sweetners: return "cube.fill"
-        case.condiments: return "waterbottle"
-        case.other : return "circle.grid.2x2.fill" //idk if this is a good icon but i didnt find any more for now
+        case .vegetables: return "carrot.fill"
+        case .fruits: return "applelogo"
+        case .proteins: return "bolt.fill"
+        case .dairy: return "takeoutbag.and.cup.and.straw.fill"
+        case .seasoning: return "flame.fill"
+        case .grains: return "bag.fill"
+        case .oils: return "drop.fill"
+        case .sweetners: return "cube.fill"
+        case .condiments: return "waterbottle"
+        case .other : return "circle.grid.2x2.fill" //idk if this is a good icon but i didnt find any more for now
         }
     }
     

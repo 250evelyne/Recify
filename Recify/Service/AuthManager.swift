@@ -41,6 +41,10 @@ class AuthManager: ObservableObject {
                     favorites: data["favorites"] as? [String] ?? []
                 )
                 print(" Profile loaded: \(self.userProfile?.userName ?? "")")
+                
+                DispatchQueue.main.async {
+                    FirebaseViewModel.shared.refreshData()
+                }
             }
         }
     }

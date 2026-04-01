@@ -10,18 +10,14 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var showLogoutConfirm = false
-    
+    @StateObject private var firebaseManager = FirebaseViewModel.shared
     @StateObject private var ingredientVM = IngredientViewModel()
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
-                    Button("Import Ingredients") {
-                        Task {
-                            await ingredientVM.uploadingIngredientsToFirebase()
-                        }
-                    }
+                    
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
                             Circle()
@@ -80,13 +76,26 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            SettingsRow(
-                                icon: "heart.fill",
-                                iconColor: .pink,
-                                title: "Favorite Recipes",
-                                subtitle: "\(authManager.userProfile?.favorites.count ?? 0) saved",
-                                action: {}
-                            )
+                            NavigationLink(destination: FavoriteRecipesView()) {
+                                SettingsRowContent(
+                                    icon: "heart.fill",
+                                    iconColor: .pink,
+                                    title: "Favorite Recipes",
+                                    subtitle: "\(firebaseManager.savedRecipes.count) saved"
+                                )
+                            }
+                            
+                            Divider().padding(.leading, 60)
+                            
+                            NavigationLink(destination: PantryView()) {
+                                SettingsRowContent(
+                                    icon: "archivebox.fill",
+                                    iconColor: .brown,
+                                    title: "Pantry",
+                                    subtitle: "View all your saved Ingredients"
+                                )
+                            }
+                            
                         }
                         .background(Color.white)
                         .cornerRadius(12)
@@ -191,6 +200,7 @@ struct ProfileView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Account Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarRole(.editor)
             .alert("Logout", isPresented: $showLogoutConfirm) {
                 Button("Cancel", role: .cancel) {}
                 Button("Logout", role: .destructive) {
@@ -215,7 +225,7 @@ struct SettingsRowContent: View {
                 .font(.system(size: 20))
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
-                .background(iconColor.opacity(0.2))
+                .background(iconColor.opacity(0.8)) //i just though that the coloor looked to muted and it looked disbaled
                 .cornerRadius(8)
             
             VStack(alignment: .leading, spacing: 2) {
