@@ -137,7 +137,7 @@ struct GroceryMapsView: View {
 //                }
 //                
 //                if let errorMessage {
-//                    Text(errorMessage) //TODO: chnage his to an alert
+//                    Text(errorMessage) 
 //                        .foregroundStyle(.red)
 //                        .padding()
 //                }

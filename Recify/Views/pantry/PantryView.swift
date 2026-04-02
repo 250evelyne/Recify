@@ -97,26 +97,33 @@ struct PantryView: View {
                 }.padding()
                 
                 
-                ScrollView(.vertical, showsIndicators: false) {
+                List {
                     if firebaseManager.isLoading && firebaseManager.ingredients.isEmpty {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .padding()
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                     } else if filteredIngredients.isEmpty {
                         Text("Tap the + to add ingredients to your pantry.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .italic()
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                     } else {
-                        ForEach(filteredIngredients) { ingredient in //TODO: add a swipe to delete
+                        ForEach(filteredIngredients) { ingredient in
                             IngredientPantryView(ingredient: ingredient)
-                                .swipeActions(edge: .trailing) {
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
                                         deleteIngredient(ingredient)
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
                                 }
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
                         }
                         
                         if firebaseManager.canLoadMore {
@@ -124,10 +131,14 @@ struct PantryView: View {
                                 .onAppear {
                                     firebaseManager.fetchIngredients()
                                 }
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
                         }
                         
                     }
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
                 .onAppear {
                     firebaseManager.refreshData()
                 }
