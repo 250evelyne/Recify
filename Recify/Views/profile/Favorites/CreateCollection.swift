@@ -115,7 +115,7 @@ struct CreateCollection: View {
                         )
                     }
                     
-                } //TODO: make it visible when use clicks 1 image
+                }
             }
             
             
@@ -197,6 +197,17 @@ struct coverView : View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding()
             })
+            
+            .overlay(alignment: .topTrailing) {
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.pink, .white)
+                        .padding(10)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            
         }
         .animation(.easeInOut, value: isSelected)
     }

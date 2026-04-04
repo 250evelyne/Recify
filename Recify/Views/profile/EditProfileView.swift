@@ -166,59 +166,64 @@ struct EditProfileView: View {
         
         isLoading = true
         
-        let usernameChanged = username.trimmingCharacters(in: .whitespaces) != authManager.userProfile?.userName
+        let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
+        let usernameChanged = trimmedUsername != authManager.userProfile?.userName
         let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         let passwordChanged = !newPassword.isEmpty
         
-        //validate password if changing
         if passwordChanged {
-            if newPassword != confirmPassword {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "New passwords do not match"
-                showAlert = true
-                return
-            }
-            
-            if newPassword.count < 6 {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "Password must be at least 6 characters"
-                showAlert = true
-                return
-            }
-            
-            if currentPassword.isEmpty {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "Current password is required to change password"
-                showAlert = true
-                return
-            }
+            if newPassword != confirmPassword { setError(message: "New passwords do not match"); return }
+            if newPassword.count < 6 { setError(message: "Password must be at least 6 characters"); return }
+            if currentPassword.isEmpty { setError(message: "Current password is required"); return }
         }
         
         var successMessages: [String] = []
+        let db = Firestore.firestore()
         
         if usernameChanged || avatarChanged {
-            let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
+            let batch = db.batch()
             
-            let db = Firestore.firestore()
-            db.collection("users").document(userId).updateData([
+            let userRef = db.collection("users").document(userId)
+            batch.updateData([
                 "userName": trimmedUsername,
                 "avatar": selectedAvatar
-            ]) { error in
-                if error == nil {
-                    authManager.userProfile?.userName = trimmedUsername
-                    authManager.userProfile?.avatar = selectedAvatar
-                    
-                    if usernameChanged { successMessages.append("Username updated") }
-                    if avatarChanged { successMessages.append("Profile picture updated") }
+            ], forDocument: userRef)
+            
+            db.collection("posts").whereField("userId", isEqualTo: userId).getDocuments { postSnapshot, _ in
+                if let postDocs = postSnapshot?.documents {
+                    for doc in postDocs {
+                        batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
+                    }
                 }
                 
-                if passwordChanged {
-                    updatePassword(user: currentUser, successMessages: successMessages)
-                } else {
-                    finishUpdate(messages: successMessages)
+                db.collectionGroup("comments").whereField("userId", isEqualTo: userId).getDocuments { commentSnapshot, _ in
+                    if let commentDocs = commentSnapshot?.documents {
+                        for doc in commentDocs {
+                            batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
+                        }
+                    }
+                    
+                    batch.commit { error in
+                        if let error = error {
+                            setError(message: error.localizedDescription)
+                            return
+                        }
+                        
+                        DispatchQueue.main.async {
+                            authManager.userProfile?.userName = trimmedUsername
+                            authManager.userProfile?.avatar = selectedAvatar
+                            authManager.loadUserProfile(userId: userId)
+                            
+                            if usernameChanged { successMessages.append("Username updated") }
+                            if avatarChanged { successMessages.append("Profile picture updated") }
+                            
+                            if passwordChanged {
+                                updatePassword(user: currentUser, successMessages: successMessages)
+                            } else {
+                                finishUpdate(messages: successMessages)
+                            }
+                        }
+                    }
                 }
             }
         } else if passwordChanged {
@@ -227,7 +232,14 @@ struct EditProfileView: View {
             isLoading = false
         }
     }
-        
+    
+    private func setError(message: String) {
+        isLoading = false
+        alertTitle = "Error"
+        alertMessage = message
+        showAlert = true
+    }
+    
     func updatePassword(user: FirebaseAuth.User, successMessages: [String]) {
         guard let currentEmail = authManager.userProfile?.email else {
             isLoading = false

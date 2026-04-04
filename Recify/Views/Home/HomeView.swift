@@ -72,7 +72,6 @@ struct HomeView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    //TODO: change this normal
                     if #available(iOS 17.0, *) {
                         NavigationLink(destination: GroceryMapsView()) {
                             Image(systemName: "cart")

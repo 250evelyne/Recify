@@ -15,6 +15,8 @@ struct CommentsSheetView: View {
     
     @Environment(\.dismiss) private var dissmiss
     
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         VStack{
             
@@ -39,12 +41,12 @@ struct CommentsSheetView: View {
                     ForEach(feedVM.currentComments){ comment in
                         
                         HStack{
-                            Image(comment.userAvatar)
+                            Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 40, height: 40)
-                                .clipShape(.circle)
                                 .shadow(radius: 1)
+                                .clipShape(Circle())
                             
                             VStack(alignment: .leading){
                                 HStack{

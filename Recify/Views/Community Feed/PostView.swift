@@ -68,14 +68,18 @@ struct PostView: View {
                 
                 HStack {
                     Button {
-                        //adds 1 like to the post in Firestore
                         feedVM.likePost(post: post)
-                        if (isLiked != true){
+                        if !isLiked {
                             isLiked = true
                         }
                     } label: {
-                        interactionBtn(icon: "heart.fill", count: post.likes, color: .pink)
-                    }.disabled(isLiked) //TODO: Alexanne should find a away to change the color
+                        interactionBtn(
+                            icon: "heart.fill",
+                            count: post.likes,
+                            color: isLiked ? .pink : .gray // Changes color when liked
+                        )
+                    }
+                    .disabled(isLiked)
                     
                     Button {
                         showComments = true

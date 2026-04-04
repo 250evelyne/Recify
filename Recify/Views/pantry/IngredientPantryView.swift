@@ -10,7 +10,11 @@ import SwiftUI
 struct IngredientPantryView: View {
     
     var ingredient : Ingredients
-    @StateObject private var firebaseVM = FirebaseViewModel.shared
+    @ObservedObject private var firebaseVM = FirebaseViewModel.shared
+    
+    private var currentIngredient: Ingredients {
+        firebaseVM.ingredients.first(where: { $0.id == ingredient.id }) ?? ingredient
+    }
     
     var body: some View {
         VStack{
@@ -21,7 +25,7 @@ struct IngredientPantryView: View {
                 //.shadow(radius: 5) //just so i can see with the white background
                 .overlay {
                     HStack{
-                        AsyncImage(url: URL(string: ingredient.imageUrl)) { image in
+                        AsyncImage(url: URL(string: currentIngredient.imageUrl)) { image in
                             image.resizable().scaledToFit()
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .frame(width: 65, height: 65)
@@ -31,7 +35,7 @@ struct IngredientPantryView: View {
                                 .foregroundColor(.orange.opacity(0.2))
                                 .frame(width: 65, height: 65)
                                 .overlay {
-                                    Image(systemName: ingredient.category?.icon ?? "carrot.fill")
+                                    Image(systemName: currentIngredient.category?.icon ?? "carrot.fill")
                                         .resizable()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(.orange)
@@ -40,19 +44,19 @@ struct IngredientPantryView: View {
                         }
                         
                         VStack(alignment: .leading){
-                            Text(ingredient.name)
+                            Text(currentIngredient.name)
                                 .fontWeight(.semibold)
-                            Text("\(ingredient.quantity ?? 0) \(ingredient.unit?.rawValue ?? "N/A")").foregroundColor(.gray)
+                            Text("\(currentIngredient.quantity ?? 0) \(currentIngredient.unit?.rawValue ?? "N/A")")
+                                .foregroundColor(.gray)
                         }
                         
                         Spacer()
                         
                         Button {
-                            firebaseVM.updateQuantity(ingredient: ingredient, change: -1)
-                            
-//                            if ingredient.quantity != 0 {
-//                                
-//                            }
+                            firebaseVM.updateQuantity(ingredient: currentIngredient, change: -1)
+//                           if ingredient.quantity != 0 {
+//
+//                           }
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
                                 .frame(width: 40, height: 40)
@@ -64,15 +68,15 @@ struct IngredientPantryView: View {
                                         .font(.title3)
                                 }
                         }
+                        .buttonStyle(.plain)
                         
-                        Text("\(ingredient.quantity ?? 0)")
+                        Text("\(currentIngredient.quantity ?? 0)")
                             .fontWeight(.semibold)
                             .font(.system(size: 20))
                             .padding(5)
                         
                         Button {
-                            
-                            firebaseVM.updateQuantity(ingredient: ingredient, change: 1)
+                            firebaseVM.updateQuantity(ingredient: currentIngredient, change: 1)
                             //ingredient.quantity += 1
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
@@ -84,7 +88,7 @@ struct IngredientPantryView: View {
                                         .fontWeight(.semibold)
                                         .font(.title3)
                                 }
-                        }
+                        }.buttonStyle(.plain)
                     }.padding(.horizontal)
                 }
         }

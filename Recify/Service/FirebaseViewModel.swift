@@ -45,13 +45,17 @@ class FirebaseViewModel: ObservableObject {
             }
     }
     
-    //TODO: see if it works 
     func deleteIngredient(_ ingredient: Ingredients) {
-        if let id = ingredient.id {
-            Firestore.firestore()
-                .collection("ingredients")
-                .document(id)
-                .delete()
+        guard let collection = userCollection, let id = ingredient.id else { return }
+        
+        collection.document(id).delete() { [weak self] error in
+            if let error = error {
+                print("Error deleting: \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    self?.ingredients.removeAll { $0.id == id }
+                }
+            }
         }
     }
     

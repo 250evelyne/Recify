@@ -157,4 +157,27 @@ class FeedViewModel: ObservableObject {
             }
         }
     }
+    
+    func deletePost(postId: String) {
+        db.collection("posts").document(postId).delete() { error in
+            if let error = error {
+                print("Error deleting post: \(error.localizedDescription)")
+            } else {
+                print("Post successfully deleted")
+            }
+        }
+    }
+    
+    func updatePost(postId: String, newCaption: String) {
+        db.collection("posts").document(postId).updateData([
+            "caption": newCaption
+        ]) { error in
+            if let error = error {
+                print("Error updating post: \(error.localizedDescription)")
+            } else {
+                print("Post successfully updated")
+            }
+        }
+    }
+    
 }
