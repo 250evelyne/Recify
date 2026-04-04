@@ -18,6 +18,7 @@ class FirebaseViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var canLoadMore: Bool = true
     @Published var recipes: [Recipe] = []
+    @Published var userRecipes: [Recipe] = [] //the recipes the user had postsed
     @Published var shoppingItems: [Ingredients] = []
     @Published var savedRecipes: [SavedRecipe] = []
     @Published var userFavCollections: [RecipeCollection] = [] //i added this to save the collections th users have made for thiere fav recipes
@@ -43,6 +44,23 @@ class FirebaseViewModel: ObservableObject {
                     try? doc.data(as: SavedRecipe.self)
                 }
             }
+    }
+    
+    func deleteRecipe(recipeId: String) {
+        let db = Firestore.firestore()
+        
+        db.collection("recipes").document(recipeId).delete { error in
+            if let error = error {
+                print("Error deleting recipe: \(error.localizedDescription)")
+            } else {
+                print("Recipe deleted successfully")
+                
+                // 🔥 Update UI instantly
+                DispatchQueue.main.async {
+                    self.userRecipes.removeAll { $0.id == recipeId }
+                }
+            }
+        }
     }
     
     func deleteIngredient(_ ingredient: Ingredients) {
@@ -137,6 +155,12 @@ class FirebaseViewModel: ObservableObject {
         fetchShoppingList()
         fetchSavedRecipes()
         fecthUsersCollections()
+    }
+    
+    @MainActor
+    func loadUserRecipes() async {
+        let recipes = await fetchUserRecipes()
+        self.userRecipes = recipes
     }
     
     private var userCollection: CollectionReference? {
@@ -546,5 +570,29 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
+    
+    func fetchUserRecipes() async -> [Recipe] {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: User not logged in")
+            return []
+        }
+        
+        let db = Firestore.firestore()
+        
+        do {
+            let snapshot = try await db.collection("recipes")
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
+            
+            let recipes = snapshot.documents.compactMap {
+                try? $0.data(as: Recipe.self)
+            }
+            
+            return recipes
+        } catch {
+            print("Error fetching user recipes: \(error.localizedDescription)")
+            return []
+        }
+    }
     
 }

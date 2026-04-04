@@ -210,14 +210,14 @@ struct CookingStatisticsTabView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Cooking Statistics")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {}) {
-                    Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.pink)
-                }
-            }
-        }
+//        .toolbar {
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                Button(action: {}) {
+//                    Image(systemName: "square.and.arrow.up")
+//                        .foregroundColor(.pink)
+//                }
+//            }
+//        }
     }
 }
 

@@ -96,7 +96,7 @@ struct ProfileView: View {
                                 SettingsRowContent(
                                     icon: "text.below.photo",
                                     iconColor: .pink,
-                                    title: "Posts",
+                                    title: "My Posts",
                                     subtitle: "View all Posts you have made"
                                 )
                             }
@@ -107,7 +107,7 @@ struct ProfileView: View {
                                 SettingsRowContent(
                                     icon: "fork.knife",
                                     iconColor: .pink,
-                                    title: "Recipes",
+                                    title: "My Recipes",
                                     subtitle: "View all Recipes you have made"
                                 )
                             }

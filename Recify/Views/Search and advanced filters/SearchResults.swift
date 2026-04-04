@@ -68,11 +68,11 @@ struct SearchResults: View {
     
     private var resultsListView: some View {
         ScrollView {
-            Text("\(viewModel.searchResults.count) recipes round for '\(query)'")
-                    .font(.title3)
-                    .foregroundColor(.black)
-                    .padding(.horizontal)
-                    .fontWeight(.semibold)
+//            Text("\(viewModel.searchResults.count) recipes round for '\(query)'")
+//                    .font(.title3)
+//                    .foregroundColor(.black)
+//                    .padding(.horizontal)
+//                    .fontWeight(.semibold)
             
 //            LazyVGrid(columns: [
 //                GridItem(.flexible(), spacing: 16),

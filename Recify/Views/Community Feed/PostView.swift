@@ -13,7 +13,7 @@ struct PostView: View {
     
     @State private var showComments: Bool = false
     
-    @State private var isLiked : Bool = false //TODO: anabella get from database if the user has already lieked this post and hmake the bool true ofr flase based on that
+    @State private var isLiked : Bool = false 
     
     var body: some View {
         ZStack {

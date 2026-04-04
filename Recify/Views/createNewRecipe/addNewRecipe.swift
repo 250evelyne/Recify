@@ -70,7 +70,7 @@ struct addNewRecipe: View {
                         RoundedRectangle(cornerRadius: 15)
                             .strokeBorder(Color.pink.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))
                             .foregroundStyle(.pink.opacity(0.1))
-                            .frame(maxWidth: .infinity, minHeight: 300, maxHeight: 300)
+                            .frame(maxWidth: 360, minHeight: 300, maxHeight: 300)
                             .background(Color.pink.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 15))
                         
@@ -78,7 +78,7 @@ struct addNewRecipe: View {
                             Image(uiImage: selectedImage)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(maxWidth: .infinity, maxHeight: 300)
+                                .frame(maxWidth: 360, maxHeight: 300)
                                 .clipped()
                                 .clipShape(RoundedRectangle(cornerRadius: 15))
                         } else {
@@ -241,6 +241,8 @@ struct addNewRecipe: View {
                                 dismiss()
                             }
                         }
+                        
+                        dismiss()
                     } label: {
                         if isUploading {
                             ProgressView()

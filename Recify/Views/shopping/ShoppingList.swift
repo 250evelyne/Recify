@@ -40,16 +40,15 @@ struct ShoppingList: View {
                 
                 if #available(iOS 17.0, *) {
                     NavigationLink(destination: GroceryMapsView()) {
-                        Image(systemName: "cart")
-                            .tint(.pink)
-                            .font(.title2)
-                            .padding(7)
-                            .background(.white)
-                            .clipShape(.circle)
-                            .shadow(radius: 5)
+                        ZStack {
+                            Circle()
+                                .frame(width: 40, height: 40)
+                            
+                            Image(systemName: "cart.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
                     }
-                } else {
-                    // Fallback on earlier versions
                 }
                 
                 
@@ -122,7 +121,7 @@ struct ShoppingList: View {
                                     }) {
                                         HStack(spacing: 4) {
                                             Image(systemName: "checkmark.seal.fill")
-                                            Text("Confirm Type")
+                                            Text("Confirm Purchase")
                                         }
                                         .font(.caption)
                                         .fontWeight(.bold)

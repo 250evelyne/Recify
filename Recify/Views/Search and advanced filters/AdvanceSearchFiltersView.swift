@@ -43,7 +43,7 @@ struct AdvanceSearchFiltersView: View {
                 
                 resultsButtonSection
                 
-            }//TODO: add the others to disable the buttons after annabella finsh making the page work
+            }
             .padding()
             .navigationTitle("Search & Filters")
             .navigationBarTitleDisplayMode(.inline)
@@ -56,17 +56,17 @@ struct AdvanceSearchFiltersView: View {
                         selectedRestrictions = []
                     }.tint(.pink)
                 }
-            }//TODO: remove random enptyr space on top (alexanne) low priority
+            }
         }
         //Button {
-            //                        //TODO: TAKE ALL THE filters and search recipes
             //                    } label: {
             //                        Label("Show Results", systemImage: "chevron.right")
             //                            .font(.title3)
             //                            .padding(.init(top: 10, leading: 60, bottom: 10, trailing: 60))
             //                    }.buttonStyle(.bordered)
             //                        .tint(.pink)
-            //                        .disabled(searchedIngredient.isEmpty) //TODO: add the others to the diables
+            //                        .disabled(searchedIngredient.isEmpty)
+        
             //                    Spacer()
        // }
         
@@ -156,12 +156,17 @@ struct AdvanceSearchFiltersView: View {
             Spacer()
             
             let currentFilters = SearchFilters(
-                cookTime: selectedCookTime,
-                dietaryRestrictions: Array(selectedRestrictions),
-                matchPantry: matchPantry
-            )
+                        cookTime: selectedCookTime,
+                        dietaryRestrictions: Array(selectedRestrictions),
+                        matchPantry: matchPantry
+                    )
             
-            let canSearch = !searchedIngredient.isEmpty || matchPantry
+            let canSearch =
+                       !searchedIngredient.isEmpty ||
+                       matchPantry ||
+                       selectedCookTime != nil ||
+                       !selectedRestrictions.isEmpty
+            
             
             NavigationLink(destination: SearchResults(query: searchedIngredient, filters: currentFilters)) {
                 Label("Show Results", systemImage: "chevron.right")

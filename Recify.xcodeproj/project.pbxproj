@@ -67,7 +67,6 @@
 		FA6CEFC22F4D36D900748A27 /* SearchItemShoppingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6CEFC12F4D36D900748A27 /* SearchItemShoppingView.swift */; };
 		FA839EA82F4A6C9A0010E2E6 /* ShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA839EA72F4A6C9A0010E2E6 /* ShoppingList.swift */; };
 		FA839EAC2F4BAFB20010E2E6 /* addItemShoppingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA839EAB2F4BAFB20010E2E6 /* addItemShoppingList.swift */; };
-		FA9504E82F58A2020082B995 /* SearchRecipeResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */; };
 		FA9504EA2F5DECA60082B995 /* SearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504E92F5DECA60082B995 /* SearchResults.swift */; };
 		FA9504EE2F5DF3850082B995 /* searchResultCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9504ED2F5DF3850082B995 /* searchResultCard.swift */; };
 		FA95053F2F6107AA0082B995 /* RecipeCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA95053E2F6107AA0082B995 /* RecipeCollections.swift */; };
@@ -155,7 +154,6 @@
 		FA6CEFC12F4D36D900748A27 /* SearchItemShoppingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItemShoppingView.swift; sourceTree = "<group>"; };
 		FA839EA72F4A6C9A0010E2E6 /* ShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingList.swift; sourceTree = "<group>"; };
 		FA839EAB2F4BAFB20010E2E6 /* addItemShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addItemShoppingList.swift; sourceTree = "<group>"; };
-		FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRecipeResultsView.swift; sourceTree = "<group>"; };
 		FA9504E92F5DECA60082B995 /* SearchResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResults.swift; sourceTree = "<group>"; };
 		FA9504ED2F5DF3850082B995 /* searchResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultCard.swift; sourceTree = "<group>"; };
 		FA95053E2F6107AA0082B995 /* RecipeCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCollections.swift; sourceTree = "<group>"; };
@@ -337,6 +335,7 @@
 				208CB39E2F7DCA55007038F8 /* FavoriteRecipesView.swift */,
 				208CB39F2F7DCA55007038F8 /* savedCollectionsView.swift */,
 				208CB3A02F7DCA55007038F8 /* SaveToCollectionView.swift */,
+				208CB3A62F7DCA66007038F8 /* MyRecipesView.swift */,
 			);
 			path = Favorites;
 			sourceTree = "<group>";
@@ -369,7 +368,6 @@
 				FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */,
 				FA9504E92F5DECA60082B995 /* SearchResults.swift */,
 				FA9504ED2F5DF3850082B995 /* searchResultCard.swift */,
-				FA9504E72F58A2020082B995 /* SearchRecipeResultsView.swift */,
 			);
 			path = "Search and advanced filters";
 			sourceTree = "<group>";
@@ -413,7 +411,6 @@
 				20EE05942F3D109100930D68 /* EditProfileView.swift */,
 				20EE05922F3D107200930D68 /* CookingStatisticsTabView.swift */,
 				208CB3A12F7DCA55007038F8 /* Favorites */,
-				208CB3A62F7DCA66007038F8 /* MyRecipesView.swift */,
 			);
 			path = profile;
 			sourceTree = "<group>";
@@ -628,7 +625,6 @@
 				20EE05882F3D0F3B00930D68 /* MessagesListView.swift in Sources */,
 				FAA5E4AF2F509B7200F3122C /* Comment.swift in Sources */,
 				FA46E4052F37D9D1002CB0ED /* IngredientsView.swift in Sources */,
-				FA9504E82F58A2020082B995 /* SearchRecipeResultsView.swift in Sources */,
 				FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */,
 				20EE059B2F3D10DA00930D68 /* TabBarView.swift in Sources */,
 				040410292F311B5400EA6C4C /* Recipe.swift in Sources */,
@@ -798,6 +794,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show nearby stores";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photos to upload your favorite recipes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -827,6 +825,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Recify/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show nearby stores";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photos to upload your favorite recipes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

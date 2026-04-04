@@ -58,12 +58,12 @@ struct HomeView: View {
             .navigationTitle("Discover")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
-                        Image(systemName: "bell")
-                            .foregroundColor(.pink)
-                    }
-                }
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button(action: {}) {
+//                        Image(systemName: "bell")
+//                            .foregroundColor(.pink)
+//                    }
+//                }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: ShoppingList()) {
