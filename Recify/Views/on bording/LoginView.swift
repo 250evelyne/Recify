@@ -102,48 +102,48 @@ struct LoginView: View {
                 .padding(.top, 8)
                 .disabled(email.isEmpty || password.isEmpty)
                 
-                Text("or continue with")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                    .padding(.top, 8)
-                
-                VStack(spacing: 12) {
-                    Button(action: {}) {
-                        HStack {
-                            Image(systemName: "g.circle.fill")
-                            Text("Continue with Google")
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                    
-                    Button(action: {}) {
-                        HStack {
-                            Image(systemName: "apple.logo")
-                            Text("Continue with Apple")
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                }
-                .padding(.horizontal, 24)
-                
+//                Text("or continue with")
+//                    .font(.subheadline)
+//                    .foregroundColor(.gray)
+//                    .padding(.top, 8)
+//                
+//                VStack(spacing: 12) {
+//                    Button(action: {}) {
+//                        HStack {
+//                            Image(systemName: "g.circle.fill")
+//                            Text("Continue with Google")
+//                                .fontWeight(.semibold)
+//                        }
+//                        .foregroundColor(.black)
+//                        .frame(maxWidth: .infinity)
+//                        .padding()
+//                        .background(Color.white)
+//                        .cornerRadius(12)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 12)
+//                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+//                        )
+//                    }
+//                    
+//                    Button(action: {}) {
+//                        HStack {
+//                            Image(systemName: "apple.logo")
+//                            Text("Continue with Apple")
+//                                .fontWeight(.semibold)
+//                        }
+//                        .foregroundColor(.black)
+//                        .frame(maxWidth: .infinity)
+//                        .padding()
+//                        .background(Color.white)
+//                        .cornerRadius(12)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 12)
+//                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+//                        )
+//                    }
+//                }
+//                .padding(.horizontal, 24)
+//                
                 Spacer()
                 
                 HStack {

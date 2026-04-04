@@ -16,9 +16,11 @@ struct CommunityFeedView: View {
             VStack {
                 HStack {
                     NavigationLink(destination: MyPostsView().environmentObject(authManager)) {
-                        Image(systemName: "person.fill")
-                            .clipShape(.circle)
-                            .font(.title)
+                        Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 35, height: 35)
+                            .clipShape(Circle())
                     }
                     Spacer()
                     Text("Community Feed")

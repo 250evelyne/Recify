@@ -23,11 +23,13 @@ struct PostView: View {
             
             VStack(alignment: .leading) {
                 HStack(spacing: 15) {
-                    Image(systemName: "person.fill")
-                        .clipShape(.circle)
-                        .font(.title)
+                    Image(post.userAvatar ?? "tomatoAvatar")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .shadow(radius: 1)
                     VStack(alignment: .leading) {
-                        // Dynamically display the users name
                         Text(post.userName)
                             .bold()
                         Text(RelativeDateTimeFormatter().localizedString(for: post.createdAt, relativeTo: Date()))
@@ -66,14 +68,18 @@ struct PostView: View {
                 
                 HStack {
                     Button {
-                        // Adds 1 like to the post in Firestore
                         feedVM.likePost(post: post)
-                        if (isLiked != true){
+                        if !isLiked {
                             isLiked = true
                         }
                     } label: {
-                        interactionBtn(icon: "heart.fill", count: post.likes, color: .pink)
-                    }.disabled(isLiked) //TODO: Alexanne should find a away to change the color
+                        interactionBtn(
+                            icon: "heart.fill",
+                            count: post.likes,
+                            color: isLiked ? .pink : .gray // Changes color when liked
+                        )
+                    }
+                    .disabled(isLiked)
                     
                     Button {
                         showComments = true
@@ -112,8 +118,8 @@ struct PostView: View {
         }
     }
 }
-// MARK: - Preview
 
+// MARK: - Preview
 #Preview {
     PostView(
         post: Post(

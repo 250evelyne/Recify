@@ -20,18 +20,12 @@ struct ProfileView: View {
                     
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
-                            Circle()
-                                .fill(LinearGradient(
-                                    colors: [Color.orange.opacity(0.6), Color.pink.opacity(0.6)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ))
+                            Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                                .resizable()
+                                .scaledToFill()
                                 .frame(width: 120, height: 120)
-                                .overlay(
-                                    Image(systemName: "person.fill")
-                                        .font(.system(size: 50))
-                                        .foregroundColor(.white)
-                                )
+                                .clipShape(Circle())
+                                .shadow(radius: 3)
                             
                             NavigationLink(destination: EditProfileView().environmentObject(authManager)) {
                                 Circle()
@@ -134,12 +128,12 @@ struct ProfileView: View {
                             .padding(.bottom, 8)
                         
                         VStack(spacing: 0) {
-                            SettingsToggleRow(
-                                icon: "eye.slash.fill",
-                                iconColor: .blue,
-                                title: "Private Profile",
-                                isOn: .constant(false)
-                            )
+//                            SettingsToggleRow(
+//                                icon: "eye.slash.fill",
+//                                iconColor: .blue,
+//                                title: "Private Profile",
+//                                isOn: .constant(false)
+//                            )
                             
                             Divider().padding(.leading, 60)
                             
@@ -152,12 +146,12 @@ struct ProfileView: View {
                             
                             Divider().padding(.leading, 60)
                             
-                            SettingsRow(
-                                icon: "nosign",
-                                iconColor: .blue.opacity(0.2), //i chanhed the opacity to show we have not implimented this yet
-                                title: "Blocked Accounts",
-                                action: {}
-                            )
+//                            SettingsRow(
+//                                icon: "nosign",
+//                                iconColor: .blue.opacity(0.2), //i chanhed the opacity to show we have not implimented this yet
+//                                title: "Blocked Accounts",
+//                                action: {}
+//                            )
                         }
                         .background(Color.white)
                         .cornerRadius(12)
@@ -165,36 +159,36 @@ struct ProfileView: View {
                     }
                     .padding(.bottom, 24)
                     
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("SUPPORT")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                            .padding(.bottom, 8)
-                        
-                        VStack(spacing: 0) {
-                            SettingsRow(
-                                icon: "questionmark.circle.fill",
-                                iconColor: .gray.opacity(0.2),
-                                title: "Help Center",
-                                action: {}
-                            )
-                            
-                            Divider().padding(.leading, 60)
-                            
-                            SettingsRow(
-                                icon: "doc.text.fill",
-                                iconColor: .gray.opacity(0.2),
-                                title: "Terms of Service",
-                                action: {}
-                            )
-                        }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom, 24)
+//                    VStack(alignment: .leading, spacing: 0) {
+//                        Text("SUPPORT")
+//                            .font(.caption)
+//                            .fontWeight(.semibold)
+//                            .foregroundColor(.gray)
+//                            .padding(.horizontal)
+//                            .padding(.bottom, 8)
+//                        
+//                        VStack(spacing: 0) {
+//                            SettingsRow(
+//                                icon: "questionmark.circle.fill",
+//                                iconColor: .gray.opacity(0.2),
+//                                title: "Help Center",
+//                                action: {}
+//                            )
+//                            
+//                            Divider().padding(.leading, 60)
+//                            
+//                            SettingsRow(
+//                                icon: "doc.text.fill",
+//                                iconColor: .gray.opacity(0.2),
+//                                title: "Terms of Service",
+//                                action: {}
+//                            )
+//                        }
+//                        .background(Color.white)
+//                        .cornerRadius(12)
+//                        .padding(.horizontal)
+//                    }
+//                    .padding(.bottom, 24)
                     
                     Button(action: {
                         showLogoutConfirm = true

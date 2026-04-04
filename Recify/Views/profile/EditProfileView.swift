@@ -18,6 +18,9 @@ struct EditProfileView: View {
     @State private var currentPassword: String = ""
     @State private var newPassword: String = ""
     @State private var confirmPassword: String = ""
+    @State private var selectedAvatar: String = ""
+    
+    let predefinedAvatars = ["cupcakeAvatar", "orangeAvatar", "strawberryAvatar", "peachAvatar", "pancakeAvatar", "friesAvatar", "cookieAvatar", "tomatoAvatar"]
     
     @State private var isLoading: Bool = false
     @State private var showAlert: Bool = false
@@ -26,6 +29,44 @@ struct EditProfileView: View {
     
     var body: some View {
         Form {
+            Section {
+                VStack {
+                    Image(selectedAvatar.isEmpty ? "tomatoAvatar" : selectedAvatar)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .shadow(radius: 3)
+                        .padding(.bottom, 10)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(predefinedAvatars, id: \.self) { avatar in
+                                Image(avatar)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(Circle())
+                                    .overlay(
+                                        Circle()
+                                            .stroke(selectedAvatar == avatar ? Color.pink : Color.clear, lineWidth: 3)
+                                    )
+                                    .onTapGesture {
+                                        withAnimation {
+                                            selectedAvatar = avatar
+                                        }
+                                    }
+                            }
+                        }
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 5)
+                    }
+                }
+                .padding(.vertical, 5)
+            } header: {
+                Text("CHOOSE AN AVATAR")
+            }
+            
             Section {
                 HStack {
                     Text("Username")
@@ -98,6 +139,7 @@ struct EditProfileView: View {
         .onAppear {
             username = authManager.userProfile?.userName ?? ""
             email = authManager.userProfile?.email ?? ""
+            selectedAvatar = authManager.userProfile?.avatar ?? "avatar1"
         }
         .alert(alertTitle, isPresented: $showAlert) {
             Button("OK") {
@@ -113,8 +155,9 @@ struct EditProfileView: View {
     var hasChanges: Bool {
         let usernameChanged = username != (authManager.userProfile?.userName ?? "")
         let passwordChanged = !newPassword.isEmpty
+        let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         
-        return usernameChanged || passwordChanged
+        return usernameChanged || passwordChanged || avatarChanged
     }
     
     func saveChanges() {
@@ -123,64 +166,78 @@ struct EditProfileView: View {
         
         isLoading = true
         
-        let usernameChanged = username.trimmingCharacters(in: .whitespaces) != authManager.userProfile?.userName
+        let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
+        let usernameChanged = trimmedUsername != authManager.userProfile?.userName
+        let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         let passwordChanged = !newPassword.isEmpty
         
-        // Validate password if changing
         if passwordChanged {
-            if newPassword != confirmPassword {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "New passwords do not match"
-                showAlert = true
-                return
-            }
-            
-            if newPassword.count < 6 {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "Password must be at least 6 characters"
-                showAlert = true
-                return
-            }
-            
-            if currentPassword.isEmpty {
-                isLoading = false
-                alertTitle = "Error"
-                alertMessage = "Current password is required to change password"
-                showAlert = true
-                return
-            }
+            if newPassword != confirmPassword { setError(message: "New passwords do not match"); return }
+            if newPassword.count < 6 { setError(message: "Password must be at least 6 characters"); return }
+            if currentPassword.isEmpty { setError(message: "Current password is required"); return }
         }
         
         var successMessages: [String] = []
+        let db = Firestore.firestore()
         
-        // Update username in Firestore
-        if usernameChanged {
-            let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
+        if usernameChanged || avatarChanged {
+            let batch = db.batch()
             
-            let db = Firestore.firestore()
-            db.collection("users").document(userId).updateData([
-                "userName": trimmedUsername
-            ]) { error in
-                if error == nil {
-                    authManager.userProfile?.userName = trimmedUsername
-                    successMessages.append("Username updated")
+            let userRef = db.collection("users").document(userId)
+            batch.updateData([
+                "userName": trimmedUsername,
+                "avatar": selectedAvatar
+            ], forDocument: userRef)
+            
+            db.collection("posts").whereField("userId", isEqualTo: userId).getDocuments { postSnapshot, _ in
+                if let postDocs = postSnapshot?.documents {
+                    for doc in postDocs {
+                        batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
+                    }
                 }
                 
-                // If also changing password, do that next
-                if passwordChanged {
-                    updatePassword(user: currentUser, successMessages: successMessages)
-                } else {
-                    finishUpdate(messages: successMessages)
+                db.collectionGroup("comments").whereField("userId", isEqualTo: userId).getDocuments { commentSnapshot, _ in
+                    if let commentDocs = commentSnapshot?.documents {
+                        for doc in commentDocs {
+                            batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
+                        }
+                    }
+                    
+                    batch.commit { error in
+                        if let error = error {
+                            setError(message: error.localizedDescription)
+                            return
+                        }
+                        
+                        DispatchQueue.main.async {
+                            authManager.userProfile?.userName = trimmedUsername
+                            authManager.userProfile?.avatar = selectedAvatar
+                            authManager.loadUserProfile(userId: userId)
+                            
+                            if usernameChanged { successMessages.append("Username updated") }
+                            if avatarChanged { successMessages.append("Profile picture updated") }
+                            
+                            if passwordChanged {
+                                updatePassword(user: currentUser, successMessages: successMessages)
+                            } else {
+                                finishUpdate(messages: successMessages)
+                            }
+                        }
+                    }
                 }
             }
         } else if passwordChanged {
-            // Only chang e password
             updatePassword(user: currentUser, successMessages: successMessages)
         } else {
             isLoading = false
         }
+    }
+    
+    private func setError(message: String) {
+        isLoading = false
+        alertTitle = "Error"
+        alertMessage = message
+        showAlert = true
     }
     
     func updatePassword(user: FirebaseAuth.User, successMessages: [String]) {

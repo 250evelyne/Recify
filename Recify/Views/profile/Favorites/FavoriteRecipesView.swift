@@ -58,7 +58,6 @@ struct FavoriteRecipesView: View {
             
             VStack {
                 ScrollView {
-                    //                Empty State
                     if recipes.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "heart.slash")
@@ -139,7 +138,6 @@ struct RecipeCollectionRow: View {
                 }
             }
         } else {
-            // "0 count" fallback
             HStack {
                 Image(systemName: "heart.slash.fill")
                     .foregroundColor(.gray)

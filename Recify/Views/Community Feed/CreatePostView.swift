@@ -47,7 +47,7 @@ struct CreatePostView: View {
                     
                     .overlay {
                         VStack {
-                            Image(systemName: "camera.fill") //TODO: ask for permission like the locaiton permission, then we get the path where the image is stored and then u store it in the firebase
+                            Image(systemName: "camera.fill") //TODO: permission works now i have to fix it 
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 35, height: 35)

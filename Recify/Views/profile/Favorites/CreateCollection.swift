@@ -25,6 +25,7 @@ struct CreateCollection: View {
             Text("COLLECTION NAME")
                 .foregroundStyle(.gray)
                 .font(.system(size: 13))
+                .foregroundColor(.pink)
             
             GroupBox{
                 Section {
@@ -35,6 +36,7 @@ struct CreateCollection: View {
             Text("CHOSE A COVER")
                 .foregroundStyle(.gray)
                 .font(.system(size: 13))
+                .foregroundColor(.pink)
             
             
             ScrollView(showsIndicators: false) {
@@ -113,7 +115,7 @@ struct CreateCollection: View {
                         )
                     }
                     
-                } //TODO: make it visible when use clicks 1 image
+                }
             }
             
             
@@ -132,6 +134,8 @@ struct CreateCollection: View {
                         dismiss()
                     } label: {
                         Text("Cancel")
+                            .foregroundColor(.pink)
+
                     }
                     
                 }
@@ -141,6 +145,7 @@ struct CreateCollection: View {
                         saveAction()
                     } label: {
                         Text("Create")
+                            .foregroundColor(.pink)
                     }.disabled(collectionName.isEmpty || httpChosen.isEmpty)
                 }
                 
@@ -172,12 +177,12 @@ struct coverView : View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } else if phase.error != nil {
-                    Color.red.opacity(0.1) // Show error state
+                    Color.red.opacity(0.1)
                 } else {
                     ProgressView()
                 }
             }
-            .frame(width: 160, height: 160) // Fixed size for the container
+            .frame(width: 160, height: 160)
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
@@ -192,6 +197,17 @@ struct coverView : View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding()
             })
+            
+            .overlay(alignment: .topTrailing) {
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.pink, .white)
+                        .padding(10)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            
         }
         .animation(.easeInOut, value: isSelected)
     }

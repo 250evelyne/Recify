@@ -94,13 +94,12 @@ struct addItemShoppingList: View {
                                             unit: selectedUnits
                                         )
                                         
-                                        // Trigger the collapse and toast
                                         withAnimation(.easeInOut) {
                                             ingredientSelected = false // ingredient should be come smaller again
                                             showToast = true // show the toast
                                         }
                                         
-                                        // Hide toast after 2 seconds
+                                        //hide toast after 2 seconds
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                             withAnimation { showToast = false }
                                         }

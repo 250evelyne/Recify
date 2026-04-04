@@ -10,29 +10,36 @@ import SwiftUI
 struct searchResultCard: View {
     let mealId: String
     let title: String
-    let imageURL: String
+    let imageURL: String 
     let time: Int
     let difficulty: String
-//    let difficulty: DifficultyLevel
     var height : CGFloat?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            
-            AsyncImage(url: URL(string: imageURL)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.1))
-                    .overlay(Image(systemName: "fork.knife").foregroundColor(.gray))
+            ZStack {
+                if imageURL.hasPrefix("http") {
+                    AsyncImage(url: URL(string: imageURL)) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                } else if let imageData = Data(base64Encoded: imageURL),
+                          let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } else {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.1))
+                        .overlay(Image(systemName: "photo").foregroundColor(.gray))
+                }
             }
             .frame(height: height ?? 140)
+            .frame(maxWidth: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 15))
-            .padding(.horizontal)
-            .padding(.top)
-            .padding(.bottom, 4)
+            .padding([.horizontal, .top])
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
@@ -59,6 +66,7 @@ struct searchResultCard: View {
        
         
     }
+    
 }
 
 #Preview {

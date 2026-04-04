@@ -85,14 +85,28 @@ struct ShoppingList: View {
             Divider()
                 .overlay(Color.orange.opacity(0.3))
             
-            //foreach item the user added to thier shopping list
-            ScrollView {
-                VStack(spacing: 20) {
-                    
-                    if selectedTab == 0 { //TODO: add the empty shopiing list view
-                        //Show grouped by Type (Category)
-                        ForEach(itemsByType.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { category in
-                            VStack(alignment: .leading, spacing: 10) {
+            // MARK: - Dynamic Content Area
+            Group {
+                if firebaseManager.shoppingItems.isEmpty {
+                    VStack(spacing: 15) {
+                        Spacer().frame(height: 50)
+                        Image(systemName: "cart.badge.minus")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray.opacity(0.5))
+                        Text("Your shopping list is empty!")
+                            .font(.title3)
+                            .bold()
+                        Text("Tap the + button below to add some ingredients.")
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        Spacer()
+                    }
+                } else {
+                    List {
+                        if selectedTab == 0 {
+                            ForEach(itemsByType.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { category in
+                                
                                 HStack {
                                     Text(category.rawValue)
                                         .foregroundStyle(.blue)
@@ -121,16 +135,29 @@ struct ShoppingList: View {
                                     .disabled(!checkedInCategory)
                                 }
                                 .padding(.horizontal)
+                                .padding(.top, 10)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                                 
                                 ForEach(itemsByType[category] ?? []) { item in
                                     ShoppingListItemRow(item: item, checkedItems: $checkedItems)
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                            if item.recipeName?.isEmpty ?? true {
+                                                Button(role: .destructive) {
+                                                    firebaseManager.clearCompletedShoppingItems(items: [item])
+                                                } label: {
+                                                    Label("Delete", systemImage: "trash")
+                                                }
+                                            }
+                                        }
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
                                 }
                             }
-                        }
-                    } else {
-                        //Show grouped by Recipe Name
-                        ForEach(itemsByRecipe.keys.sorted(), id: \.self) { recipeName in
-                            VStack(alignment: .leading, spacing: 10) {
+                        } else {
+                            ForEach(itemsByRecipe.keys.sorted(), id: \.self) { recipeName in
                                 HStack {
                                     Text(recipeName)
                                         .foregroundStyle(.pink)
@@ -162,22 +189,39 @@ struct ShoppingList: View {
                                     }
                                 }
                                 .padding(.horizontal)
+                                .padding(.top, 10)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                                 
                                 ForEach(itemsByRecipe[recipeName] ?? []) { item in
                                     ShoppingListItemRow(item: item, checkedItems: $checkedItems)
-                                } //TODO: i wanna swipe to delete
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                            if recipeName == "Manually Added" {
+                                                Button(role: .destructive) {
+                                                    firebaseManager.clearCompletedShoppingItems(items: [item])
+                                                } label: {
+                                                    Label("Delete", systemImage: "trash")
+                                                }
+                                            }
+                                        }
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                                }
                             }
                         }
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .padding(.bottom, 80)
                 }
-                .padding(.top)
-                .padding(.bottom, 80) // Space for the floating button
             }
             .overlay(alignment: .bottom){ //Its in the middle of the page for now when there nothing idk if we should keep like that
                 HStack{
                     Spacer()
                     //the navigation button isnt working any more
-                    NavigationLink(destination: SearchItemShoppingView()) { 
+                    NavigationLink(destination: SearchItemShoppingView()) {
                         Circle()
                             .shadow(color: .pink.opacity(0.3), radius: 3, y: 2)
                             .foregroundColor(.pink)
@@ -200,7 +244,6 @@ struct ShoppingList: View {
 }
 
 // MARK: - Helper Views
-
 struct ShoppingListItemRow: View {
     let item: Ingredients
     @StateObject var firebaseManager = FirebaseViewModel.shared
@@ -245,7 +288,7 @@ struct ShoppingListItemRow: View {
                 }
                 .padding(.horizontal)
             }
-            .padding(.horizontal)
+            //.padding(.horizontal)
             .onTapGesture {
                 withAnimation {
                     firebaseManager.toggleShoppingItemCheck(item: item)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 @MainActor
 class RecipeDetailViewModel: ObservableObject {
@@ -29,6 +30,37 @@ class RecipeDetailViewModel: ObservableObject {
     func fetchRecipeDetails(idMeal: String) async {
         isLoading = true
         
+        let isFirestoreID = idMeal.count > 10
+        
+        if isFirestoreID {
+            do {
+                //fetch the custom recipe straight from Firebase using the ID
+                let document = try await Firestore.firestore().collection("recipes").document(idMeal).getDocument()
+                if let customRecipe = try? document.data(as: Recipe.self) {
+                    self.recipe = customRecipe
+                    
+                    self.ingredients = customRecipe.ingredients.map {
+                        RecipeIngredient(name: $0, rawName: $0, inPantry: false)
+                    }
+                    
+                    let cleanedSteps = customRecipe.instructions
+                        .components(separatedBy: CharacterSet.newlines)
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .map { $0.replacingOccurrences(of: "^(?i)(step\\s*)?\\d+[:\\.-]?\\s*", with: "", options: .regularExpression) }
+                        .filter { !$0.isEmpty }
+                    
+                    self.instructions = cleanedSteps.isEmpty ? [customRecipe.instructions] : cleanedSteps
+                    
+                    self.checkPantryStatus()
+                    self.isLoading = false
+                    return
+                }
+            } catch {
+                print("Error fetching custom recipe from Firestore: \(error.localizedDescription)")
+            }
+        }
+        
+        // MARK: - API Fetch
         let urlString: String
         if idMeal.rangeOfCharacter(from: CharacterSet.letters) != nil {
             let encodedName = idMeal.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? idMeal
@@ -99,7 +131,8 @@ class RecipeDetailViewModel: ObservableObject {
                     inPantry: false,
                     prepTime: meta.time,
                     calories: meta.kcal,
-                    level: meta.level
+                    level: meta.level,
+                    searchTitle: (meal["strMeal"] as? String ?? "Unknown Recipe").lowercased()
                 )
             }
         } catch {
@@ -109,13 +142,11 @@ class RecipeDetailViewModel: ObservableObject {
     }
     
     private func generateMetadata(instructionCount: Int, ingredientCount: Int) -> (time: Int, kcal: Int, level: String) {
-        // Estimate time: 5 mins base + 3 mins per instruction step
+        //estimate
         let estimatedMinutes = 5 + (instructionCount * 3)
-        
-        // Estimate calories: randomrange based on ingredient count ig
+        //estimate
         let estimatedKcal = 150 + (ingredientCount * 45)
         
-        // Determine level:
         var difficulty = "Easy"
         if instructionCount > 10 || ingredientCount > 12 {
             difficulty = "Hard"
@@ -137,4 +168,6 @@ class RecipeDetailViewModel: ObservableObject {
             
             ingredients[index].inCart = alreadyInCart
         }
-    }}
+    }
+}
+

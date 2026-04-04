@@ -1,3 +1,10 @@
+//
+//  FeedViewModel.swift
+//  Recify
+//
+//  Created by netblen on 03-03-2026.
+//
+
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -38,7 +45,8 @@ class AuthManager: ObservableObject {
                     id: userId,
                     email: data["email"] as? String ?? "",
                     userName: data["userName"] as? String ?? "",
-                    favorites: data["favorites"] as? [String] ?? []
+                    favorites: data["favorites"] as? [String] ?? [],
+                    avatar: data["avatar"] as? String ?? "tomatoAvatar"
                 )
                 print(" Profile loaded: \(self.userProfile?.userName ?? "")")
                 
@@ -71,43 +79,33 @@ class AuthManager: ObservableObject {
     }
     
     func signUp(email: String, password: String, userName: String, completion: @escaping (Bool) -> Void) {
-        print(" Starting signup for: \(email)")
-        
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
+            guard let self = self else { return }
+            
             if let error = error {
-                print(" Signup error: \(error.localizedDescription)")
                 self.errorMessage = error.localizedDescription
                 completion(false)
                 return
             }
             
-            guard let user = result?.user else {
-                print(" No user returned")
-                completion(false)
-                return
-            }
+            guard let user = result?.user else { return }
             
-            print(" Auth user created: \(user.uid)")
-            print(" Creating Firestore document...")
-            
-            self.db.collection("users").document(user.uid).setData([
+            let userData: [String: Any] = [
+                "uid": user.uid,
                 "email": email,
                 "userName": userName,
-                "favorites": [] as [String]
-            ]) { error in
+                "avatar": "tomatoAvatar",
+                "createdAt": FieldValue.serverTimestamp()
+            ]
+            
+            self.db.collection("users").document(user.uid).setData(userData) { error in
                 if let error = error {
-                    print(" Firestore error: \(error.localizedDescription)")
                     self.errorMessage = error.localizedDescription
                     completion(false)
-                    return
+                } else {
+                    self.loadUserProfile(userId: user.uid)
+                    completion(true)
                 }
-                
-                print(" Firestore document created")
-                print(" Signup complete! User must now log in.")
-                
-                try? Auth.auth().signOut()
-                
-                completion(true)
             }
         }
     }
@@ -118,5 +116,19 @@ class AuthManager: ObservableObject {
         self.userProfile = nil
         self.isAuthenticated = false
         print(" User signed out")
+    }
+    
+        
+    func updateAvatarLocally(newAvatar: String) {
+        self.userProfile?.avatar = newAvatar
+        
+        guard let uid = currentUser?.uid else { return }
+        db.collection("users").document(uid).updateData([
+            "avatar": newAvatar
+        ]) { error in
+            if let error = error {
+                print("Error syncing avatar to cloud: \(error.localizedDescription)")
+            }
+        }
     }
 }

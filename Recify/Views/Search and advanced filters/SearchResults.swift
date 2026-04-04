@@ -89,12 +89,11 @@ struct SearchResults: View {
                         recipe: recipe
                     )) {
                         searchResultCard(
-                            mealId: recipe.id ?? recipe.title,
+                            mealId: recipe.id ?? "",
                             title: recipe.title,
-                            imageURL: recipe.imageURL ?? "",
+                            imageURL: recipe.imageURL ?? "", 
                             time: recipe.prepTime,
-                            difficulty: recipe.level,
-                            height: 200
+                            difficulty: recipe.level
                         )
                     }
                     .buttonStyle(PlainButtonStyle())

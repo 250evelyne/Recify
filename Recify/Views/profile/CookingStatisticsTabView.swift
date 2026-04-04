@@ -14,18 +14,12 @@ struct CookingStatisticsTabView: View {
         ScrollView {
             VStack(spacing: 20) {
                 VStack(spacing: 12) {
-                    Circle()
-                        .fill(LinearGradient(
-                            colors: [Color.orange.opacity(0.6), Color.pink.opacity(0.6)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
+                    Image(authManager.userProfile?.avatar ?? "cupcakeAvatar")
+                        .resizable()
+                        .scaledToFill()
                         .frame(width: 80, height: 80)
-                        .overlay(
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 32))
-                                .foregroundColor(.white)
-                        )
+                        .clipShape(Circle())
+                        .shadow(radius: 3)
                         .overlay(
                             Circle()
                                 .fill(Color.pink)

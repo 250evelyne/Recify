@@ -45,13 +45,17 @@ class FirebaseViewModel: ObservableObject {
             }
     }
     
-    //TODO: see if it works 
     func deleteIngredient(_ ingredient: Ingredients) {
-        if let id = ingredient.id {
-            Firestore.firestore()
-                .collection("ingredients")
-                .document(id)
-                .delete()
+        guard let collection = userCollection, let id = ingredient.id else { return }
+        
+        collection.document(id).delete() { [weak self] error in
+            if let error = error {
+                print("Error deleting: \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    self?.ingredients.removeAll { $0.id == id }
+                }
+            }
         }
     }
     
@@ -219,7 +223,7 @@ class FirebaseViewModel: ObservableObject {
     }
     
     //MARK: favorites
-    // Checks if the heart should be filled in or not
+    //checks if the heart should be filled in or not
     func isRecipeSaved(mealId: String) -> Bool {
         return savedRecipes.contains(where: { $0.mealId == mealId })
     }
@@ -230,11 +234,9 @@ class FirebaseViewModel: ObservableObject {
         let favRef = db.collection("users").document(userId).collection("favorites").document(mealId)
         
         if let existingIndex = savedRecipes.firstIndex(where: { $0.mealId == mealId }) {
-            // 1. Remove from Master List
             savedRecipes.remove(at: existingIndex)
             favRef.delete()
             
-            // 2. FIX: Auto-cleanup all collections that contain this recipe
             for collection in userFavCollections {
                 if collection.recipeIds.contains(mealId) {
                     removeFromCollection(recipeId: mealId, collectionTitle: collection.name)
@@ -407,7 +409,7 @@ class FirebaseViewModel: ObservableObject {
             return .vegetables
         }
         
-        return .other // Fallback for everything else
+        return .other
     }
     
     
@@ -471,6 +473,76 @@ class FirebaseViewModel: ObservableObject {
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - Post New Recipe
+    func saveNewRecipe(title: String,
+                       caloriesString: String,
+                       prepTime: Int,
+                       difficulty: String,
+                       ingredients: [Ingredients],
+                       instructionsArray: [String],
+                       coverImage: UIImage?,
+                       completion: @escaping (Bool) -> Void) {
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: User not logged in")
+            completion(false)
+            return
+        }
+        
+        var base64String: String? = nil
+        if let image = coverImage {
+            if let imageData = image.jpegData(compressionQuality: 0.05) {
+                base64String = imageData.base64EncodedString()
+            }
+        }
+        
+        let caloriesInt = Int(caloriesString.filter { $0.isWholeNumber }) ?? 0
+        let ingredientStrings = ingredients.map { $0.displayText }
+        let formattedInstructions = instructionsArray.joined(separator: "\n")
+        
+        let newRecipe = Recipe(
+            title: title.isEmpty ? "Untitled Recipe" : title,
+            category: "General",
+            ingredients: ingredientStrings,
+            instructions: formattedInstructions,
+            imageURL: base64String,
+            servings: 2,
+            userId: userId,
+            inPantry: false,
+            prepTime: prepTime,
+            calories: caloriesInt,
+            level: difficulty.capitalized,
+            searchTitle: title.lowercased()
+        )
+        
+        do {
+            try db.collection("recipes").document().setData(from: newRecipe)
+            print("Successfully saved recipe with Base64 image!")
+            completion(true)
+        } catch {
+            print("Error saving recipe: \(error.localizedDescription)")
+            completion(false)
+        }
+    }
+    
+    
+    func searchUserRecipes(query: String) async -> [Recipe] {
+        let db = Firestore.firestore()
+        let lowerQuery = query.lowercased()
+        
+        do {
+            let snapshot = try await db.collection("recipes")
+                .whereField("searchTitle", isGreaterThanOrEqualTo: lowerQuery) 
+                .whereField("searchTitle", isLessThanOrEqualTo: lowerQuery + "\u{f8ff}")
+                .getDocuments()
+            
+            return snapshot.documents.compactMap { try? $0.data(as: Recipe.self) }
+        } catch {
+            print("Error searching Firebase: \(error.localizedDescription)")
+            return []
         }
     }
     

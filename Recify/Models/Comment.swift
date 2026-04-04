@@ -11,7 +11,8 @@ import FirebaseFirestore
 struct Comment: Identifiable, Codable {
     @DocumentID var id: String?
     let userId: String
-    let userName: String 
+    let userName: String
+    let userAvatar: String
     let text: String
     let createdAt: Date
 }

@@ -11,7 +11,8 @@ import FirebaseFirestore
 struct Post: Identifiable, Codable {
     @DocumentID var id: String?
     var userId: String
-    var userName: String 
+    var userName: String
+    var userAvatar: String?
     var caption: String
     var imageUrl: String
     var createdAt: Date
