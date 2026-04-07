@@ -58,7 +58,18 @@ struct HomeView: View {
                     
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.98, green: 0.98, blue: 1.0),
+                        Color(red: 0.85, green: 0.93, blue: 1.0),
+                        Color(red: 1.0, green: 0.90, blue: 0.95)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            )
             .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 0) }
             .navigationTitle("Discover")
             .navigationBarTitleDisplayMode(.large)
