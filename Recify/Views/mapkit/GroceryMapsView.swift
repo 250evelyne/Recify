@@ -477,10 +477,10 @@ struct GroceryMapsView: View {
     
 }
 
-//#Preview {
-//    if #available(iOS 17.0, *) {
-//        GroceryMapsView()
-//    } else {
-//        // Fallback on earlier versions
-//    }
-//}
+#Preview {
+    if #available(iOS 17.0, *) {
+        GroceryMapsView()
+    } else {
+        // Fallback on earlier versions
+    }
+}

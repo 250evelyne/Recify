@@ -69,8 +69,16 @@ class FeedViewModel: ObservableObject {
             )
             
             do {
-                _ = try self.db.collection("posts").addDocument(from: newPost)
-                print("SUCCESS: Post successfully added to Firestore!")
+                let docRef = try self.db.collection("posts").addDocument(from: newPost)
+                print("SUCCESS: Post successfully added to Firestore with ID: \(docRef.documentID)")
+                
+                DispatchQueue.main.async {
+                    var finalPost = newPost
+                    finalPost.id = docRef.documentID
+                    
+                    self.posts.insert(finalPost, at: 0)
+                    self.userPosts.insert(finalPost, at: 0)
+                }
             } catch {
                 print("Firebase Error creating post: \(error.localizedDescription)")
             }

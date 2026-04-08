@@ -31,7 +31,7 @@ struct CommunityFeedView: View {
                         .foregroundColor(.pink)
                         .frame(width: 50, height: 50)
                         .overlay {
-                            NavigationLink(destination: CreatePostView()) {
+                            NavigationLink(destination: CreatePostView(feedVM: feedVM)) { 
                                 Image(systemName: "plus")
                                     .foregroundStyle(.white)
                                     .font(.title)
