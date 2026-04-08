@@ -33,6 +33,37 @@ struct addNewRecipe: View {
     @State private var showAddIngredient = false
     @State private var showAddStep = false
     
+    @State private var showSuccessAlert = false
+    
+    @State private var isNameTaken = false
+    @State private var showingDuplicateAlert = false
+    
+    @State private var showClearConfirmation = false
+    
+    // MARK: - Validation Logic
+    private var isFormValid: Bool {
+        let hasTitle = !recipeTitle.trimmingCharacters(in: .whitespaces).isEmpty
+        let hasIngredients = !ingredients.isEmpty
+        let hasInstructions = !instructions.isEmpty
+        let hasDifficulty = selectedDifficulty != nil
+        let hasPrepTime = prepTime > 0
+        let hasCalories = !calories.isEmpty
+        let hasImage = selectedImage != nil
+        
+        return hasTitle && hasIngredients && hasInstructions && hasDifficulty && hasPrepTime && hasCalories && hasImage
+    }
+    
+    private func resetForm() {
+        recipeTitle = ""
+        calories = ""
+        selectedDifficulty = nil
+        prepTime = 0
+        instructions = []
+        ingredients = []
+        ingredientStrings = []
+        selectedImage = nil
+    }
+    
     private func syncIngredientStrings() {
         ingredientStrings = ingredients.map { $0.displayText }
     } //for the listview
@@ -109,13 +140,29 @@ struct addNewRecipe: View {
                 .buttonStyle(PlainButtonStyle())
                 
                 Group {
-                    Text("General Information")
-                        .fontWeight(.semibold)
-                        .font(.title3)
+                    // MARK: - General Info Header with Clear All
+                    HStack {
+                        Text("General Information")
+                            .fontWeight(.semibold)
+                            .font(.title3)
+                        
+                        Spacer()
+                        
+                        Button(role: .destructive) {
+                            showClearConfirmation = true
+                        } label: {
+                            Text("Clear All")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                                .foregroundStyle((recipeTitle.isEmpty && ingredients.isEmpty && instructions.isEmpty && selectedImage == nil) ? .gray : .pink)
+                        }
+                        .disabled(recipeTitle.isEmpty && ingredients.isEmpty && instructions.isEmpty && selectedImage == nil)
+                    }
+                    .padding(.top)
                     
                     Text("Recipe Title")
-                        .foregroundStyle(.gray)
-                    GroupBox{
+                        .foregroundStyle(recipeTitle.isEmpty ? .pink : .gray)
+                    GroupBox {
                         Section {
                             TextField("e.g. Grandma's Apple Pie", text: $recipeTitle)
                         }
@@ -124,7 +171,7 @@ struct addNewRecipe: View {
                     HStack{
                         VStack(alignment: .leading){
                             Text("Difficulty")
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(selectedDifficulty == nil ? .pink : .gray)
                             GroupBox{
                                 Menu {
                                     ForEach(DifficultyLevel.allCases, id: \.self) { difficulty in
@@ -133,27 +180,29 @@ struct addNewRecipe: View {
                                         }
                                     }
                                 } label: {
-                                    Text(selectedDifficulty?.rawValue.capitalized ?? "Select Difficulty")
-                                        .foregroundColor(.pink)
-                                    Image(systemName: "chevron.down")                        .foregroundColor(.gray)
-                                    
+                                    HStack {
+                                        Text(selectedDifficulty?.rawValue.capitalized ?? "Select Difficulty")
+                                        Image(systemName: "chevron.down")
+                                    }
+                                    .foregroundColor(.pink)
                                 }
                             }
                         }
                         
                         VStack(alignment: .leading){
                             Text("Calories")
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(calories.isEmpty ? .pink : .gray)
                             GroupBox{
                                 Section {
                                     TextField("e.g. 450 kcals", text: $calories)
+                                        .keyboardType(.numberPad)
                                 }
                             }
                         }
                     }
                     
                     Text("Prep Time")
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(prepTime == 0 ? .pink : .gray)
                     HStack(spacing: 20){
                         btnView(time: $prepTime, btnTime: 15)
                         btnView(time: $prepTime, btnTime: 30)
@@ -187,7 +236,7 @@ struct addNewRecipe: View {
                             title:"Instructions",
                             destination: "AddStep",
                             items: $instructions,
-                            ingredients: $ingredients, //just ignore this line its only for the ingredients
+                            ingredients: $ingredients,
                             emptyMessage: "Start adding your cooking steps",
                             buttonText: "ADD STEP",
                             systemImage: "list.bullet"
@@ -227,22 +276,29 @@ struct addNewRecipe: View {
                     Button {
                         isUploading = true
                         
-                        firebaseVM.saveNewRecipe(
-                            title: recipeTitle,
-                            caloriesString: calories,
-                            prepTime: prepTime,
-                            difficulty: selectedDifficulty?.rawValue ?? "Easy",
-                            ingredients: ingredients,
-                            instructionsArray: instructions,
-                            coverImage: selectedImage
-                        ) { success in
-                            isUploading = false
-                            if success {
-                                dismiss()
+                        Task {
+                            let exists = await firebaseVM.recipeExists(title: recipeTitle.trimmingCharacters(in: .whitespaces))
+                            
+                            if exists {
+                                isUploading = false
+                                showingDuplicateAlert = true
+                            } else {
+                                firebaseVM.saveNewRecipe(
+                                    title: recipeTitle,
+                                    caloriesString: calories,
+                                    prepTime: prepTime,
+                                    difficulty: selectedDifficulty?.rawValue ?? "Easy",
+                                    ingredients: ingredients,
+                                    instructionsArray: instructions,
+                                    coverImage: selectedImage
+                                ) { success in
+                                    isUploading = false
+                                    if success {
+                                        showSuccessAlert = true
+                                    }
+                                }
                             }
                         }
-                        
-                        dismiss()
                     } label: {
                         if isUploading {
                             ProgressView()
@@ -256,15 +312,27 @@ struct addNewRecipe: View {
                     .font(.title2)
                     .buttonStyle(.bordered)
                     .tint(.pink)
-                    .disabled(recipeTitle.isEmpty || isUploading)
+                    .disabled(!isFormValid || isUploading)
                     
                     Spacer()
                 }
                 
             }//end of vstack
             .padding()
-        }//end of scroll view
-        
+            // MARK: - Alerts
+            .alert("Name Already Taken", isPresented: $showingDuplicateAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("A recipe with the name '\(recipeTitle)' already exists. Please choose a different name.")
+            }
+        }
+        .navigationTitle("Add New Recipe")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") { dismiss() }
+            }
+        }
         // MARK: - Modifiers
         .sheet(isPresented: $showAddIngredient) {
             AddIngredient { selected in
@@ -284,22 +352,21 @@ struct addNewRecipe: View {
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(selectedImage: $selectedImage)
         }
-        .alert("Permission Denied", isPresented: $showPermissionDeniedAlert) {
-            Button("OK", role: .cancel) { }
-            Button("Settings") {
-                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(settingsURL)
-                }
+        .alert("Recipe Saved!", isPresented: $showSuccessAlert) {
+            Button("OK") {
+                resetForm()
+                dismiss()
             }
         } message: {
-            Text("Please allow access to your photos in Settings to upload a cover image.")
+            Text("Your recipe has been successfully posted to your collection.")
         }
-        .navigationTitle("Add New Recipe")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel") { dismiss() }
+        .confirmationDialog("Clear everything?", isPresented: $showClearConfirmation, titleVisibility: .visible) {
+            Button("Clear All", role: .destructive) {
+                resetForm()
             }
+            Button("Keep Editing", role: .cancel) { }
+        } message: {
+            Text("This will delete all progress on this recipe.")
         }
     }
 }
@@ -371,6 +438,7 @@ struct ListView: View {
                 Text(title)
                     .fontWeight(.semibold)
                     .font(.title3)
+                    .foregroundStyle(items.isEmpty ? .pink : .primary)
                     .padding(.top)
                 
                 Spacer()

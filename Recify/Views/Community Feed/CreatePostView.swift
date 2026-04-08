@@ -28,6 +28,7 @@ struct CreatePostView: View {
                     dismiss()
                 } label: {
                     Text("Cancel").foregroundStyle(.gray)
+                        .tint(.pink)
                 }
                 Spacer()
                 Text("Create Post").bold().font(.title)

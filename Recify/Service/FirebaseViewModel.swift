@@ -595,4 +595,22 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
+    
+    // MARK: - Duplicate Check
+    func recipeExists(title: String) async -> Bool {
+        let lowerQuery = title.lowercased().trimmingCharacters(in: .whitespaces)
+        let db = Firestore.firestore()
+        
+        do {
+            // Check if any recipe has the same searchTitle (handles case-insensitive duplicates)
+            let snapshot = try await db.collection("recipes")
+                .whereField("searchTitle", isEqualTo: lowerQuery)
+                .getDocuments()
+            
+            return !snapshot.documents.isEmpty
+        } catch {
+            print("Error checking for duplicates: \(error.localizedDescription)")
+            return false
+        }
+    }
 }
