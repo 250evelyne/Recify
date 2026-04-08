@@ -183,7 +183,6 @@ class ChatManager: ObservableObject {
             return
         }
         
-        // 1. Check if a conversation already exists between these two users
         let existing = conversations.first { conv in
             conv.participants.contains(otherUserId) && conv.participants.count == 2
         }
@@ -193,12 +192,11 @@ class ChatManager: ObservableObject {
             return
         }
         
-        // 2. Prepare new conversation data
         let conversationId = db.collection("conversations").document().documentID
         let currentUserName = AuthManager.shared.userProfile?.userName ?? "Me"
         
         let newConversation = Conversation(
-            id: conversationId,
+            //id: conversationId,
             participants: [currentUserId, otherUserId],
             participantNames: [
                 currentUserId: currentUserName,
@@ -212,7 +210,6 @@ class ChatManager: ObservableObject {
             unreadCount: [currentUserId: 0, otherUserId: 0]
         )
         
-        // 3. Save to Firebase Firestore
         do {
             try db.collection("conversations").document(conversationId).setData(from: newConversation)
             completion(conversationId)
