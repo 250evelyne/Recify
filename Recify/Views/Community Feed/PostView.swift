@@ -30,7 +30,8 @@ struct PostView: View {
             
             VStack(alignment: .leading) {
                 HStack(spacing: 15) {
-                    Image(post.userAvatar ?? "tomatoAvatar")
+                    let avatarName = post.userAvatar
+                    Image((avatarName == nil || avatarName!.isEmpty) ? "tomatoAvatar" : avatarName!)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 40, height: 40)

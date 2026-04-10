@@ -239,7 +239,7 @@ class FirebaseViewModel: ObservableObject {
         guard let userId = Auth.auth().currentUser?.uid, let docId = item.id else { return }
         let db = Firestore.firestore()
         
-        let currentStatus = item.isChecked ?? false
+        let currentStatus = item.isChecked
         
         db.collection("users").document(userId).collection("shopping_list").document(docId).updateData([
             "isChecked": !currentStatus
@@ -293,7 +293,6 @@ class FirebaseViewModel: ObservableObject {
     
     
     //MARK: fav collections
-    
     func saveNewCollection (name: String, imageUrl: String){
         guard let userId = Auth.auth().currentUser?.uid else {return}
         
@@ -442,7 +441,7 @@ class FirebaseViewModel: ObservableObject {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         let itemsToMove = shoppingItems.filter {
-            $0.recipeName == recipeName && ($0.isChecked ?? false)
+            $0.recipeName == recipeName && $0.isChecked
         }
         
         for item in itemsToMove {
@@ -465,7 +464,7 @@ class FirebaseViewModel: ObservableObject {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         let itemsToMove = shoppingItems.filter {
-            $0.category == category && ($0.isChecked ?? false)
+            $0.category == category && $0.isChecked
         }
         
         for item in itemsToMove {

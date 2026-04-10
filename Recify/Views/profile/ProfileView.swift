@@ -9,9 +9,11 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var chatManager: ChatManager
     @State private var showLogoutConfirm = false
     @StateObject private var firebaseManager = FirebaseViewModel.shared
     @StateObject private var ingredientVM = IngredientViewModel()
+    
     
     var body: some View {
         NavigationStack {
@@ -20,7 +22,8 @@ struct ProfileView: View {
                     
                     VStack(spacing: 12) {
                         ZStack(alignment: .bottomTrailing) {
-                            Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                            let avatarName = authManager.userProfile?.avatar
+                            Image((avatarName == nil || avatarName!.isEmpty) ? "tomatoAvatar" : avatarName!)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 120, height: 120)
@@ -207,7 +210,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 16)
                     
-                    Text("Recify Version 2.4.0 (2026)")
+                    Text("Recify (2026)")
                         .font(.caption2)
                         .foregroundColor(.gray)
                         .padding(.bottom, 30)
@@ -221,6 +224,7 @@ struct ProfileView: View {
                 Button("Cancel", role: .cancel) {}
                 Button("Logout", role: .destructive) {
                     authManager.signOut()
+                    chatManager.signOut()
                 }
             } message: {
                 Text("Are you sure you want to logout?")

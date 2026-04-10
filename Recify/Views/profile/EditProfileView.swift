@@ -139,7 +139,7 @@ struct EditProfileView: View {
         .onAppear {
             username = authManager.userProfile?.userName ?? ""
             email = authManager.userProfile?.email ?? ""
-            selectedAvatar = authManager.userProfile?.avatar ?? "avatar1"
+            selectedAvatar = authManager.userProfile?.avatar ?? "tomatoAvatar"
         }
         .alert(alertTitle, isPresented: $showAlert) {
             Button("OK") {
@@ -161,9 +161,8 @@ struct EditProfileView: View {
     }
     
     func saveChanges() {
-        guard let currentUser = Auth.auth().currentUser,
-              let userId = authManager.userProfile?.id else { return }
-        
+        guard let currentUser = Auth.auth().currentUser else { return }
+        let userId = currentUser.uid
         isLoading = true
         
         let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
@@ -171,49 +170,53 @@ struct EditProfileView: View {
         let avatarChanged = selectedAvatar != (authManager.userProfile?.avatar ?? "tomatoAvatar")
         let passwordChanged = !newPassword.isEmpty
         
-        if passwordChanged {
-            if newPassword != confirmPassword { setError(message: "New passwords do not match"); return }
-            if newPassword.count < 6 { setError(message: "Password must be at least 6 characters"); return }
-            if currentPassword.isEmpty { setError(message: "Current password is required"); return }
-        }
-        
-        var successMessages: [String] = []
         let db = Firestore.firestore()
+        let batch = db.batch()
         
-        if usernameChanged || avatarChanged {
-            let batch = db.batch()
+        let userRef = db.collection("users").document(userId)
+        batch.updateData([
+            "userName": trimmedUsername,
+            "avatar": selectedAvatar
+        ], forDocument: userRef)
+        
+        db.collection("posts").whereField("userId", isEqualTo: userId).getDocuments { postSnapshot, _ in
+            if let docs = postSnapshot?.documents {
+                docs.forEach { batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: $0.reference) }
+            }
             
-            let userRef = db.collection("users").document(userId)
-            batch.updateData([
-                "userName": trimmedUsername,
-                "avatar": selectedAvatar
-            ], forDocument: userRef)
-            
-            db.collection("posts").whereField("userId", isEqualTo: userId).getDocuments { postSnapshot, _ in
-                if let postDocs = postSnapshot?.documents {
-                    for doc in postDocs {
-                        batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
-                    }
+            db.collectionGroup("comments").whereField("userId", isEqualTo: userId).getDocuments { commentSnapshot, _ in
+                if let docs = commentSnapshot?.documents {
+                    docs.forEach { batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: $0.reference) }
                 }
                 
-                db.collectionGroup("comments").whereField("userId", isEqualTo: userId).getDocuments { commentSnapshot, _ in
-                    if let commentDocs = commentSnapshot?.documents {
-                        for doc in commentDocs {
-                            batch.updateData(["userAvatar": selectedAvatar, "userName": trimmedUsername], forDocument: doc.reference)
-                        }
+                db.collectionGroup("messages").whereField("senderId", isEqualTo: userId).getDocuments { msgSnapshot, _ in
+                    if let docs = msgSnapshot?.documents {
+                        docs.forEach { batch.updateData(["senderImage": selectedAvatar, "senderName": trimmedUsername], forDocument: $0.reference) }
                     }
                     
-                    batch.commit { error in
-                        if let error = error {
-                            setError(message: error.localizedDescription)
-                            return
-                        }
+                    db.collection("conversations")
+                        .whereField("participants", arrayContains: userId)
+                        .getDocuments { convSnapshot, _ in
+                            if let docs = convSnapshot?.documents {
+                                for doc in docs {
+                                    batch.updateData(["participantImages.\(userId)": selectedAvatar], forDocument: doc.reference)
+                                    batch.updateData(["participantNames.\(userId)": trimmedUsername], forDocument: doc.reference)
+                                }
+                            }
+                    
+                    
+                            batch.commit { error in
+                                if let error = error {
+                                    setError(message: error.localizedDescription)
+                                    return
+                                }
+                            }
                         
                         DispatchQueue.main.async {
                             authManager.userProfile?.userName = trimmedUsername
                             authManager.userProfile?.avatar = selectedAvatar
-                            authManager.loadUserProfile(userId: userId)
                             
+                            var successMessages: [String] = []
                             if usernameChanged { successMessages.append("Username updated") }
                             if avatarChanged { successMessages.append("Profile picture updated") }
                             
@@ -226,30 +229,22 @@ struct EditProfileView: View {
                     }
                 }
             }
-        } else if passwordChanged {
-            updatePassword(user: currentUser, successMessages: successMessages)
-        } else {
-            isLoading = false
         }
-    }
-    
-    private func setError(message: String) {
-        isLoading = false
-        alertTitle = "Error"
-        alertMessage = message
-        showAlert = true
     }
     
     func updatePassword(user: FirebaseAuth.User, successMessages: [String]) {
         guard let currentEmail = authManager.userProfile?.email else {
+            print("DEBUG ❌: User email missing for re-authentication")
             isLoading = false
             return
         }
         
+        print("DEBUG 8️⃣: Starting Re-authentication")
         let credential = EmailAuthProvider.credential(withEmail: currentEmail, password: currentPassword)
         
         user.reauthenticate(with: credential) { _, error in
             if let error = error {
+                print("DEBUG ❌: Re-authentication Failed: \(error.localizedDescription)")
                 self.isLoading = false
                 self.alertTitle = "Authentication Failed"
                 self.alertMessage = "Current password is incorrect"
@@ -257,28 +252,68 @@ struct EditProfileView: View {
                 return
             }
             
+            print("DEBUG 9️⃣: Re-auth Success. Updating Password...")
             user.updatePassword(to: self.newPassword) { error in
                 self.isLoading = false
                 
                 if let error = error {
+                    print("DEBUG ❌: Password Update Failed: \(error.localizedDescription)")
                     self.alertTitle = "Password Update Failed"
                     self.alertMessage = error.localizedDescription
                     self.showAlert = true
                     return
                 }
                 
+                print("DEBUG ✅: Password Updated Successfully")
                 var updatedMessages = successMessages
                 updatedMessages.append("Password updated")
                 self.finishUpdate(messages: updatedMessages)
             }
         }
     }
+    private func setError(message: String) {
+        isLoading = false
+        alertTitle = "Error"
+        alertMessage = message
+        showAlert = true
+    }
+    
+    
     
     func finishUpdate(messages: [String]) {
         self.isLoading = false
         self.alertTitle = "Success"
         self.alertMessage = messages.isEmpty ? "Profile updated successfully!" : messages.joined(separator: "\n")
         self.showAlert = true
+    }
+}
+
+private func updateUserContentInFirebase(userId: String, newName: String, newAvatar: String) {
+    let db = Firestore.firestore()
+    let batch = db.batch()
+    
+    db.collection("posts").whereField("userId", isEqualTo: userId).getDocuments { snapshot, _ in
+        snapshot?.documents.forEach { doc in
+            batch.updateData([
+                "userName": newName,
+                "userAvatar": newAvatar
+            ], forDocument: doc.reference)
+        }
+        
+        db.collectionGroup("comments").whereField("userId", isEqualTo: userId).getDocuments { snapshot, _ in
+            snapshot?.documents.forEach { doc in
+                batch.updateData([
+                    "userName": newName,
+                    "userAvatar": newAvatar
+                ], forDocument: doc.reference)
+            }
+            
+            batch.commit { error in
+                if let error = error {
+                    print("Error syncing legacy content: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
 

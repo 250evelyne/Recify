@@ -16,7 +16,8 @@ struct CommunityFeedView: View {
             VStack {
                 HStack {
                     NavigationLink(destination: MyPostsView().environmentObject(authManager)) {
-                        Image(authManager.userProfile?.avatar ?? "tomatoAvatar")
+                        let avatarName = authManager.userProfile?.avatar
+                        Image((avatarName == nil || avatarName!.isEmpty) ? "tomatoAvatar" : avatarName!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 35, height: 35)

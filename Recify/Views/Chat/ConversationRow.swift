@@ -18,44 +18,18 @@ struct ConversationRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            if let imageURL = conversation.otherUserImage(currentUserId: currentUserId) {
-                AsyncImage(url: URL(string: imageURL)) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Circle().fill(Color.gray.opacity(0.3))
-                }
-                .frame(width: 56, height: 56)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .fill(Color.green)
-                        .frame(width: 14, height: 14)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                        )
-                        .offset(x: 18, y: 18)
-                )
-            } else {
+            UserAvatarView(
+                imageURL: conversation.otherUserImage(currentUserId: currentUserId),
+                name: conversation.otherUserName(currentUserId: currentUserId)
+            )
+            .frame(width: 56, height: 56)
+            .overlay(
                 Circle()
-                    .fill(Color.pink.opacity(0.3))
-                    .frame(width: 56, height: 56)
-                    .overlay(
-                        Text(conversation.otherUserName(currentUserId: currentUserId).prefix(1))
-                            .font(.title2)
-                            .foregroundColor(.white)
-                    )
-                    .overlay(
-                        Circle()
-                            .fill(Color.green)
-                            .frame(width: 14, height: 14)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 2)
-                            )
-                            .offset(x: 18, y: 18)
-                    )
-            }
+                    .fill(Color.green)
+                    .frame(width: 14, height: 14)
+                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                    .offset(x: 18, y: 18)
+            )
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack {

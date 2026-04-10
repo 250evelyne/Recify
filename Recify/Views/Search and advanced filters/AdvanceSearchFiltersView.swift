@@ -258,7 +258,7 @@ func getIconForRestriction(_ res: DietaryRestriction) -> some View {
     case .nutFree: return dietImage(icon: "allergens", iconColor: .brown)
     case .glutenFree: return dietImage(icon: "laurel.leading", iconColor: .yellow)
     case .keto: return dietImage(icon: "flame.fill", iconColor: .red)
-    default: return dietImage(icon: "info.circle", iconColor: .gray)
+    //default: return dietImage(icon: "info.circle", iconColor: .gray)
     }
 }
 

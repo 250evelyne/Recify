@@ -16,7 +16,6 @@ struct User: Identifiable, Codable {
     var avatar: String
     
     init(id: String? = nil, email: String, userName: String, favorites: [String] = [], avatar: String = "cookieAvatar") {
-        self.id = id
         self.email = email
         self.userName = userName
         self.favorites = favorites

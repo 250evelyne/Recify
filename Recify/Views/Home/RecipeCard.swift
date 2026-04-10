@@ -22,7 +22,12 @@ struct RecipeCard: View {
             // MARK: - Image Section
             ZStack(alignment: .topTrailing) {
                 Group {
-                    if imageURL.hasPrefix("http") {
+                    if imageURL.isEmpty {
+                        Image(systemName: "photo")
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.gray.opacity(0.1))
+                    } else if imageURL.hasPrefix("http") {
                         AsyncImage(url: URL(string: imageURL)) { phase in
                             switch phase {
                             case .empty:

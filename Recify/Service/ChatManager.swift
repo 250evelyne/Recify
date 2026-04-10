@@ -73,7 +73,6 @@ class ChatManager: ObservableObject {
     }
     
     // MARK: - Core Data Persistence Logic
-    
     private func cacheMessagesLocally(_ firebaseMessages: [Message]) {
         viewContext.perform {
             for msg in firebaseMessages {
@@ -85,6 +84,7 @@ class ChatManager: ObservableObject {
                     entity.id = msg.id
                     entity.text = msg.text
                     entity.senderName = msg.senderName
+                    entity.senderId = msg.senderId
                     entity.timestamp = msg.timestamp.dateValue()
                     entity.conversationId = msg.conversationId
                 }
@@ -105,7 +105,6 @@ class ChatManager: ObservableObject {
         
         do {
             let localEntities = try viewContext.fetch(request)
-            // Map Core Data entities back to your Message model for the UI
             self.messages = localEntities.map { entity in
                 Message(
                     id: entity.id,
@@ -113,7 +112,7 @@ class ChatManager: ObservableObject {
                     text: entity.text ?? "",
                     imageURL: nil,
                     timestamp: Timestamp(date: entity.timestamp ?? Date()),
-                    senderId: "",
+                    senderId: entity.senderId ?? "",
                     senderName: entity.senderName ?? "Unknown",
                     senderImage: nil
                 )
@@ -122,24 +121,24 @@ class ChatManager: ObservableObject {
             print("Failed to fetch offline messages: \(error)")
         }
     }
-    
-    
 
-    // MARK: - Actions
     
-    func sendMessage(text: String, in conversationId: String) { // Ensure the 'in' label is present
+    // MARK: - Actions
+    func sendMessage(text: String, in conversationId: String) {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        let currentUserName = AuthManager.shared.userProfile?.userName ?? "Me"
+        let currentAvatar = AuthManager.shared.userProfile?.avatar ?? "cookieAvatar"
         
         let messageId = UUID().uuidString
         let newMessage = Message(
-            id: messageId,
             conversationId: conversationId,
             text: text,
             imageURL: nil,
             timestamp: Timestamp(date: Date()),
             senderId: currentUserId,
-            senderName: AuthManager.shared.userProfile?.userName ?? "Me",
-            senderImage: nil
+            senderName: currentUserName,
+            senderImage: currentAvatar
         )
         
         do {
@@ -176,7 +175,6 @@ class ChatManager: ObservableObject {
     }
     
     // MARK: - Conversation Management
-    
     func createConversation(withUserId otherUserId: String, userName: String, userImage: String?, completion: @escaping (String?) -> Void) {
         guard let currentUserId = Auth.auth().currentUser?.uid else {
             completion(nil)
@@ -192,18 +190,19 @@ class ChatManager: ObservableObject {
             return
         }
         
-        let conversationId = db.collection("conversations").document().documentID
+        let docRef = db.collection("conversations").document()
+        let conversationId = docRef.documentID
+        
         let currentUserName = AuthManager.shared.userProfile?.userName ?? "Me"
         
         let newConversation = Conversation(
-            //id: conversationId,
             participants: [currentUserId, otherUserId],
             participantNames: [
-                currentUserId: currentUserName,
+                currentUserId: currentUserName, 
                 otherUserId: userName
             ],
             participantImages: [
-                otherUserId: userImage ?? ""
+                otherUserId: userImage ?? "cookieAvatar"
             ],
             lastMessage: "Started a new conversation",
             lastMessageTime: Timestamp(date: Date()),
@@ -211,11 +210,19 @@ class ChatManager: ObservableObject {
         )
         
         do {
-            try db.collection("conversations").document(conversationId).setData(from: newConversation)
+            try docRef.setData(from: newConversation)
             completion(conversationId)
         } catch {
             print("Error creating conversation: \(error)")
             completion(nil)
         }
+    }
+    
+    func signOut() {
+        self.conversations = []
+        self.messages = []
+        self.currentConversation = nil
+        conversationsListener?.remove()
+        messagesListener?.remove()
     }
 }

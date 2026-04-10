@@ -254,7 +254,7 @@ struct HomeView: View {
                 HStack(spacing: 16) {
                     ForEach(viewModel.pantryMeals) { meal in
                         NavigationLink(destination: RecipeInstructionsView(
-                            mealId: meal.idMeal ?? "",
+                            mealId: meal.idMeal,
                             recipeTitle: meal.strMeal ?? "Unknown Recipe",
                             recipeImage: meal.strMealThumb ?? "",
                             prepTime: 30,
@@ -289,7 +289,7 @@ struct HomeView: View {
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                 ForEach(viewModel.trendingMeals) { meal in
                     NavigationLink(destination: RecipeInstructionsView(
-                        mealId: meal.idMeal ?? "",
+                        mealId: meal.idMeal,
                         recipeTitle: meal.strMeal ?? "Unknown Recipe",
                         recipeImage: meal.strMealThumb ?? "",
                         prepTime: 45,

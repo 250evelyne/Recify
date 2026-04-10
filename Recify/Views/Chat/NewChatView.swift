@@ -219,7 +219,7 @@ struct ChatViewWrapper: View {
         chatManager.createConversation(
             withUserId: userId,
             userName: user.userName,
-            userImage: nil
+            userImage: user.avatar //chnage this from nil to this 
         ) { conversationId in
             print("Conversation ID: \(conversationId ?? "nil")")
             

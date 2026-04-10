@@ -1,3 +1,10 @@
+//
+//  ConversationRow.swift
+//  Recify
+//
+//  Created by eve on 2026-02-09.
+//
+
 import Foundation
 import FirebaseFirestore
 
@@ -9,6 +16,22 @@ struct Conversation: Identifiable, Codable {
     var lastMessage: String?
     var lastMessageTime: Timestamp?
     var unreadCount: [String: Int]
+    
+    init(id: String? = nil,
+         participants: [String],
+         participantNames: [String : String],
+         participantImages: [String : String],
+         lastMessage: String? = nil,
+         lastMessageTime: Timestamp? = nil,
+         unreadCount: [String : Int]) {
+        //self.id = id
+        self.participants = participants
+        self.participantNames = participantNames
+        self.participantImages = participantImages
+        self.lastMessage = lastMessage
+        self.lastMessageTime = lastMessageTime
+        self.unreadCount = unreadCount
+    }
     
     func otherUserName(currentUserId: String) -> String {
         let otherUserId = participants.first { $0 != currentUserId } ?? ""

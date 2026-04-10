@@ -249,7 +249,7 @@ struct ShoppingListItemRow: View {
     @Binding var checkedItems: Set<String>
     
     var body: some View {
-        let isSelected = item.isChecked ?? false
+        let isSelected = item.isChecked
         
         RoundedRectangle(cornerRadius: 18)
             .frame(maxWidth: .infinity)
