@@ -36,12 +36,12 @@ struct CookingStatisticsTabView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("Level 12 Master Cook")
-                        .font(.subheadline)
-                        .foregroundColor(.pink)
-                        .fontWeight(.semibold)
+                    //                    Text("Level 12 Master Cook")
+                    //                        .font(.subheadline)
+                    //                        .foregroundColor(.pink)
+                    //                        .fontWeight(.semibold)
                     
-                    Text("Shining since Jan 2024")
+                    Text("Shining since Jan 2024") //TODO: add the date careate the account
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
@@ -59,17 +59,10 @@ struct CookingStatisticsTabView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
-                        Text("124")
+                        Text("124") //TODO: add their count of recipe they have puplished
                             .font(.title)
                             .fontWeight(.bold)
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.up")
-                                .font(.caption)
-                                .foregroundColor(.green)
-                            Text("+12% this month")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                        }
+                        
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -87,14 +80,7 @@ struct CookingStatisticsTabView: View {
                         Text("12 days")
                             .font(.title)
                             .fontWeight(.bold)
-                        HStack(spacing: 4) {
-                            Image(systemName: "flame.fill")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                            Text("On fire!")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                        }
+                        
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -118,7 +104,7 @@ struct CookingStatisticsTabView: View {
                             .rotationEffect(.degrees(-90))
                         
                         VStack {
-                            Text("12")
+                            Text("12") //TODO: how many recipes u have saved
                                 .font(.system(size: 36, weight: .bold))
                             Text("types")
                                 .font(.caption)
@@ -136,74 +122,75 @@ struct CookingStatisticsTabView: View {
                         Text("Pantry Efficiency")
                             .font(.headline)
                         Spacer()
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text("SAVED $40")
-                                .font(.caption)
-                                .foregroundColor(.green)
-                                .fontWeight(.semibold)
-                            Text("vs last month")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                        }
+                        //                        VStack(alignment: .trailing, spacing: 2) {
+                        //                            Text("SAVED $40")
+                        //                                .font(.caption)
+                        //                                .foregroundColor(.green)
+                        //                                .fontWeight(.semibold)
+                        //                            Text("vs last month")
+                        //                                .font(.caption2)
+                        //                                .foregroundColor(.gray)
+                        //                        }
                     }
                     
-                    HStack(alignment: .bottom) {
+                    HStack(alignment: .bottom) { //TODO: show how many items u have in yr pantry
                         Text("85%")
                             .font(.system(size: 48, weight: .bold))
                         Spacer()
                     }
-                    
-                    Text("Resource Utilization")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    
-                    ProgressView(value: 0.85)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .pink))
-                        .scaleEffect(x: 1, y: 2, anchor: .center)
-                    
-                    Text("*You're excellent at using on-hand ingredients! This month you've wasted 12% less fresh produce.")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .italic()
+                    //
+                    //                    Text("Resource Utilization")
+                    //                        .font(.caption)
+                    //                        .foregroundColor(.gray)
+                    //
+                    //                    ProgressView(value: 0.85)
+                    //                        .progressViewStyle(LinearProgressViewStyle(tint: .pink))
+                    //                        .scaleEffect(x: 1, y: 2, anchor: .center)
+                    //
+                    //                    Text("*You're excellent at using on-hand ingredients! This month you've wasted 12% less fresh produce.")
+                    //                        .font(.caption)
+                    //                        .foregroundColor(.gray)
+                    //                        .italic()
                 }
                 .padding()
                 .background(Color.white)
                 .cornerRadius(12)
                 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Weekly Heatmap")
-                            .font(.headline)
-                        Spacer()
-                        HStack(spacing: 8) {
-                            Text("LESS ACTIVE")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                            HStack(spacing: 2) {
-                                Circle().fill(Color.pink.opacity(0.2)).frame(width: 8, height: 8)
-                                Circle().fill(Color.pink.opacity(0.4)).frame(width: 8, height: 8)
-                                Circle().fill(Color.pink.opacity(0.6)).frame(width: 8, height: 8)
-                                Circle().fill(Color.pink.opacity(0.8)).frame(width: 8, height: 8)
-                                Circle().fill(Color.pink).frame(width: 8, height: 8)
-                            }
-                            Text("MORE ACTIVE")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 4) {
-                        ForEach(0..<49) { index in
-                            Rectangle()
-                                .fill(Color.pink.opacity(Double.random(in: 0.2...1.0)))
-                                .frame(height: 20)
-                                .cornerRadius(4)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
+                //                VStack(alignment: .leading, spacing: 12) {
+                //                    HStack {
+                //                        Text("Weekly Heatmap")
+                //                            .font(.headline)
+                //                        Spacer()
+                //                        HStack(spacing: 8) {
+                //                            Text("LESS ACTIVE")
+                //                                .font(.caption2)
+                //                                .foregroundColor(.gray)
+                //                            HStack(spacing: 2) {
+                //                                Circle().fill(Color.pink.opacity(0.2)).frame(width: 8, height: 8)
+                //                                Circle().fill(Color.pink.opacity(0.4)).frame(width: 8, height: 8)
+                //                                Circle().fill(Color.pink.opacity(0.6)).frame(width: 8, height: 8)
+                //                                Circle().fill(Color.pink.opacity(0.8)).frame(width: 8, height: 8)
+                //                                Circle().fill(Color.pink).frame(width: 8, height: 8)
+                //                            }
+                //                            Text("MORE ACTIVE")
+                //                                .font(.caption2)
+                //                                .foregroundColor(.gray)
+                //                        }
+                //                    }
+                //
+                //                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 4) {
+                //                        ForEach(0..<49) { index in
+                //                            Rectangle()
+                //                                .fill(Color.pink.opacity(Double.random(in: 0.2...1.0)))
+                //                                .frame(height: 20)
+                //                                .cornerRadius(4)
+                //                        }
+                //                    }
+                //                }
+                //                .padding()
+                //                .background(Color.white)
+                //                .cornerRadius(12)
+                
             }
             .padding()
         }
