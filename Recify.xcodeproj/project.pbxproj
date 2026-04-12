@@ -48,7 +48,6 @@
 		20EE05852F3D0F3B00930D68 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05802F3D0F3B00930D68 /* MessageBubble.swift */; };
 		20EE05862F3D0F3B00930D68 /* NewChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05822F3D0F3B00930D68 /* NewChatView.swift */; };
 		20EE05882F3D0F3B00930D68 /* MessagesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05812F3D0F3B00930D68 /* MessagesListView.swift */; };
-		20EE058D2F3D0F5500930D68 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05892F3D0F5500930D68 /* ChatManager.swift */; };
 		20EE058E2F3D0F5500930D68 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE058A2F3D0F5500930D68 /* Conversation.swift */; };
 		20EE058F2F3D0F5500930D68 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE058B2F3D0F5500930D68 /* Message.swift */; };
 		20EE05932F3D107200930D68 /* CookingStatisticsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EE05922F3D107200930D68 /* CookingStatisticsTabView.swift */; };
@@ -137,7 +136,6 @@
 		20EE05802F3D0F3B00930D68 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		20EE05812F3D0F3B00930D68 /* MessagesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListView.swift; sourceTree = "<group>"; };
 		20EE05822F3D0F3B00930D68 /* NewChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewChatView.swift; sourceTree = "<group>"; };
-		20EE05892F3D0F5500930D68 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
 		20EE058A2F3D0F5500930D68 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		20EE058B2F3D0F5500930D68 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		20EE05922F3D107200930D68 /* CookingStatisticsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingStatisticsTabView.swift; sourceTree = "<group>"; };
@@ -237,7 +235,6 @@
 			children = (
 				FA9A76EA2F38F11200458CC8 /* Service */,
 				040410252F311B0D00EA6C4C /* Views */,
-				20EE058C2F3D0F5500930D68 /* Chat */,
 				040410242F311B0400EA6C4C /* Models */,
 				04040FE22F3117E300EA6C4C /* RecifyApp.swift */,
 				04040FE42F3117E300EA6C4C /* ContentView.swift */,
@@ -290,7 +287,8 @@
 				20F7E13E2F5E76F200A9A6AC /* MealApi.swift */,
 				20F7E1452F5E8D3900A9A6AC /* SavedRecipe.swift */,
 				FA95053E2F6107AA0082B995 /* RecipeCollections.swift */,
-				FA1B36402F88774800B121C9 /* TransportOptions.swift */,
+				20EE058A2F3D0F5500930D68 /* Conversation.swift */, /*evylne thing try and delete if not working*/
+				FA1B36402F88774800B121C9 /* TransportOptions.swift */, /*transport and grocerystore are mine*/
 				FA1B36422F88946200B121C9 /* GroceryStore.swift */,
 			);
 			path = Models;
@@ -349,21 +347,12 @@
 		20EE05832F3D0F3B00930D68 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				208CB3A82F7DCCFA007038F8 /* ChatView.swift */,
+				20EE058B2F3D0F5500930D68 /* Message.swift */,
 				20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */,
 				20EE05802F3D0F3B00930D68 /* MessageBubble.swift */,
 				20EE05812F3D0F3B00930D68 /* MessagesListView.swift */,
 				20EE05822F3D0F3B00930D68 /* NewChatView.swift */,
-			);
-			path = Chat;
-			sourceTree = "<group>";
-		};
-		20EE058C2F3D0F5500930D68 /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				20EE05892F3D0F5500930D68 /* ChatManager.swift */,
-				20EE058A2F3D0F5500930D68 /* Conversation.swift */,
-				20EE058B2F3D0F5500930D68 /* Message.swift */,
-				208CB3A82F7DCCFA007038F8 /* ChatView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -582,7 +571,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20EE058D2F3D0F5500930D68 /* ChatManager.swift in Sources */,
 				208CB3A22F7DCA55007038F8 /* savedCollectionsView.swift in Sources */,
 				208CB3A32F7DCA55007038F8 /* SaveToCollectionView.swift in Sources */,
 				208CB3A42F7DCA55007038F8 /* CreateCollection.swift in Sources */,

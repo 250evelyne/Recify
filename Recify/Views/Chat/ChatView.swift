@@ -86,23 +86,10 @@ struct ChatView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 8) {
-                    if let imageURL = conversation.otherUserImage(currentUserId: currentUserId) {
-                        AsyncImage(url: URL(string: imageURL)) { image in
-                            image.resizable().scaledToFill()
-                        } placeholder: {
-                            Circle().fill(Color.gray.opacity(0.3))
-                        }
-                        .frame(width: 32, height: 32)
-                        .clipShape(Circle())
-                    } else {
-                        Circle()
-                            .fill(Color.pink.opacity(0.3))
-                            .frame(width: 32, height: 32)
-                            .overlay(
-                                Text(conversation.otherUserName(currentUserId: currentUserId).prefix(1))
-                                    .foregroundColor(.white)
-                            )
-                    }
+                    UserAvatarView(
+                        imageURL: conversation.otherUserImage(currentUserId: currentUserId),
+                        name: conversation.otherUserName(currentUserId: currentUserId)
+                    )
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(conversation.otherUserName(currentUserId: currentUserId))

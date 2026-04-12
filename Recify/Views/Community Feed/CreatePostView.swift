@@ -6,11 +6,20 @@
 //
 
 import SwiftUI
+import PhotosUI
+import FirebaseAuth
 
 struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var caption: String = ""
-    @StateObject private var feedVM = FeedViewModel()
+    @ObservedObject var feedVM: FeedViewModel
+    
+    @State private var selectedItem: PhotosPickerItem? = nil
+    @State private var selectedImage: UIImage? = nil
+    @State private var base64String: String = ""
+    
+    @State private var showSuccessAlert = false
+    @State private var isPosting = false
     
     var body: some View {
         VStack {
@@ -18,54 +27,82 @@ struct CreatePostView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("Cancel").foregroundStyle(.gray)
+                    Text("Cancel")
+                        .foregroundStyle(.pink)
                 }
                 Spacer()
                 Text("Create Post").bold().font(.title)
                 Spacer()
+                
                 Button {
-                    feedVM.createPost(caption: caption, imageUrl: "https://picsum.photos/400")
-                    dismiss() 
+                    isPosting = true
+                    if !base64String.isEmpty {
+                        feedVM.createPost(caption: caption, imageUrl: base64String)
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showSuccessAlert = true
+                            isPosting = false
+                        }
+                    }
                 } label: {
-                    Text("Post")
+                    if isPosting {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Post")
+                    }
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.pink)
-                .disabled(caption.isEmpty) // Prevent empty posts
+                .disabled(caption.isEmpty || base64String.isEmpty)
             }
             .padding()
             
             Divider()
             
-            Button {
-                // TODO: Add image picker later (anabella or me)
-            } label: {
-                RoundedRectangle(cornerRadius: 15)
-                    .strokeBorder(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))
-                    .foregroundStyle(.blue.opacity(0.1))
-                    .frame(width: 350,height: 300)
-                    
-                    .overlay {
-                        VStack {
-                            Image(systemName: "camera.fill") //TODO: permission works now i have to fix it 
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 35, height: 35)
-                                .foregroundStyle(.blue)
-                                .padding(15)
-                                .background(
-                                    Circle()
-                                        .fill(Color.white)
-                                )
-
-                            Text("Add Photo")
-                                .foregroundStyle(.blue)
-                                .bold()
+            PhotosPicker(selection: $selectedItem, matching: .images) {
+                if let selectedImage = selectedImage {
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 350, height: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                } else {
+                    RoundedRectangle(cornerRadius: 15)
+                        .strokeBorder(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [10,6]))
+                        .foregroundStyle(.blue.opacity(0.1))
+                        .frame(width: 350,height: 300)
+                        .overlay {
+                            VStack {
+                                Image(systemName: "camera.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 35, height: 35)
+                                    .foregroundStyle(.blue)
+                                    .padding(15)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white)
+                                    )
+                                
+                                Text("Add Photo")
+                                    .foregroundStyle(.blue)
+                                    .bold()
+                            }
+                        }
+                        .background(Color.blue.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                }
+            }
+            .onChange(of: selectedItem) { newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        self.selectedImage = uiImage
+                        if let compressedData = uiImage.jpegData(compressionQuality: 0.5) {
+                            self.base64String = compressedData.base64EncodedString()
                         }
                     }
-                    .background(Color.blue.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                
+                }
             }
             
             TextField("Write a caption...", text: $caption)
@@ -75,9 +112,16 @@ struct CreatePostView: View {
             
         }
         .navigationBarBackButtonHidden(true)
+        .alert("Success", isPresented: $showSuccessAlert) {
+            Button("Done") {
+                dismiss()
+            }
+        } message: {
+            Text("Your recipe has been shared with the community!")
+        }
     }
 }
 
 #Preview {
-    CreatePostView()
+    CreatePostView(feedVM: FeedViewModel())
 }

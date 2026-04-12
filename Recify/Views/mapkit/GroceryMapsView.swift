@@ -500,6 +500,7 @@ struct GroceryMapsView: View {
         
         guard let center = currentCenter else {return}
         
+//         if locationManager.userLocation != nil {
 //        if let userLocation = locationManager.userLocation {
             withAnimation {
                 zoomLevel *= 0.8
@@ -518,6 +519,7 @@ struct GroceryMapsView: View {
     private func zoomOut(){
         guard let center = currentCenter else {return}
 
+//         if locationManager.userLocation != nil {
 //        if let userLocation = locationManager.userLocation {
             withAnimation {
                 zoomLevel *= 1.2

@@ -8,17 +8,22 @@
 import SwiftUI
 import FirebaseCore
 
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+}
+
 @main
 struct RecifyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @StateObject private var authManager = AuthManager()
-    
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var firebaseViewModel = FirebaseViewModel()
-    
-    init() {
-        FirebaseApp.configure()
-    }
     
     var body: some Scene {
         WindowGroup {
@@ -34,6 +39,7 @@ struct RecifyApp: App {
             .environmentObject(authManager)
             .environmentObject(homeViewModel)
             .environmentObject(firebaseViewModel)
+            .environmentObject(ChatManager())
         }
     }
 }

@@ -1,3 +1,10 @@
+//
+//  ChatManager.swift
+//  Recify
+//
+//  Created by netblen on 2026-02-11.
+//
+
 import Foundation
 import FirebaseFirestore
 

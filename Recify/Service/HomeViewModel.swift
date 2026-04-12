@@ -155,7 +155,7 @@ class HomeViewModel: ObservableObject {
     
     func applyAdvancedFilters(filters: SearchFilters) {
         guard filters.matchPantry else {
-            print("✅ Filters are OFF, skipping filtering logic")
+            print(" Filters are OFF, skipping filtering logic")
             return
         }
         
@@ -173,7 +173,20 @@ class HomeViewModel: ObservableObject {
             }
         }
     }
-
+    
+    func fetchByCategory(_ category: String) async {
+        self.isLoading = true
+        if category == "All" {
+            await fetchTrendingMeals()
+        } else {
+            let urlString = "https://www.themealdb.com/api/json/v1/1/filter.php?c=\(category)"
+            if let meals = await fetchMeals(from: urlString) {
+                self.trendingMeals = Array(meals.prefix(10))
+            }
+        }
+        self.isLoading = false
+    }
+    
     func fetchHomeData() async {
         self.isLoading = true
         

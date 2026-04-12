@@ -58,9 +58,18 @@ struct RecipeInstructionsView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
+        
+        //updated to return all parameters - eve
         .sheet(isPresented: $showCalendar) {
-            CalendarView()
+            CalendarView(
+                recipeId: mealId,
+                recipeName: recipeTitle,
+                recipeImage: recipeImage,
+                prepTime: prepTime,
+                difficulty: difficulty
+            )
         }
+
         .alert("Added to Cart", isPresented: $showAddedAlert) {
             Button("OK", role: .cancel) { }
         } message: {

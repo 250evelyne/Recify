@@ -19,22 +19,7 @@ struct TabBarView: View {
                 }
                 .tag(0)
             
-            //gonna move this to user profile
-//            PantryView()
-//                .tabItem {
-//                    Image(systemName: selectedTab == 1 ? "archivebox.fill" : "archivebox")
-//                    Text("Pantry")
-//                }
-//                .tag(1)
-            
-            //has to be somewhere else
-//            CookingModeTabView()
-//                .tabItem {
-//                    Image(systemName: selectedTab == 2 ? "play.circle.fill" : "play.circle")
-//                    Text("Cooking")
-//                }
-//                .tag(2)
-            
+         
             CommunityFeedView()
                 .tabItem {
                     Image(systemName: selectedTab == 3 ? "person.3.fill" : "person.3")
@@ -55,12 +40,6 @@ struct TabBarView: View {
                 }
                 .tag(5)
             
-            //move this to home page well not sure at the moment 
-//            ShoppingList()
-//                .tabItem {
-//                    Image(systemName: selectedTab == 6 ? "cart.fill" : "cart")
-//                    Text("Shop")
-//                }.tag(6)
             
             ProfileView()
                 .tabItem {

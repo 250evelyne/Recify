@@ -22,120 +22,148 @@ struct SignUpView: View {
     @State private var errorMessage = ""
     
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 8) {
-                Image(systemName: "fork.knife")
-                    .font(.system(size: 50))
-                    .foregroundColor(.pink)
+        ScrollView {
+            VStack(spacing: 0) {
                 
-                Text("Recify")
-                    .font(.title2)
-                    .fontWeight(.bold)
-            }
-            .padding(.top, 40)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Create Account")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Text("Join our cooking community.")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 24)
-            .padding(.top, 20)
-            
-            VStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Username")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                // MARK: - Header
+                ZStack {
+                    LinearGradient(
+                        colors: [Color.pink.opacity(0.7), Color(red: 0.6, green: 0.8, blue: 1.0).opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea(edges: .top)
                     
-                    TextField("Enter your username", text: $userName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Email Address")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    
-                    TextField("example@email.com", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Password")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    
-                    HStack {
-                        if showPassword {
-                            TextField("Enter your password", text: $password)
-                        } else {
-                            SecureField("Enter your password", text: $password)
-                        }
+                    VStack(spacing: 12) {
+                        Image(systemName: "fork.knife.circle.fill")
+                            .font(.system(size: 64))
+                            .foregroundColor(.white)
                         
-                        Button(action: { showPassword.toggle() }) {
-                            Image(systemName: showPassword ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
-                        }
+                        Text("Recify")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        
+                        Text("Join our cooking community")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.85))
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    .padding(.vertical, 48)
                 }
+                .frame(maxWidth: .infinity)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Confirm Password")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                // MARK: - Form Card
+                VStack(spacing: 20) {
                     
-                    SecureField("Re-enter your password", text: $confirmPassword)
+                    Text("Create Account")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 8)
+                    
+                    // Username
+                    CustomField(
+                        icon: "person",
+                        placeholder: "Username",
+                        text: $userName,
+                        isSecure: false
+                    )
+                    
+                    // Email
+                    CustomField(
+                        icon: "envelope",
+                        placeholder: "Email Address",
+                        text: $email,
+                        isSecure: false,
+                        keyboardType: .emailAddress
+                    )
+                    
+                    // Password
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Image(systemName: "lock")
+                                .foregroundColor(.pink)
+                                .frame(width: 20)
+                            if showPassword {
+                                TextField("Password", text: $password)
+                                    .autocapitalization(.none)
+                            } else {
+                                SecureField("Password", text: $password)
+                            }
+                            Button(action: { showPassword.toggle() }) {
+                                Image(systemName: showPassword ? "eye.slash" : "eye")
+                                    .foregroundColor(.gray)
+                            }
+                        }
                         .padding()
                         .background(Color(.systemGray6))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
+                    }
+                    
+                    // Confirm Password
+                    CustomField(
+                        icon: "lock.fill",
+                        placeholder: "Confirm Password",
+                        text: $confirmPassword,
+                        isSecure: true
+                    )
+                    
+                    // Password match indicator
+                    if !confirmPassword.isEmpty {
+                        HStack(spacing: 6) {
+                            Image(systemName: password == confirmPassword ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundColor(password == confirmPassword ? .green : .red)
+                            Text(password == confirmPassword ? "Passwords match" : "Passwords don't match")
+                                .font(.caption)
+                                .foregroundColor(password == confirmPassword ? .green : .red)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    
+                    // Sign Up Button
+                    Button(action: handleSignUp) {
+                        ZStack {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Text("Create Account")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            isFormValid && !isLoading
+                            ? LinearGradient(colors: [.pink, .pink.opacity(0.8)], startPoint: .leading, endPoint: .trailing)
+                            : LinearGradient(colors: [.gray.opacity(0.4), .gray.opacity(0.4)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .cornerRadius(14)
+                        .shadow(color: isFormValid ? .pink.opacity(0.3) : .clear, radius: 8, x: 0, y: 4)
+                    }
+                    .disabled(!isFormValid || isLoading)
+                    .padding(.top, 8)
+                    
+                    // Login link
+                    HStack {
+                        Text("Already have an account?")
+                            .foregroundColor(.gray)
+                        Button("Log In") {
+                            dismiss()
+                        }
+                        .foregroundColor(.pink)
+                        .fontWeight(.semibold)
+                    }
+                    .font(.subheadline)
+                    .padding(.bottom, 32)
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
             }
-            .padding(.horizontal, 24)
-            
-            Button(action: handleSignUp) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Text("Sign Up")
-                        .font(.headline)
-                }
-            }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(isFormValid && !isLoading ? Color.pink : Color.gray)
-            .cornerRadius(12)
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
-            .disabled(!isFormValid || isLoading)
-            
-            Spacer()
-            
-            HStack {
-                Text("Already have an account?")
-                    .foregroundColor(.gray)
-                Button("Log In") {
-                    dismiss()
-                }
-                .foregroundColor(.pink)
-                .fontWeight(.semibold)
-            }
-            .font(.subheadline)
-            .padding(.bottom, 24)
         }
+        .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) {}
@@ -143,11 +171,9 @@ struct SignUpView: View {
             Text(errorMessage)
         }
         .alert("Success!", isPresented: $showSuccess) {
-            Button("OK") {
-                dismiss()
-            }
+            Button("OK") { dismiss() }
         } message: {
-            Text("Account created successfully! Please log in with your new credentials.")
+            Text("Account created successfully! Please log in.")
         }
     }
     
@@ -156,40 +182,53 @@ struct SignUpView: View {
     }
     
     func handleSignUp() {
-        print(" Form validation passed")
-        print("   Username: \(userName)")
-        print("   Email: \(email)")
-        print("   Password length: \(password.count)")
-        
         guard password == confirmPassword else {
             errorMessage = "Passwords do not match"
             showError = true
-            print(" Passwords don't match")
             return
         }
-        
         guard password.count >= 6 else {
             errorMessage = "Password must be at least 6 characters"
             showError = true
-            print(" Password too short")
             return
         }
-        
         isLoading = true
-        print(" Starting signup process...")
-        
         authManager.signUp(email: email, password: password, userName: userName) { success in
             isLoading = false
-            
             if success {
-                print(" Signup successful in view")
                 showSuccess = true
             } else {
-                print(" Signup failed in view")
                 errorMessage = authManager.errorMessage
                 showError = true
             }
         }
+    }
+}
+
+// MARK: - Reusable Custom Field
+struct CustomField: View {
+    let icon: String
+    let placeholder: String
+    @Binding var text: String
+    var isSecure: Bool = false
+    var keyboardType: UIKeyboardType = .default
+    
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(.pink)
+                .frame(width: 20)
+            if isSecure {
+                SecureField(placeholder, text: $text)
+            } else {
+                TextField(placeholder, text: $text)
+                    .autocapitalization(.none)
+                    .keyboardType(keyboardType)
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
     }
 }
 
