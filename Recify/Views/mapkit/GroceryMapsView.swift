@@ -51,21 +51,21 @@ struct GroceryMapsView: View {
             
             Map(position: $camera, selection: $selectedStore){
                 
-                  Marker("You", coordinate: college) //for niw its only loads the user location after a while so teven if they give the location it shows the collage so tom ima focus on user the suer lcoation becuase if i allow it then it send the user from ls to a metro in mtl so no good
-                      .tint(.blue)
+                Marker("You", coordinate: college) //for niw its only loads the user location after a while so teven if they give the location it shows the collage so tom ima focus on user the suer lcoation becuase if i allow it then it send the user from ls to a metro in mtl so no good
+                    .tint(.blue)
                 
-//                if let userLocation = locationManager.userLocation{
-//                    Marker("You", coordinate: userLocation)
-//                        .tint(.blue)
-//                }
+                //                if let userLocation = locationManager.userLocation{
+                //                    Marker("You", coordinate: userLocation)
+                //                        .tint(.blue)
+                //                }
                 
                 if let destination {
                     Marker(searchText, coordinate: destination)
                         .tint(.green)
                 }
-
                 
-//                ForEach(stores, id: \.self) { store in
+                
+                //                ForEach(stores, id: \.self) { store in
                 ForEach(stores) { store in
                     Marker(store.name, coordinate: store.coordinate)
                         .tint(.green)
@@ -95,7 +95,7 @@ struct GroceryMapsView: View {
             //                }
                 .onAppear {
                     if !didAutoCenter {
-                        let startLocation = locationManager.userLocation ?? college
+                        let startLocation = /*locationManager.userLocation ??*/ college
                         
                         camera = .camera(
                             MapCamera(
@@ -119,7 +119,7 @@ struct GroceryMapsView: View {
                     selectStore(store)
                 }
                 .onChange(of: selectedTransport) { _ in //i wanted that if the user chnages the transport type the route recals its self
-                    let source = locationManager.userLocation ?? college
+                    let source = /*locationManager.userLocation ?? */college
                     
                     if let store = selectedStore {
                         selectStore(store)
@@ -135,7 +135,11 @@ struct GroceryMapsView: View {
                                 route = newRoute
                                 camera = .region(MKCoordinateRegion(newRoute.polyline.boundingMapRect))
                             } catch {
+                                route = nil
                                 errorMessage = error.localizedDescription
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    self.errorMessage = nil
+                                }
                             }
                         }
                     }
@@ -168,7 +172,7 @@ struct GroceryMapsView: View {
                 
                 Spacer()
             }
-                    
+            
             
             VStack{
                 Spacer()
@@ -210,37 +214,18 @@ struct GroceryMapsView: View {
             }
             
             
-//            if let store = selectedStore {
-//                VStack {
-//                    Spacer()
-//                    
-//                    VStack(spacing: 10) {
-//                        Text(store.name ?? "Store")
-//                            .font(.headline)
-//                        
-//                        Text(store.placemark.title ?? "")
-//                            .font(.subheadline)
-//                            .foregroundStyle(.gray)
-//                        
-//                        Button {
-//                            store.openInMaps()
-//                        } label: {
-//                            Text("Get Directions")
-//                                .foregroundStyle(.white)
-//                                .padding()
-//                                .frame(maxWidth: .infinity)
-//                                .background(Color.blue)
-//                                .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        }
-//                    }
-//                    .padding()
-//                    .background(.ultraThinMaterial)
-//                    .clipShape(RoundedRectangle(cornerRadius: 20))
-//                    .padding()
-//                }
-//            }
-            
-            
+            if let errorMessage {
+                VStack {
+                    Spacer()
+                    
+                    Text(errorMessage)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red.opacity(0.9))
+                        .cornerRadius(10)
+                        .padding()
+                }
+            }
             
         }
         .navigationTitle("Grocery Maps").foregroundStyle(.white)
@@ -248,6 +233,9 @@ struct GroceryMapsView: View {
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
     
+    
+    //MARK: funtions
+
     private var storeSearchSection: some View {
         
         HStack(spacing: 12) {
@@ -285,11 +273,10 @@ struct GroceryMapsView: View {
     }
     
     
-    //MARK: funtions
     
     private func selectStore(_ store: GroceryStore) {
         Task {
-            let source = locationManager.userLocation ?? college
+            let source = /*locationManager.userLocation ??*/ college
             
             do {
                 let newRoute = try await calculateRoute(
@@ -304,7 +291,11 @@ struct GroceryMapsView: View {
                 camera = .region(MKCoordinateRegion(rect))
                 
             } catch {
+                route = nil
                 errorMessage = error.localizedDescription
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    self.errorMessage = nil
+                }
             }
         }
     }
@@ -354,7 +345,7 @@ struct GroceryMapsView: View {
 //                return
 //            }
             
-            let source = locationManager.userLocation ?? college
+            let source =/* locationManager.userLocation ??*/ college
             
             isSearching = true
             defer { isSearching = false}
@@ -376,7 +367,11 @@ struct GroceryMapsView: View {
                 camera = .region(regien)
                 
             }catch{
+                route = nil
                 errorMessage = error.localizedDescription
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    self.errorMessage = nil
+                }
             }
             
         }
@@ -404,9 +399,6 @@ struct GroceryMapsView: View {
                 )
             )
             
-            
-            //TODO: idk if ima chnage it so that they can chose search the route based on vhicle, transit , walking or cycling
-//            request.transportType = .automobile
             request.transportType = transport
             
             MKDirections(request: request).calculate {
@@ -418,17 +410,23 @@ struct GroceryMapsView: View {
                 }
                 
                 guard let route = response?.routes.first else {
+                    
+                    let message = transport == .transit
+                        ? "No transit route available for this trip."
+                        : "No route found."
+
                     continuation.resume(
                         throwing: NSError(
                             domain: "Directions",
                             code: 0,
                             userInfo: [
-                                NSLocalizedDescriptionKey: "No route found."
+                                NSLocalizedDescriptionKey: message
                             ]
                         )
                     )
                     return
                 }
+                
                 continuation.resume(returning: route)
             }
             
@@ -537,7 +535,7 @@ struct GroceryMapsView: View {
     
     private func goTOUserLocation(){
 //        if let userLocation = locationManager.userLocation {
-        let target = locationManager.userLocation ?? college
+        let target = /*locationManager.userLocation ??*/ college
             withAnimation {
                 camera = .camera(
                     MapCamera(
