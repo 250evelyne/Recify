@@ -62,7 +62,7 @@ struct UserAvatarView: View { //TODO: chnage so the default like like gray so we
     let name: String
     
     var body: some View {
-        let avatarName =  imageURL!.isEmpty ? "tomatoAvatar" : imageURL!
+        let avatarName =  imageURL!.isEmpty ? "tomatoAvatar" : imageURL! //TODO:fucking up here
         
         Image(avatarName)
             .resizable()

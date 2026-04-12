@@ -58,6 +58,7 @@
 		FA0A82652F578A0E0066A796 /* AdvanceSearchFiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */; };
 		FA1B36412F88774800B121C9 /* TransportOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B36402F88774800B121C9 /* TransportOptions.swift */; };
 		FA1B36432F88946200B121C9 /* GroceryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B36422F88946200B121C9 /* GroceryStore.swift */; };
+		FA1D94302F8C0B710088357C /* SavedMeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1D942F2F8C0B710088357C /* SavedMeal.swift */; };
 		FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3DB2F36A448002CB0ED /* PantryView.swift */; };
 		FA46E3FB2F37C3B0002CB0ED /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FA2F37C3B0002CB0ED /* Filters.swift */; };
 		FA46E3FD2F37CC82002CB0ED /* Ingredients.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */; };
@@ -146,6 +147,7 @@
 		FA0A82642F578A0E0066A796 /* AdvanceSearchFiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvanceSearchFiltersView.swift; sourceTree = "<group>"; };
 		FA1B36402F88774800B121C9 /* TransportOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportOptions.swift; sourceTree = "<group>"; };
 		FA1B36422F88946200B121C9 /* GroceryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryStore.swift; sourceTree = "<group>"; };
+		FA1D942F2F8C0B710088357C /* SavedMeal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedMeal.swift; sourceTree = "<group>"; };
 		FA46E3DB2F36A448002CB0ED /* PantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryView.swift; sourceTree = "<group>"; };
 		FA46E3FA2F37C3B0002CB0ED /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
 		FA46E3FC2F37CC82002CB0ED /* Ingredients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ingredients.swift; sourceTree = "<group>"; };
@@ -274,6 +276,8 @@
 		040410242F311B0400EA6C4C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				20EE058B2F3D0F5500930D68 /* Message.swift */,
+				FA1D942F2F8C0B710088357C /* SavedMeal.swift */,
 				FAA185AE2F57CC1400A67F7C /* CookTime.swift */,
 				040410262F311B1C00EA6C4C /* User.swift */,
 				FAA5E4AC2F509A6100F3122C /* Post.swift */,
@@ -287,8 +291,8 @@
 				20F7E13E2F5E76F200A9A6AC /* MealApi.swift */,
 				20F7E1452F5E8D3900A9A6AC /* SavedRecipe.swift */,
 				FA95053E2F6107AA0082B995 /* RecipeCollections.swift */,
-				20EE058A2F3D0F5500930D68 /* Conversation.swift */, /*evylne thing try and delete if not working*/
-				FA1B36402F88774800B121C9 /* TransportOptions.swift */, /*transport and grocerystore are mine*/
+				20EE058A2F3D0F5500930D68 /* Conversation.swift */,
+				FA1B36402F88774800B121C9 /* TransportOptions.swift */,
 				FA1B36422F88946200B121C9 /* GroceryStore.swift */,
 			);
 			path = Models;
@@ -348,7 +352,6 @@
 			isa = PBXGroup;
 			children = (
 				208CB3A82F7DCCFA007038F8 /* ChatView.swift */,
-				20EE058B2F3D0F5500930D68 /* Message.swift */,
 				20EE057F2F3D0F3B00930D68 /* ConversationRow.swift */,
 				20EE05802F3D0F3B00930D68 /* MessageBubble.swift */,
 				20EE05812F3D0F3B00930D68 /* MessagesListView.swift */,
@@ -626,6 +629,7 @@
 				040410292F311B5400EA6C4C /* Recipe.swift in Sources */,
 				FA46E3DC2F36A448002CB0ED /* PantryView.swift in Sources */,
 				040410272F311B1C00EA6C4C /* User.swift in Sources */,
+				FA1D94302F8C0B710088357C /* SavedMeal.swift in Sources */,
 				0404102F2F311BBA00EA6C4C /* OnboardingPageView.swift in Sources */,
 				040410332F311C0300EA6C4C /* LoginView.swift in Sources */,
 				04040FE32F3117E300EA6C4C /* RecifyApp.swift in Sources */,

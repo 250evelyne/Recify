@@ -46,25 +46,25 @@ struct ChatView: View {
             }
             
             HStack(spacing: 12) {
-                Button(action: {
-                    showImagePicker = true
-                }) {
-                    Image(systemName: "camera.fill")
-                        .foregroundColor(.white)
-                        .frame(width: 36, height: 36)
-                        .background(Color.pink)
-                        .clipShape(Circle())
-                }
+//                Button(action: {
+//                    showImagePicker = true
+//                }) {
+//                    Image(systemName: "camera.fill")
+//                        .foregroundColor(.white)
+//                        .frame(width: 36, height: 36)
+//                        .background(Color.pink)
+//                        .clipShape(Circle())
+//                }
                 
                 HStack {
                     TextField("Message \(conversation.otherUserName(currentUserId: currentUserId))...", text: $messageText)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
                     
-                    Button(action: {}) {
-                        Image(systemName: "face.smiling")
-                            .foregroundColor(.gray)
-                    }
+//                    Button(action: {}) {
+//                        Image(systemName: "face.smiling")
+//                            .foregroundColor(.gray)
+//                    }
                 }
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(20)
@@ -101,16 +101,16 @@ struct ChatView: View {
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
-//                    Button(action: {}) {
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                HStack(spacing: 16) {
+//                   Button(action: {}) {
 //                        Image(systemName: "video.fill")
+//                   }
+//                    Button(action: {}) {
+//                        Image(systemName: "info.circle")
 //                    }
-                    Button(action: {}) {
-                        Image(systemName: "info.circle")
-                    }
-                }
-            }
+//                }
+//            }
         }
         .onAppear {
             if let conversationId = conversation.id {
