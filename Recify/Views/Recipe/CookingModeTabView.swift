@@ -180,12 +180,12 @@ struct CookingModeTabView: View {
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {}) {
-                    Image(systemName: "bell.fill")
-                        .foregroundColor(.pink)
-                }
-            }
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                Button(action: {}) {
+//                    Image(systemName: "bell.fill")
+//                        .foregroundColor(.pink)
+//                }
+//            }
         }
         
         

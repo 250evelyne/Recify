@@ -40,7 +40,7 @@ struct CommunityFeedView: View {
                         }
                 }
                 .padding()
-                .background(.blue.opacity(0.08))
+                .background(.white)
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(feedVM.posts) { post in
@@ -48,12 +48,21 @@ struct CommunityFeedView: View {
                     }
                 }
             }
-            .background(Color.pink.opacity(0.1))
+            .recifyBackground()
+//            .background(Color.pink.opacity(0.1))
             .onAppear {
                 feedVM.fetchPosts() //tjis loads posts when the view appears
             }
         }
     }
+    
+    func recifyBackground() -> some View {
+        ZStack {
+            GradientBackground()
+            self
+        }
+    }
+    
 }
 
 

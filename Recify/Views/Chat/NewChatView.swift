@@ -185,6 +185,7 @@ struct NewChatView: View {
             Text(searchText.isEmpty ? "No other users yet" : "No users found")
                 .font(.headline)
                 .foregroundColor(.gray)
+            Spacer()
         }
         .padding()
     }

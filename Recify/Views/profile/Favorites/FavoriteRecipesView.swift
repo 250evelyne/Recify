@@ -44,17 +44,17 @@ struct FavoriteRecipesView: View {
     }
     
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color.orange.opacity(0.1),
-                    Color.clear,
-                    Color.pink.opacity(0.3)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+//        ZStack {
+//            LinearGradient(
+//                colors: [
+//                    Color.orange.opacity(0.1),
+//                    Color.clear,
+//                    Color.pink.opacity(0.3)
+//                ],
+//                startPoint: .top,
+//                endPoint: .bottom
+//            )
+//            .ignoresSafeArea()
             
             VStack {
                 ScrollView {
@@ -104,8 +104,17 @@ struct FavoriteRecipesView: View {
                     }
                 }
             }
+            .recifyBackground()
+//        }
+    }
+    
+    func recifyBackground() -> some View {
+        ZStack {
+            GradientBackground()
+            self
         }
     }
+    
 }
     
     

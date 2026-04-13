@@ -123,12 +123,12 @@ struct ProfileView: View {
                     .padding(.bottom, 24)
                     
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("PRIVACY & SECURITY")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                            .padding(.bottom, 8)
+//                        Text("PRIVACY & SECURITY")
+//                            .font(.caption)
+//                            .fontWeight(.semibold)
+//                            .foregroundColor(.gray)
+//                            .padding(.horizontal)
+//                            .padding(.bottom, 8)
                         
 //                        VStack(spacing: 0) {
 //                            SettingsToggleRow(
