@@ -11,63 +11,73 @@ import FirebaseAuth
 
 struct MessageBubble: View {
     let message: Message
-    
+
+    @ObservedObject var authManager = AuthManager.shared
+    @EnvironmentObject var chatManager: ChatManager
+
     var isFromCurrentUser: Bool {
         return message.senderId == Auth.auth().currentUser?.uid
     }
     
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
-            if !isFromCurrentUser {
-                UserAvatarView(imageURL: message.senderImage, name: message.senderName)
-            } else {
-                Spacer(minLength: 50)
-            }
-            
-            VStack(alignment: isFromCurrentUser ? .trailing : .leading, spacing: 4) {
-                if let text = message.text, !text.isEmpty {
-                    Text(text)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(isFromCurrentUser ? Color.blue.opacity(0.8) : Color.gray.opacity(0.15))
-                        .foregroundColor(isFromCurrentUser ? .white : .primary)
-                        .cornerRadius(18, corners: isFromCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
+        
+        let liveAvatar = chatManager.userCache[message.senderId]?.avatar
+        
+            HStack(alignment: .bottom, spacing: 8) {
+                if !isFromCurrentUser {
+                    let liveAvatar = chatManager.userCache[message.senderId]?.avatar
+                    
+                    UserAvatarView(
+                        avatarName: liveAvatar ?? message.senderImage,
+                        name: message.senderName
+                    )
+                } else {
+                    Spacer(minLength: 50)
                 }
                 
-                // Show images if they exist
-                if let imageURL = message.imageURL, !imageURL.isEmpty {
-                    MessageImageView(url: imageURL)
+                VStack(alignment: isFromCurrentUser ? .trailing : .leading, spacing: 4) {
+                    if let text = message.text, !text.isEmpty {
+                        Text(text)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(isFromCurrentUser ? Color.blue.opacity(0.8) : Color.gray.opacity(0.15))
+                            .foregroundColor(isFromCurrentUser ? .white : .primary)
+                            .cornerRadius(18, corners: isFromCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
+                    }
+                    
+                    Text(message.formattedTime)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 4)
                 }
                 
-                Text(message.formattedTime)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 4)
+                if isFromCurrentUser {
+                    UserAvatarView(
+                        avatarName: authManager.userProfile?.avatar,
+                        name: authManager.userProfile?.userName ?? "Me"
+                    )
+                } else {
+                    Spacer(minLength: 50)
+                }
             }
-            
-            // Your messages are pushed to the right
-            if isFromCurrentUser {
-                // No avatar for current user in WhatsApp style
-            } else {
-                Spacer(minLength: 50)
-            }
-        }
-        .padding(.horizontal, 8)
-        .frame(maxWidth: .infinity, alignment: isFromCurrentUser ? .trailing : .leading)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, alignment: isFromCurrentUser ? .trailing : .leading)
+        
     }
 }
 
-struct UserAvatarView: View { //TODO: chnage so the default like like gray so we know its loading and its not the actuall pfp, to fix the chat view and the mesaage view not laoding the user pfp
-    let imageURL: String?
+struct UserAvatarView: View {
+    let avatarName: String?
     let name: String
     
     var body: some View {
-        let avatarName =  imageURL!.isEmpty ? "tomatoAvatar" : imageURL! //TODO:fucking up here
+        let imageName = (avatarName == nil || avatarName!.isEmpty) ? "tomatoAvatar" : avatarName!
         
-        Image(avatarName)
+        Image(imageName)
             .resizable()
             .scaledToFill()
             .frame(width: 32, height: 32)
+            .background(Color.gray.opacity(0.2))
             .clipShape(Circle())
             .shadow(radius: 1)
     }

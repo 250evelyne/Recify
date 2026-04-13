@@ -21,11 +21,11 @@ struct Recipe: Identifiable, Codable, Hashable {
     var userId: String
     var inPantry: Bool
     
-    let prepTime: Int
-    let calories: Int
-    let level: String
+    var prepTime: Int
+    var calories: Int
+    var level: String
     
-    var searchTitle: String // New field for case-insensitive search
+    var searchTitle: String 
     
     init(title: String,
          category: String,
@@ -53,9 +53,9 @@ struct Recipe: Identifiable, Codable, Hashable {
         self.searchTitle = searchTitle
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id ?? title)
-    }
+//    func hash(into hasher: inout Hasher) {
+//        hasher.combine(id ?? title)
+//    }
     
     static func == (lhs: Recipe, rhs: Recipe) -> Bool {
         if let lid = lhs.id, let rid = rhs.id {

@@ -142,7 +142,7 @@ class FeedViewModel: ObservableObject {
             guard let self = self else { return }
             let userName = document?.data()?["userName"] as? String ?? "Unknown User"
             
-            let userAvatar = document?.data()?["avatar"] as? String ?? "cookieAvatar"
+            let userAvatar = document?.data()?["avatar"] as? String ?? "tomatoAvatar"
             
             let newComment = Comment(
                 userId: userId,

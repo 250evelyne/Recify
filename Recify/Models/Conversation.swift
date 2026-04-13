@@ -8,7 +8,13 @@
 import Foundation
 import FirebaseFirestore
 
-struct Conversation: Identifiable, Codable {
+enum ConversationStatus: String, Codable {
+    case pending
+    case accepted
+    case declined
+}
+
+struct Conversation: Identifiable, Codable, Equatable {
     @DocumentID var id: String?
     var participants: [String]
     var participantNames: [String: String]
@@ -16,21 +22,27 @@ struct Conversation: Identifiable, Codable {
     var lastMessage: String?
     var lastMessageTime: Timestamp?
     var unreadCount: [String: Int]
+    var status: ConversationStatus
+    var requestSenderId: String
     
     init(id: String? = nil,
          participants: [String],
-         participantNames: [String : String],
-         participantImages: [String : String],
+         participantNames: [String: String],
+         participantImages: [String: String],
          lastMessage: String? = nil,
          lastMessageTime: Timestamp? = nil,
-         unreadCount: [String : Int]) {
-        //self.id = id
+         unreadCount: [String: Int],
+         status: ConversationStatus = .accepted,
+         requestSenderId: String = "") {
+        self.id = id
         self.participants = participants
         self.participantNames = participantNames
         self.participantImages = participantImages
         self.lastMessage = lastMessage
         self.lastMessageTime = lastMessageTime
         self.unreadCount = unreadCount
+        self.status = status
+        self.requestSenderId = requestSenderId
     }
     
     func otherUserName(currentUserId: String) -> String {
@@ -50,7 +62,6 @@ struct Conversation: Identifiable, Codable {
     var formattedTime: String {
         guard let timestamp = lastMessageTime else { return "" }
         let date = timestamp.dateValue()
-        
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
             let formatter = DateFormatter()

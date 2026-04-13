@@ -26,7 +26,17 @@ struct MyRecipesView: View {
                 
                 VStack {
                     ScrollView {
-                        if firebaseManager.userRecipes.isEmpty {
+                        if firebaseManager.isFetchingUserRecipes && firebaseManager.userRecipes.isEmpty {
+                            VStack(spacing: 16) {
+                                ProgressView()
+                                    .scaleEffect(1.5)
+                                    .tint(.pink)
+                                Text("Loading Recipes...")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.top, 100)
+                            
+                        } else if firebaseManager.userRecipes.isEmpty {
                             VStack(spacing: 16) {
                                 Image(systemName: "book.closed")
                                     .font(.system(size: 60))
@@ -47,9 +57,8 @@ struct MyRecipesView: View {
                     .navigationTitle("My Recipes")
                     .navigationBarTitleDisplayMode(.inline)
                     .onAppear {
-                        Task {
-                            await firebaseManager.loadUserRecipes()
-                        }
+                        firebaseManager.isFetchingUserRecipes = true
+                        firebaseManager.listenToUserRecipes()
                     }
                 }
             }
@@ -59,7 +68,9 @@ struct MyRecipesView: View {
 struct MyRecipeRow: View {
     let recipe: Recipe
     @ObservedObject var firebaseManager = FirebaseViewModel.shared
+    
     @State private var showDeleteAlert = false
+    @State private var showEditSheet = false
     
     var body: some View {
         NavigationLink(destination: RecipeInstructionsView(
@@ -79,8 +90,13 @@ struct MyRecipeRow: View {
             )
         }
         .buttonStyle(.plain)
-        
         .contextMenu {
+            Button {
+                showEditSheet = true
+            } label: {
+                Label("Edit Recipe", systemImage: "pencil")
+            }
+            
             Button(role: .destructive) {
                 showDeleteAlert = true
             } label: {
@@ -92,6 +108,10 @@ struct MyRecipeRow: View {
                 deleteRecipe()
             }
             Button("Cancel", role: .cancel) {}
+        }
+
+        .sheet(isPresented: $showEditSheet) {
+            EditRecipeView(recipe: recipe)
         }
     }
     

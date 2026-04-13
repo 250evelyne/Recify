@@ -23,6 +23,8 @@ class FirebaseViewModel: ObservableObject {
     @Published var savedRecipes: [SavedRecipe] = []
     @Published var userFavCollections: [RecipeCollection] = [] //i added this to save the collections th users have made for thiere fav recipes
     @Published var currentCollectionRecipes: [SavedRecipe] = [] //i added this for the favorites page i dont use saved recipes i use this to i can just gett all the saved recioes
+    @Published var isLoadingCollectionRecipes: Bool = false
+    @Published var isFetchingUserRecipes: Bool = false
     
     private var lastDocument: DocumentSnapshot? = nil
     private let pageSize = 20
@@ -159,8 +161,10 @@ class FirebaseViewModel: ObservableObject {
     
     @MainActor
     func loadUserRecipes() async {
+        isFetchingUserRecipes = true
         let recipes = await fetchUserRecipes()
         self.userRecipes = recipes
+        isFetchingUserRecipes = false 
     }
     
     private var userCollection: CollectionReference? {
@@ -389,33 +393,33 @@ class FirebaseViewModel: ObservableObject {
     
     
     func fetchRecipesForCollection(ids: [String]) {
-        self.currentCollectionRecipes = []
-        guard !ids.isEmpty else { return }
+        DispatchQueue.main.async {
+            self.isLoadingCollectionRecipes = true
+            self.currentCollectionRecipes = []
+        }
         
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("DEBUG: User not logged in")
+        guard !ids.isEmpty else {
+            DispatchQueue.main.async { self.isLoadingCollectionRecipes = false }
             return
         }
         
-        print("DEBUG: Fetching from FAVORITES for IDs: \(ids)")
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
         
         db.collection("users").document(userId).collection("favorites")
             .whereField(FieldPath.documentID(), in: ids)
             .getDocuments { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
-                if let error = error {
-                    print("DEBUG: Firestore Error: \(error.localizedDescription)")
-                    return
-                }
-                
                 if let docs = querySnapshot?.documents {
                     let fetched = docs.compactMap { try? $0.data(as: SavedRecipe.self) }
-                    print("DEBUG: Final fetched count: \(fetched.count)")
                     
                     DispatchQueue.main.async {
                         self.currentCollectionRecipes = fetched
+                        self.isLoadingCollectionRecipes = false
                     }
+                } else {
+                    DispatchQueue.main.async { self.isLoadingCollectionRecipes = false }
                 }
             }
     }
@@ -551,6 +555,67 @@ class FirebaseViewModel: ObservableObject {
         }
     }
     
+    func updateRecipe(recipeId: String,
+                      title: String,
+                      caloriesString: String,
+                      prepTime: Int,
+                      difficulty: String,
+                      ingredientStrings: [String],
+                      instructionsArray: [String],
+                      newCoverImage: UIImage?,
+                      existingImageURL: String?,
+                      completion: @escaping (Bool) -> Void) {
+        
+        var base64String = existingImageURL
+        
+        if let image = newCoverImage {
+            if let imageData = image.jpegData(compressionQuality: 0.05) {
+                base64String = imageData.base64EncodedString()
+            }
+        }
+        
+        let caloriesInt = Int(caloriesString.filter { $0.isWholeNumber }) ?? 0
+        let formattedInstructions = instructionsArray.joined(separator: "\n")
+        let resolvedTitle = title.isEmpty ? "Untitled Recipe" : title
+        
+        let updatedData: [String: Any] = [
+            "title": resolvedTitle,
+            "ingredients": ingredientStrings,
+            "instructions": formattedInstructions,
+            "imageURL": base64String ?? "",
+            "prepTime": prepTime,
+            "calories": caloriesInt,
+            "level": difficulty.capitalized,
+            "searchTitle": title.lowercased()
+        ]
+        
+        DispatchQueue.main.async {
+            if let index = self.userRecipes.firstIndex(where: { $0.id == recipeId }) {
+                self.userRecipes[index].title = resolvedTitle
+                self.userRecipes[index].prepTime = prepTime
+                self.userRecipes[index].calories = caloriesInt
+                self.userRecipes[index].level = difficulty.capitalized
+                self.userRecipes[index].ingredients = ingredientStrings
+                self.userRecipes[index].instructions = formattedInstructions
+                self.userRecipes[index].searchTitle = title.lowercased()
+                if let newImage = base64String {
+                    self.userRecipes[index].imageURL = newImage
+                }
+            }
+        }
+        
+        db.collection("recipes").document(recipeId).updateData(updatedData) { error in
+            if let error = error {
+                print("Error updating recipe: \(error.localizedDescription)")
+                Task { await self.loadUserRecipes() }
+                completion(false)
+            }
+            
+            else {
+                completion(true)
+            }
+        }
+    }
     
     func searchUserRecipes(query: String) async -> [Recipe] {
         let db = Firestore.firestore()
@@ -566,6 +631,23 @@ class FirebaseViewModel: ObservableObject {
         } catch {
             print("Error searching Firebase: \(error.localizedDescription)")
             return []
+        }
+    }
+    
+    func updateCollectionName(collectionId: String, newName: String) {
+        let db = Firestore.firestore()
+        db.collection("collections").document(collectionId).updateData([
+            "name": newName
+        ]) { error in
+            if let error = error {
+                print("Error updating name: \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    if let index = self.userFavCollections.firstIndex(where: { $0.id == collectionId }) {
+                        self.userFavCollections[index].name = newName
+                    }
+                }
+            }
         }
     }
     
@@ -601,7 +683,6 @@ class FirebaseViewModel: ObservableObject {
         let db = Firestore.firestore()
         
         do {
-            // Check if any recipe has the same searchTitle (handles case-insensitive duplicates)
             let snapshot = try await db.collection("recipes")
                 .whereField("searchTitle", isEqualTo: lowerQuery)
                 .getDocuments()
@@ -612,4 +693,34 @@ class FirebaseViewModel: ObservableObject {
             return false
         }
     }
+    
+    func listenToUserRecipes() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        
+        db.collection("recipes")
+            .whereField("userId", isEqualTo: userId)
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("Error listening to recipes: \(error.localizedDescription)")
+                    self.isFetchingUserRecipes = false
+                    return
+                }
+                
+                guard let documents = querySnapshot?.documents else { return }
+                
+                let fetchedRecipes = documents.compactMap { doc -> Recipe? in
+                    try? doc.data(as: Recipe.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.userRecipes = fetchedRecipes
+                    self.isFetchingUserRecipes = false
+                }
+            }
+    }
+    
 }

@@ -58,7 +58,19 @@ struct FavoriteRecipesView: View {
             
             VStack {
                 ScrollView {
-                    if recipes.isEmpty {
+                    if firebaseManager.isLoadingCollectionRecipes {
+                        VStack {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .pink))
+                                .scaleEffect(1.5)
+                            Text("Loading recipes...")
+                                .foregroundColor(.gray)
+                                .padding(.top)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 100)
+                        
+                    } else if recipes.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "heart.slash")
                                 .font(.system(size: 60))

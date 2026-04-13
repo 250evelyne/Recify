@@ -130,24 +130,24 @@ struct ProfileView: View {
                             .padding(.horizontal)
                             .padding(.bottom, 8)
                         
-                        VStack(spacing: 0) {
+//                        VStack(spacing: 0) {
 //                            SettingsToggleRow(
 //                                icon: "eye.slash.fill",
 //                                iconColor: .blue,
 //                                title: "Private Profile",
 //                                isOn: .constant(false)
 //                            )
-                            
-                            Divider().padding(.leading, 60)
-                            
-                            SettingsToggleRow(
-                                icon: "bolt.fill",
-                                iconColor: .blue,
-                                title: "Show Activity Status",
-                                isOn: .constant(false)
-                            )
-                            
-                            Divider().padding(.leading, 60)
+//                            
+//                            Divider().padding(.leading, 60)
+//                            
+//                            SettingsToggleRow(
+//                                icon: "eye.slash.fill",
+//                                iconColor: .blue,
+//                                title: "Private Profile",
+//                                isOn: .constant(false)
+//                            )
+//                            
+//                            Divider().padding(.leading, 60)
                             
 //                            SettingsRow(
 //                                icon: "nosign",
@@ -156,11 +156,11 @@ struct ProfileView: View {
 //                                action: {}
 //                            )
                         }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom, 24)
+//                        .background(Color.white)
+//                        .cornerRadius(12)
+//                        .padding(.horizontal)
+//                    }
+//                    .padding(.bottom, 24)
                     
 //                    VStack(alignment: .leading, spacing: 0) {
 //                        Text("SUPPORT")
@@ -216,7 +216,7 @@ struct ProfileView: View {
                         .padding(.bottom, 30)
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .recifyBackground()
             .navigationTitle("Account Settings")
             .navigationBarTitleDisplayMode(.automatic)
             .toolbarRole(.editor)

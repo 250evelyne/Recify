@@ -17,7 +17,10 @@ struct NewChatView: View {
     @State private var users: [User] = []
     @State private var isLoading: Bool = false
     @State private var isCreatingConversation: Bool = false
+    @State private var lastDocument: DocumentSnapshot? = nil
+    @State private var canLoadMore: Bool = true
     
+    private let pageSize = 15
     private let db = Firestore.firestore()
     
     var body: some View {
@@ -28,8 +31,13 @@ struct NewChatView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
                         TextField("Search users...", text: $searchText)
-                            .onChange(of: searchText) { _ in
-                                searchUsers()
+                            .onChange(of: searchText) { newValue in
+                                if newValue.isEmpty {
+                                    resetPagination()
+                                    loadAllUsers()
+                                } else {
+                                    searchUsers()
+                                }
                             }
                     }
                     .padding()
@@ -37,54 +45,29 @@ struct NewChatView: View {
                     .cornerRadius(10)
                     .padding()
                     
-                    if isLoading {
-                        ProgressView()
-                            .padding()
-                    } else if users.isEmpty && !searchText.isEmpty {
-                        Text("No users found")
-                            .foregroundColor(.gray)
-                            .padding()
-                    } else if users.isEmpty {
-                        VStack(spacing: 16) {
-                            Image(systemName: "person.2")
-                                .font(.system(size: 64))
-                                .foregroundColor(.gray.opacity(0.5))
-                            Text("No other users yet")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            Text("Create another account to test messaging!")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
-                        }
-                        .padding()
+                    if users.isEmpty && !isLoading {
+                        emptyStateView
                     } else {
-                        List(users) { user in
-                            NavigationLink(destination: ChatViewWrapper(user: user)
-                                .environmentObject(chatManager)) {
-                                HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(Color.pink.opacity(0.3))
-                                        .frame(width: 48, height: 48)
-                                        .overlay(
-                                            Text(user.userName.prefix(1).uppercased())
-                                                .font(.title3)
-                                                .foregroundColor(.white)
-                                        )
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(user.userName)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                        Text(user.email)
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
+                        List {
+                            ForEach(users) { user in
+                                NavigationLink(destination: ChatViewWrapper(user: user)
+                                    .environmentObject(chatManager)) {
+                                        UserRow(user: user)
                                     }
-                                    
+                                    .onAppear {
+                                        if user.id == users.last?.id && canLoadMore && searchText.isEmpty {
+                                            loadAllUsers()
+                                        }
+                                    }
+                            }
+                            
+                            if isLoading {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
                                     Spacer()
                                 }
-                                .padding(.vertical, 8)
+                                .padding()
                             }
                         }
                         .listStyle(PlainListStyle())
@@ -92,11 +75,7 @@ struct NewChatView: View {
                 }
                 
                 if isCreatingConversation {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .progressViewStyle(CircularProgressViewStyle(tint: .pink))
+                    loadingOverlay
                 }
             }
             .navigationTitle("New Message")
@@ -109,12 +88,22 @@ struct NewChatView: View {
                 }
             }
             .onAppear {
-                loadAllUsers()
+                if users.isEmpty {
+                    loadAllUsers()
+                }
             }
         }
     }
     
+    // MARK: - Logic
+    func resetPagination() {
+        users = []
+        lastDocument = nil
+        canLoadMore = true
+    }
+    
     func loadAllUsers() {
+        guard !isLoading && canLoadMore else { return }
         isLoading = true
         
         guard let currentUserId = Auth.auth().currentUser?.uid else {
@@ -122,138 +111,114 @@ struct NewChatView: View {
             return
         }
         
-        db.collection("users")
-            .getDocuments { snapshot, error in
-                isLoading = false
+        var query = db.collection("users")
+            .order(by: "userName")
+            .limit(to: pageSize)
+        
+        if let lastCursor = lastDocument {
+            query = query.start(afterDocument: lastCursor)
+        }
+        
+        query.getDocuments { snapshot, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
                 
                 if let error = error {
-                    print("Error loading users: \(error.localizedDescription)")
+                    print("DEBUG: Firestore Error: \(error.localizedDescription)")
                     return
                 }
                 
-                users = snapshot?.documents.compactMap { doc in
-                    let user = try? doc.data(as: User.self)
-                    return user?.id != currentUserId ? user : nil
-                } ?? []
+                guard let documents = snapshot?.documents else { return }
                 
-                print("Loaded \(users.count) users")
+                self.lastDocument = documents.last
+                
+                let newUsers = documents.compactMap { doc -> User? in
+                    guard let user = try? doc.data(as: User.self), user.id != currentUserId else { return nil }
+                    
+                    if self.users.contains(where: { $0.id == user.id }) {
+                        return nil
+                    }
+                    return user
+                }
+                
+                self.users.append(contentsOf: newUsers)
+                self.canLoadMore = documents.count == self.pageSize
             }
+        }
     }
     
     func searchUsers() {
         guard !searchText.isEmpty else {
+            resetPagination()
             loadAllUsers()
             return
         }
         
         isLoading = true
-        
-        guard let currentUserId = Auth.auth().currentUser?.uid else {
-            isLoading = false
-            return
-        }
-        
-        db.collection("users")
-            .getDocuments { snapshot, error in
-                isLoading = false
+        db.collection("users").limit(to: 50).getDocuments { snapshot, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
                 
-                if let error = error {
-                    print("Error searching users: \(error.localizedDescription)")
-                    return
+                if let documents = snapshot?.documents {
+                    let currentUserId = Auth.auth().currentUser?.uid
+                    let allFetched = documents.compactMap { try? $0.data(as: User.self) }
+                    
+                    let filtered = allFetched.filter {
+                        $0.id != currentUserId &&
+                        (($0.userName?.lowercased().contains(searchText.lowercased()) ?? false) ||
+                         $0.email.lowercased().contains(searchText.lowercased()))
+                    }
+                    
+                    self.users = filtered.sorted { ($0.userName ?? "") < ($1.userName ?? "") }
                 }
-                
-                let allUsers = snapshot?.documents.compactMap { doc -> User? in
-                    let user = try? doc.data(as: User.self)
-                    return user?.id != currentUserId ? user : nil
-                } ?? []
-                
-                users = allUsers.filter { user in
-                    user.userName.lowercased().contains(searchText.lowercased()) ||
-                    user.email.lowercased().contains(searchText.lowercased())
-                }
+
             }
+        }
+    }
+    
+    // MARK: - Helper Views
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: searchText.isEmpty ? "person.2" : "magnifyingglass")
+                .font(.system(size: 64))
+                .foregroundColor(.gray.opacity(0.5))
+            Text(searchText.isEmpty ? "No other users yet" : "No users found")
+                .font(.headline)
+                .foregroundColor(.gray)
+        }
+        .padding()
+    }
+    
+    private var loadingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.3).ignoresSafeArea()
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle(tint: .pink))
+        }
     }
 }
 
-struct ChatViewWrapper: View {
+struct UserRow: View {
     let user: User
-    @EnvironmentObject var chatManager: ChatManager
-    @State private var conversation: Conversation?
-    @State private var isLoading: Bool = true
-    
     var body: some View {
-        Group {
-            if isLoading {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                    Text("Starting conversation...")
-                        .foregroundColor(.gray)
-                }
-            } else if let conversation = conversation {
-                ChatView(conversation: conversation)
-                    .environmentObject(chatManager)
-            } else {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 48))
-                        .foregroundColor(.gray)
-                    Text("Failed to create conversation")
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-        .onAppear {
-            createOrFindConversation()
-        }
-    }
-    
-    func createOrFindConversation() {
-        guard let userId = user.id else {
-            isLoading = false
-            return
-        }
-        
-        print("Creating/finding conversation with \(user.userName)")
-        
-        chatManager.createConversation(
-            withUserId: userId,
-            userName: user.userName,
-            userImage: user.avatar //chnage this from nil to this 
-        ) { conversationId in
-            print("Conversation ID: \(conversationId ?? "nil")")
+        HStack(spacing: 12) {
+            Image(user.avatar ?? "tomatoAvatar")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 48, height: 48)
+                .clipShape(Circle())
             
-            guard let conversationId = conversationId else {
-                print("Failed to create conversation")
-                isLoading = false
-                return
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.userName ?? "New User")
+                    .font(.headline)
+                Text(user.email)
+                    .font(.caption)
+                    .foregroundColor(.gray)
             }
-            
-           
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                if let foundConversation = chatManager.conversations.first(where: { $0.id == conversationId }) {
-                    print("Found conversation in list")
-                    conversation = foundConversation
-                } else {
-                    print("Conversation not found in list, creating temporary one")
-                    // Create a temporary conversation object
-                    let tempConversation = Conversation(
-                        id: conversationId,
-                        participants: [Auth.auth().currentUser?.uid ?? "", userId],
-                        participantNames: [
-                            Auth.auth().currentUser?.uid ?? "": AuthManager.shared.userProfile?.userName ?? "Me",
-                            userId: user.userName
-                        ],
-                        participantImages: [:],
-                        lastMessage: nil,
-                        lastMessageTime: nil,
-                        unreadCount: [:]
-                    )
-                    conversation = tempConversation
-                }
-                isLoading = false
-            }
+            Spacer()
         }
+        .padding(.vertical, 8)
     }
 }
 
