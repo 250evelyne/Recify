@@ -36,6 +36,12 @@ struct ChatViewWrapper: View {
                 }
             }
         }
+        .onChange(of: chatManager.conversations) { conversations in
+            if let conv = conversation,
+               let updated = conversations.first(where: { $0.id == conv.id }) {
+                conversation = updated
+            }
+        }
         .onAppear {
             createOrFindConversation()
         }
@@ -57,28 +63,37 @@ struct ChatViewWrapper: View {
                 return
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                if let foundConversation = chatManager.conversations.first(where: { $0.id == conversationId }) {
-                    conversation = foundConversation
-                } else {
-                    let currentUID = Auth.auth().currentUser?.uid ?? ""
-                    let tempConversation = Conversation(
-                        id: conversationId,
-                        participants: [currentUID, userId],
-                        participantNames: [
-                            currentUID: AuthManager.shared.userProfile?.userName ?? "Me",
-                            userId: user.userName ?? "New User"
-                        ],
-                        participantImages: [:],
-                        lastMessage: nil,
-                        lastMessageTime: nil,
-                        unreadCount: [:]
-                    )
-                    conversation = tempConversation
-                }
+            let currentUID = Auth.auth().currentUser?.uid ?? ""
+            
+            if let found = chatManager.conversations.first(where: { $0.id == conversationId }) {
+                conversation = found
                 isLoading = false
+                return
             }
             
+            let currentUserName = AuthManager.shared.userProfile?.userName ?? "Me"
+            let currentUserAvatar = AuthManager.shared.userProfile?.avatar ?? "tomatoAvatar"
+            let requestText = "\(currentUserName) wants to chat with you!"
+            
+            let tempConversation = Conversation(
+                id: conversationId,
+                participants: [currentUID, userId],
+                participantNames: [
+                    currentUID: currentUserName,
+                    userId: user.userName ?? "New User"
+                ],
+                participantImages: [
+                    currentUID: currentUserAvatar,
+                    userId: user.avatar ?? "tomatoAvatar"
+                ],
+                lastMessage: requestText,
+                lastMessageTime: nil,
+                unreadCount: [currentUID: 0, userId: 1],
+                status: .pending,
+                requestSenderId: currentUID
+            )
+            conversation = tempConversation
+            isLoading = false
         }
     }
 }

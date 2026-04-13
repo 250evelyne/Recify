@@ -141,9 +141,9 @@ struct ProfileView: View {
                             Divider().padding(.leading, 60)
                             
                             SettingsToggleRow(
-                                icon: "bolt.fill",
+                                icon: "eye.slash.fill",
                                 iconColor: .blue,
-                                title: "Show Activity Status",
+                                title: "Private Profile",
                                 isOn: .constant(false)
                             )
                             

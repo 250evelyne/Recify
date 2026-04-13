@@ -23,44 +23,46 @@ struct MessageBubble: View {
         
         let liveAvatar = chatManager.userCache[message.senderId]?.avatar
         
-        
-        HStack(alignment: .bottom, spacing: 8) {
-            if !isFromCurrentUser {
-                let liveAvatar = chatManager.userCache[message.senderId]?.avatar
-                
-                UserAvatarView(
-                    avatarName: liveAvatar ?? message.senderImage,
-                    name: message.senderName
-                )
-            } else {
-                Spacer(minLength: 50)
-                
-                let liveAvatar = authManager.userProfile?.avatar ?? "tomatoAvatar"
-                
-                UserAvatarView(
-                    avatarName: authManager.userProfile?.avatar,
-                    name: authManager.userProfile?.userName ?? "Me"
-                )
-            }
-            
-            VStack(alignment: isFromCurrentUser ? .trailing : .leading, spacing: 4) {
-                if let text = message.text, !text.isEmpty {
-                    Text(text)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(isFromCurrentUser ? Color.blue.opacity(0.8) : Color.gray.opacity(0.15))
-                        .foregroundColor(isFromCurrentUser ? .white : .primary)
-                        .cornerRadius(18, corners: isFromCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
+            HStack(alignment: .bottom, spacing: 8) {
+                if !isFromCurrentUser {
+                    let liveAvatar = chatManager.userCache[message.senderId]?.avatar
+                    
+                    UserAvatarView(
+                        avatarName: liveAvatar ?? message.senderImage,
+                        name: message.senderName
+                    )
+                } else {
+                    Spacer(minLength: 50)
                 }
                 
-                Text(message.formattedTime)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 4)
+                VStack(alignment: isFromCurrentUser ? .trailing : .leading, spacing: 4) {
+                    if let text = message.text, !text.isEmpty {
+                        Text(text)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(isFromCurrentUser ? Color.blue.opacity(0.8) : Color.gray.opacity(0.15))
+                            .foregroundColor(isFromCurrentUser ? .white : .primary)
+                            .cornerRadius(18, corners: isFromCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
+                    }
+                    
+                    Text(message.formattedTime)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 4)
+                }
+                
+                if isFromCurrentUser {
+                    UserAvatarView(
+                        avatarName: authManager.userProfile?.avatar,
+                        name: authManager.userProfile?.userName ?? "Me"
+                    )
+                } else {
+                    Spacer(minLength: 50)
+                }
             }
-        }
-        .padding(.horizontal, 8)
-        .frame(maxWidth: .infinity, alignment: isFromCurrentUser ? .trailing : .leading)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, alignment: isFromCurrentUser ? .trailing : .leading)
+        
     }
 }
 

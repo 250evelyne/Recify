@@ -11,119 +11,114 @@ import FirebaseAuth
 struct ChatView: View {
     @EnvironmentObject var chatManager: ChatManager
     let conversation: Conversation
-    
     @State private var messageText: String = ""
-    @State private var showImagePicker: Bool = false
     
-    var currentUserId: String {
-        return Auth.auth().currentUser?.uid ?? ""
+    var currentUserId: String { Auth.auth().currentUser?.uid ?? "" }
+    
+    var isPendingRecipient: Bool {
+        conversation.status == .pending && conversation.requestSenderId != currentUserId
+    }
+    
+    var isPendingSender: Bool {
+        conversation.status == .pending && conversation.requestSenderId == currentUserId
     }
     
     var body: some View {
         VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(chatManager.messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
-                        }
-                    }
-                    .id(chatManager.userCache.values.compactMap { $0.avatar }.joined())
-                    .padding(.vertical)
-                }
-                .onChange(of: chatManager.messages) { messages in
-                    for message in messages {
-                        if message.senderId != currentUserId {
-                            chatManager.listenToOtherUser(userId: message.senderId)
-                        }
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    ForEach(chatManager.messages) { message in
+                        MessageBubble(message: message)
                     }
                 }
-                .onAppear {
-                    if let conversationId = conversation.id {
-                        chatManager.startListeningToMessages(conversationId: conversationId)
+                .padding(.vertical)
+            }
+            .onAppear {
+                if let id = conversation.id {
+                    chatManager.startListeningToMessages(conversationId: id)
+                    
+                    chatManager.markConversationAsRead(conversationId: id)
+                }
+            }
+            
+            if isPendingRecipient {
+                requestActionButtons
+            } else {
+                messageInputField
+                if isPendingSender {
+                    Text("Waiting for acceptance...")
+                        .font(.caption).foregroundColor(.gray).padding(.bottom, 8)
+                }
+            }
+        }
+        //.navigationTitle(conversation.otherUserName(currentUserId: currentUserId))
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 12) {
+                    let otherId = conversation.otherUserId(currentUserId: currentUserId)
+                    let liveAvatar = chatManager.userCache[otherId]?.avatar ?? conversation.otherUserImage(currentUserId: currentUserId)
+                    let otherName = conversation.otherUserName(currentUserId: currentUserId)
+                    
+                    if let avatar = liveAvatar, !avatar.isEmpty {
+                        Image(avatar)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 36, height: 36)
+                            .background(Color.gray.opacity(0.2))
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 36, height: 36)
+                            .overlay(
+                                Text(String(otherName.prefix(1)).uppercased())
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                            )
+                    }
+                    
+                    VStack(alignment: .center, spacing: 2) {
+                        Text(otherName)
+                            .font(.headline)
                         
-                        for participantId in conversation.participants {
-                            if participantId != currentUserId {
-                                chatManager.listenToOtherUser(userId: participantId)
-                            }
-                        }
-                        
-                        if let lastMessage = chatManager.messages.last {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                        }
                     }
                 }
             }
             
-            HStack(spacing: 12) {
-//                Button(action: {
-//                    showImagePicker = true
-//                }) {
-//                    Image(systemName: "camera.fill")
-//                        .foregroundColor(.white)
-//                        .frame(width: 36, height: 36)
-//                        .background(Color.pink)
-//                        .clipShape(Circle())
-//                }
-                
-                HStack {
-                    TextField("Message \(conversation.otherUserName(currentUserId: currentUserId))...", text: $messageText)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                    
-//                    Button(action: {}) {
-//                        Image(systemName: "face.smiling")
-//                            .foregroundColor(.gray)
-//                    }
-                }
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(20)
-                
-                Button(action: sendMessage) {
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(.white)
-                        .frame(width: 36, height: 36)
-                        .background(messageText.isEmpty ? Color.gray : Color.pink)
-                        .clipShape(Circle())
-                }
-                .disabled(messageText.isEmpty)
-            }
-            .padding()
-            .background(Color.white)
-        }
-        .navigationTitle(conversation.otherUserName(currentUserId: currentUserId))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                HStack(spacing: 8) {
-                    let otherUserId = conversation.participants.first(where: { $0 != currentUserId }) ?? ""
-                    let liveFriendImage = chatManager.userCache[otherUserId]?.avatar ?? conversation.otherUserImage(currentUserId: currentUserId)
-                    
-                    UserAvatarView(
-                        avatarName: liveFriendImage,
-                        name: conversation.otherUserName(currentUserId: currentUserId)
-                    )
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(conversation.otherUserName(currentUserId: currentUserId))
-                            .font(.headline)
-                        Text("Online")
-                            .font(.caption)
-                            .foregroundColor(.green)
-                    }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    // TODO: Add your info button action here
+                }) {
+                    Image(systemName: "info.circle")
+                        .foregroundColor(.primary)
                 }
             }
         }
-        
     }
     
-    func sendMessage() {
-        guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty,
-              let conversationId = conversation.id else { return }
-        
-        chatManager.sendMessage(text: messageText, in: conversationId)
-        messageText = ""
+    private var requestActionButtons: some View {
+        HStack(spacing: 16) {
+            Button("Decline") { chatManager.declineRequest(conversation: conversation) }
+                .foregroundColor(.red).frame(maxWidth: .infinity)
+            Button("Accept") { chatManager.acceptRequest(conversation: conversation) }
+                .padding().background(Color.pink).foregroundColor(.white).cornerRadius(10)
+        }
+        .padding()
+    }
+    
+    private var messageInputField: some View {
+        HStack {
+            TextField("Message...", text: $messageText)
+                .padding().background(Color.gray.opacity(0.1)).cornerRadius(20)
+            Button(action: {
+                chatManager.sendMessage(text: messageText, in: conversation.id ?? "")
+                messageText = ""
+            }) {
+                Image(systemName: "paperplane.fill")
+            }.disabled(messageText.isEmpty || isPendingSender) 
+        }.padding()
     }
 }
 

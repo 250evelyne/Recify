@@ -13,15 +13,25 @@ struct ConversationRow: View {
     let conversation: Conversation
     
     @ObservedObject var authManager = AuthManager.shared
+    @EnvironmentObject var chatManager: ChatManager
     
     var currentUserId: String {
         Auth.auth().currentUser?.uid ?? ""
     }
     
+    var otherUserId: String {
+        conversation.otherUserId(currentUserId: currentUserId)
+    }
+    
+    var resolvedAvatar: String? {
+        chatManager.userCache[otherUserId]?.avatar
+        ?? conversation.otherUserImage(currentUserId: currentUserId)
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
             UserAvatarView(
-                avatarName: conversation.otherUserImage(currentUserId: currentUserId),
+                avatarName: resolvedAvatar,
                 name: conversation.otherUserName(currentUserId: currentUserId)
             )
             .frame(width: 56, height: 56)
@@ -60,6 +70,9 @@ struct ConversationRow: View {
             }
         }
         .padding(.vertical, 8)
+        .onAppear {
+            chatManager.listenToOtherUser(userId: otherUserId)
+        }
     }
 }
 
@@ -68,11 +81,12 @@ struct ConversationRow_Previews: PreviewProvider {
         ConversationRow(conversation: Conversation(
             participants: ["user1", "user2"],
             participantNames: ["user1": "Me", "user2": "Chef Julia"],
-            participantImages: ["user2": "https://i.pravatar.cc/150?img=1"],
+            participantImages: ["user2": "tomatoAvatar"],
             lastMessage: "That sourdough starter worked perfectly!",
             lastMessageTime: Timestamp(date: Date()),
             unreadCount: ["user1": 2, "user2": 0]
         ))
+        .environmentObject(ChatManager.shared)
         .padding()
     }
 }
