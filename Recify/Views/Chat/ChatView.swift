@@ -87,14 +87,14 @@ struct ChatView: View {
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    // TODO: Add your info button action here
-                }) {
-                    Image(systemName: "info.circle")
-                        .foregroundColor(.primary)
-                }
-            }
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                Button(action: {
+//                    // TODO: Add your info button action here
+//                }) {
+//                    Image(systemName: "info.circle")
+//                        .foregroundColor(.primary)
+//                }
+//            }
         }
     }
     
