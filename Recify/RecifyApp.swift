@@ -21,9 +21,10 @@ struct RecifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
-    @StateObject private var authManager = AuthManager()
+    @StateObject private var authManager = AuthManager.shared
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var firebaseViewModel = FirebaseViewModel()
+    @StateObject private var chatManager = ChatManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -39,7 +40,7 @@ struct RecifyApp: App {
             .environmentObject(authManager)
             .environmentObject(homeViewModel)
             .environmentObject(firebaseViewModel)
-            .environmentObject(ChatManager())
+            .environmentObject(ChatManager.shared)
         }
     }
 }

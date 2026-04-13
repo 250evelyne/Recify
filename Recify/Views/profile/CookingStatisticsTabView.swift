@@ -9,10 +9,17 @@ import SwiftUI
 
 struct CookingStatisticsTabView: View {
     @EnvironmentObject var authManager: AuthManager
+    @StateObject var firebaseViewModel = FirebaseViewModel.shared
+    
+    var joinedDateString: String {
+        guard let date = authManager.userProfile?.createdAt else { return "Jan 2024" }
+        return date.formatted(.dateTime.month().year())
+    }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                // MARK: - Profile Header
                 VStack(spacing: 12) {
                     Image(authManager.userProfile?.avatar ?? "cupcakeAvatar")
                         .resizable()
@@ -36,12 +43,7 @@ struct CookingStatisticsTabView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    //                    Text("Level 12 Master Cook")
-                    //                        .font(.subheadline)
-                    //                        .foregroundColor(.pink)
-                    //                        .fontWeight(.semibold)
-                    
-                    Text("Shining since Jan 2024") //TODO: add the date careate the account
+                    Text("Shining since \(joinedDateString)")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
@@ -50,19 +52,19 @@ struct CookingStatisticsTabView: View {
                 .background(Color.white)
                 .cornerRadius(12)
                 
+                // MARK: - Quick Stats
                 HStack(spacing: 20) {
                     VStack(spacing: 8) {
                         HStack {
                             Image(systemName: "fork.knife")
                                 .foregroundColor(.pink)
-                            Text("Recipes")
+                            Text("Published")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
-                        Text("124") //TODO: add their count of recipe they have puplished
+                        Text("\(firebaseViewModel.userRecipes.count)")
                             .font(.title)
                             .fontWeight(.bold)
-                        
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -73,14 +75,13 @@ struct CookingStatisticsTabView: View {
                         HStack {
                             Image(systemName: "flame.fill")
                                 .foregroundColor(.pink)
-                            Text("Cooking")
+                            Text("Cooked")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
-                        Text("12 days")
+                        Text("\(authManager.userProfile?.mealsCooked ?? 0) times")
                             .font(.title)
                             .fontWeight(.bold)
-                        
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -88,8 +89,9 @@ struct CookingStatisticsTabView: View {
                     .cornerRadius(12)
                 }
                 
+                // MARK: - Saved Recipes
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Cuisines Explored")
+                    Text("Recipes Saved")
                         .font(.headline)
                     
                     ZStack {
@@ -98,113 +100,63 @@ struct CookingStatisticsTabView: View {
                             .frame(width: 150, height: 150)
                         
                         Circle()
-                            .trim(from: 0, to: 0.6)
+                            .trim(from: 0, to: min(CGFloat(firebaseViewModel.savedRecipes.count) / 50.0, 1.0))
                             .stroke(Color.pink, style: StrokeStyle(lineWidth: 30, lineCap: .round))
                             .frame(width: 150, height: 150)
                             .rotationEffect(.degrees(-90))
+                            .animation(.easeOut(duration: 1.0), value: firebaseViewModel.savedRecipes.count)
                         
                         VStack {
-                            Text("12") //TODO: how many recipes u have saved
+                            Text("\(firebaseViewModel.savedRecipes.count)")
                                 .font(.system(size: 36, weight: .bold))
-                            Text("types")
+                            Text("saved")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
                     }
                     .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
                 }
                 .padding()
                 .background(Color.white)
                 .cornerRadius(12)
                 
+                // MARK: - Pantry Items
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text("Pantry Efficiency")
+                        Text("Pantry Status")
                             .font(.headline)
                         Spacer()
-                        //                        VStack(alignment: .trailing, spacing: 2) {
-                        //                            Text("SAVED $40")
-                        //                                .font(.caption)
-                        //                                .foregroundColor(.green)
-                        //                                .fontWeight(.semibold)
-                        //                            Text("vs last month")
-                        //                                .font(.caption2)
-                        //                                .foregroundColor(.gray)
-                        //                        }
                     }
                     
-                    HStack(alignment: .bottom) { //TODO: show how many items u have in yr pantry
-                        Text("85%")
+                    HStack(alignment: .bottom) {
+                        Text("\(firebaseViewModel.ingredients.count)")
                             .font(.system(size: 48, weight: .bold))
+                        
+                        Text("items stocked")
+                            .font(.title3)
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 8)
+                        
                         Spacer()
                     }
-                    //
-                    //                    Text("Resource Utilization")
-                    //                        .font(.caption)
-                    //                        .foregroundColor(.gray)
-                    //
-                    //                    ProgressView(value: 0.85)
-                    //                        .progressViewStyle(LinearProgressViewStyle(tint: .pink))
-                    //                        .scaleEffect(x: 1, y: 2, anchor: .center)
-                    //
-                    //                    Text("*You're excellent at using on-hand ingredients! This month you've wasted 12% less fresh produce.")
-                    //                        .font(.caption)
-                    //                        .foregroundColor(.gray)
-                    //                        .italic()
                 }
                 .padding()
                 .background(Color.white)
                 .cornerRadius(12)
-                
-                //                VStack(alignment: .leading, spacing: 12) {
-                //                    HStack {
-                //                        Text("Weekly Heatmap")
-                //                            .font(.headline)
-                //                        Spacer()
-                //                        HStack(spacing: 8) {
-                //                            Text("LESS ACTIVE")
-                //                                .font(.caption2)
-                //                                .foregroundColor(.gray)
-                //                            HStack(spacing: 2) {
-                //                                Circle().fill(Color.pink.opacity(0.2)).frame(width: 8, height: 8)
-                //                                Circle().fill(Color.pink.opacity(0.4)).frame(width: 8, height: 8)
-                //                                Circle().fill(Color.pink.opacity(0.6)).frame(width: 8, height: 8)
-                //                                Circle().fill(Color.pink.opacity(0.8)).frame(width: 8, height: 8)
-                //                                Circle().fill(Color.pink).frame(width: 8, height: 8)
-                //                            }
-                //                            Text("MORE ACTIVE")
-                //                                .font(.caption2)
-                //                                .foregroundColor(.gray)
-                //                        }
-                //                    }
-                //
-                //                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 4) {
-                //                        ForEach(0..<49) { index in
-                //                            Rectangle()
-                //                                .fill(Color.pink.opacity(Double.random(in: 0.2...1.0)))
-                //                                .frame(height: 20)
-                //                                .cornerRadius(4)
-                //                        }
-                //                    }
-                //                }
-                //                .padding()
-                //                .background(Color.white)
-                //                .cornerRadius(12)
-                
             }
             .padding()
         }
         .recifyBackground()
         .navigationTitle("Cooking Statistics")
         .navigationBarTitleDisplayMode(.inline)
-//        .toolbar {
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                Button(action: {}) {
-//                    Image(systemName: "square.and.arrow.up")
-//                        .foregroundColor(.pink)
-//                }
-//            }
-//        }
+        .onAppear {
+            Task {
+                await firebaseViewModel.loadUserRecipes()
+            }
+            firebaseViewModel.fetchSavedRecipes()
+            firebaseViewModel.fetchIngredients()
+        }
     }
 }
 
