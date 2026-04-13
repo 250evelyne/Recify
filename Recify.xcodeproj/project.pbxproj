@@ -34,6 +34,7 @@
 		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
 		20794C8F2F58E19F00751877 /* MyPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20794C8E2F58E19F00751877 /* MyPostsView.swift */; };
 		208979BF2F8C40A40061767A /* ChatViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208979BE2F8C40A40061767A /* ChatViewWrapper.swift */; };
+		208979C12F8CC0330061767A /* EditRecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208979C02F8CC0310061767A /* EditRecipeView.swift */; };
 		208CB3952F7DC6D3007038F8 /* addNewRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3922F7DC6D3007038F8 /* addNewRecipe.swift */; };
 		208CB3962F7DC6D3007038F8 /* AddStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3932F7DC6D3007038F8 /* AddStep.swift */; };
 		208CB3972F7DC6D3007038F8 /* AddIngredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3912F7DC6D3007038F8 /* AddIngredient.swift */; };
@@ -124,6 +125,7 @@
 		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		20794C8E2F58E19F00751877 /* MyPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPostsView.swift; sourceTree = "<group>"; };
 		208979BE2F8C40A40061767A /* ChatViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewWrapper.swift; sourceTree = "<group>"; };
+		208979C02F8CC0310061767A /* EditRecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecipeView.swift; sourceTree = "<group>"; };
 		208CB3912F7DC6D3007038F8 /* AddIngredient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredient.swift; sourceTree = "<group>"; };
 		208CB3922F7DC6D3007038F8 /* addNewRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addNewRecipe.swift; sourceTree = "<group>"; };
 		208CB3932F7DC6D3007038F8 /* AddStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStep.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 		208CB3A12F7DCA55007038F8 /* Favorites */ = {
 			isa = PBXGroup;
 			children = (
+				208979C02F8CC0310061767A /* EditRecipeView.swift */,
 				208CB39D2F7DCA55007038F8 /* CreateCollection.swift */,
 				208CB39E2F7DCA55007038F8 /* FavoriteRecipesView.swift */,
 				208CB39F2F7DCA55007038F8 /* savedCollectionsView.swift */,
@@ -609,6 +612,7 @@
 				FA9504EA2F5DECA60082B995 /* SearchResults.swift in Sources */,
 				04040FE52F3117E300EA6C4C /* ContentView.swift in Sources */,
 				FAA5E4B82F50E47500F3122C /* CreatePostView.swift in Sources */,
+				208979C12F8CC0330061767A /* EditRecipeView.swift in Sources */,
 				FAA185AF2F57CC1400A67F7C /* CookTime.swift in Sources */,
 				20EE05842F3D0F3B00930D68 /* ConversationRow.swift in Sources */,
 				20F7E1462F5E8D3900A9A6AC /* SavedRecipe.swift in Sources */,

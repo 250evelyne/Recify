@@ -84,17 +84,16 @@ struct AddStep: View {
                             Image(systemName: "xmark")
                         }.buttonStyle(.bordered)
                     }
-                    
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            onAdd(instruction)
-                            dismiss()
-                        } label: {
-                            Text("Save")
-                        }
-                        .buttonStyle(.bordered)
-                        .disabled(instruction.isEmpty)
-                    }
+//                    ToolbarItem(placement: .topBarTrailing) {
+//                        Button {
+//                            onAdd(instruction)
+//                            dismiss()
+//                        } label: {
+//                            Text("Save")
+//                        }
+//                        .buttonStyle(.bordered)
+//                        .disabled(instruction.isEmpty)
+//                    }
                 }
         }//nav end
     }

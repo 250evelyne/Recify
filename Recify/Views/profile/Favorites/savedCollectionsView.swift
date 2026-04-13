@@ -20,6 +20,10 @@ struct savedCollectionsView: View {
     @State private var navigatingCollection: RecipeCollection?
     @State private var showCreateSheet = false
     @State private var isNavigating: Bool = false
+    @State private var showOptionsSheet = false
+    @State private var showDeleteAlert = false
+    @State private var showRenameAlert = false
+    @State private var newCollectionName = ""
     
     var body: some View {
         VStack {
@@ -90,10 +94,10 @@ struct savedCollectionsView: View {
                             }
                             .onLongPressGesture {
                                 selectedCollection = collection
-                                showAlert = true
+                                newCollectionName = collection.name
+                                showOptionsSheet = true
                                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                            }
-                        }
+                            }                        }
                     }
                     .padding()
                 }
@@ -106,7 +110,30 @@ struct savedCollectionsView: View {
                 )
             }
         }
-        .alert("Delete Collection?", isPresented: $showAlert) {
+        .confirmationDialog("Collection Options", isPresented: $showOptionsSheet, titleVisibility: .visible) {
+            Button("Edit Name") {
+                showRenameAlert = true
+            }
+            Button("Delete Collection", role: .destructive) {
+                showDeleteAlert = true
+            }
+            Button("Cancel", role: .cancel) {
+                selectedCollection = nil
+            }
+        }
+        .alert("Rename Collection", isPresented: $showRenameAlert) {
+            TextField("New Name", text: $newCollectionName)
+            Button("Save") {
+                if let collection = selectedCollection, let id = collection.id {
+                    firebaseManager.updateCollectionName(collectionId: id, newName: newCollectionName)
+                }
+                selectedCollection = nil
+            }
+            Button("Cancel", role: .cancel) {
+                selectedCollection = nil
+            }
+        }
+        .alert("Delete Collection?", isPresented: $showDeleteAlert) {
             Button("Delete", role: .destructive) {
                 if let collection = selectedCollection {
                     withAnimation {
