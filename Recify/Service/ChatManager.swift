@@ -56,10 +56,10 @@ class ChatManager: ObservableObject {
     func startListeningToMessages(conversationId: String) {
         messagesListener?.remove()
         
-        // Load what we have offline from Core Data for speed
+        //lLoad what we have offline from Core Data for speed
         self.loadOfflineMessages(for: conversationId)
         
-        // Then, listen for live updates from Firebase
+        // then listen for live updates from Firebase
         messagesListener = db.collection("conversations")
             .document(conversationId)
             .collection("messages")
