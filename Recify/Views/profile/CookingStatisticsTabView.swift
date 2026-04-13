@@ -194,7 +194,7 @@ struct CookingStatisticsTabView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .recifyBackground()
         .navigationTitle("Cooking Statistics")
         .navigationBarTitleDisplayMode(.inline)
 //        .toolbar {

@@ -46,25 +46,25 @@ struct ChatView: View {
             }
             
             HStack(spacing: 12) {
-//                Button(action: {
-//                    showImagePicker = true
-//                }) {
-//                    Image(systemName: "camera.fill")
-//                        .foregroundColor(.white)
-//                        .frame(width: 36, height: 36)
-//                        .background(Color.pink)
-//                        .clipShape(Circle())
-//                }
+                //                Button(action: {
+                //                    showImagePicker = true
+                //                }) {
+                //                    Image(systemName: "camera.fill")
+                //                        .foregroundColor(.white)
+                //                        .frame(width: 36, height: 36)
+                //                        .background(Color.pink)
+                //                        .clipShape(Circle())
+                //                }
                 
                 HStack {
                     TextField("Message \(conversation.otherUserName(currentUserId: currentUserId))...", text: $messageText)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
                     
-//                    Button(action: {}) {
-//                        Image(systemName: "face.smiling")
-//                            .foregroundColor(.gray)
-//                    }
+                    //                    Button(action: {}) {
+                    //                        Image(systemName: "face.smiling")
+                    //                            .foregroundColor(.gray)
+                    //                    }
                 }
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(20)
@@ -81,65 +81,60 @@ struct ChatView: View {
             .padding()
             .background(Color.white)
         }
+        .background(Color(.systemGroupedBackground))
         .navigationTitle(conversation.otherUserName(currentUserId: currentUserId))
+        
+        
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     UserAvatarView(
                         imageURL: conversation.otherUserImage(currentUserId: currentUserId),
                         name: conversation.otherUserName(currentUserId: currentUserId)
                     )
-                    
+                    .frame(width: 36, height: 36)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(conversation.otherUserName(currentUserId: currentUserId))
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .lineLimit(1)
                         Text("Online")
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundColor(.green)
                     }
                 }
             }
-            
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                HStack(spacing: 16) {
-//                   Button(action: {}) {
-//                        Image(systemName: "video.fill")
-//                   }
-//                    Button(action: {}) {
-//                        Image(systemName: "info.circle")
-//                    }
-//                }
-//            }
         }
-        .onAppear {
-            if let conversationId = conversation.id {
-                chatManager.startListeningToMessages(conversationId: conversationId)
-                chatManager.currentConversation = conversation
+            .onAppear {
+                if let conversationId = conversation.id {
+                    chatManager.startListeningToMessages(conversationId: conversationId)
+                    chatManager.currentConversation = conversation
+                }
             }
+        }
+        
+        func sendMessage() {
+            guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty,
+                  let conversationId = conversation.id else { return }
+            
+            // Use 'chatManager' (no $) and call the correct 'in:' parameter
+            chatManager.sendMessage(text: messageText, in: conversationId)
+            messageText = ""
         }
     }
     
-    func sendMessage() {
-        guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty,
-              let conversationId = conversation.id else { return }
-        
-        // Use 'chatManager' (no $) and call the correct 'in:' parameter
-        chatManager.sendMessage(text: messageText, in: conversationId)
-        messageText = ""
-    }
-}
-
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            ChatView(conversation: Conversation(
-                participants: ["user1", "user2"],
-                participantNames: ["user1": "Me", "user2": "Alexanne"],
-                participantImages: [:],
-                unreadCount: ["user1": 0, "user2": 0]
-            ))
-            .environmentObject(ChatManager())
+    struct ChatView_Previews: PreviewProvider {
+        static var previews: some View {
+            NavigationView {
+                ChatView(conversation: Conversation(
+                    participants: ["user1", "user2"],
+                    participantNames: ["user1": "Me", "user2": "Alexanne"],
+                    participantImages: [:],
+                    unreadCount: ["user1": 0, "user2": 0]
+                ))
+                .environmentObject(ChatManager())
+            }
         }
     }
-}
+

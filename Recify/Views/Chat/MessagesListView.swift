@@ -41,6 +41,7 @@ struct MessagesListView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
+                .padding(.bottom, 16)
                 
                 if filteredConversations.isEmpty {
                     VStack(spacing: 16) {
@@ -59,34 +60,34 @@ struct MessagesListView: View {
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)
                                 .padding()
-                                .background(Color.pink)
+                                .background(
+                                    LinearGradient(colors: [.pink, .pink.opacity(0.8)], startPoint: .leading, endPoint: .trailing)
+                                )
                                 .cornerRadius(12)
+                                .shadow(color: .pink.opacity(0.3), radius: 8, x: 0, y: 4)
                         }
                         .padding(.top)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    List {
-                        ForEach(filteredConversations) { conversation in
-                            NavigationLink(destination: ChatView(conversation: conversation)
-                                .environmentObject(chatManager)) {
-                                ConversationRow(conversation: conversation)
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            ForEach(filteredConversations) { conversation in
+                                NavigationLink(destination: ChatView(conversation: conversation)
+                                    .environmentObject(chatManager)) {
+                                    ConversationCard(conversation: conversation)
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .onDelete(perform: deleteConversations)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
-                    .listStyle(PlainListStyle())
                 }
             }
+            .recifyBackground()
             .navigationTitle("Messages")
             .toolbar {
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    Button(action: {}) {
-//                        Image(systemName: "gearshape.fill")
-//                            .foregroundColor(.pink)
-//                    }
-//                }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showNewChat = true }) {
                         Image(systemName: "square.and.pencil")
@@ -132,6 +133,66 @@ struct MessagesListView: View {
         offsets.map { chatManager.conversations[$0] }.forEach { conversation in
             chatManager.deleteConversation(conversation)
         }
+    }
+}
+
+struct ConversationCard: View {
+    let conversation: Conversation
+    
+    var currentUserId: String {
+        return Auth.auth().currentUser?.uid ?? ""
+    }
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            UserAvatarView(
+                imageURL: conversation.otherUserImage(currentUserId: currentUserId),
+                name: conversation.otherUserName(currentUserId: currentUserId)
+            )
+            .frame(width: 56, height: 56)
+            .overlay(
+                Circle()
+                    .fill(Color.green)
+                    .frame(width: 14, height: 14)
+                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                    .offset(x: 18, y: 18)
+            )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(conversation.otherUserName(currentUserId: currentUserId))
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(conversation.formattedTime)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                HStack {
+                    Text(conversation.lastMessage ?? "No messages yet")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                    
+                    if let unreadCount = conversation.unreadCount[currentUserId], unreadCount > 0 {
+                        Text("\(unreadCount)")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .frame(minWidth: 20, minHeight: 20)
+                            .background(Color.pink)
+                            .clipShape(Circle())
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
     }
 }
 

@@ -1,4 +1,3 @@
-//
 //  NewChatView.swift
 //  Recify
 //
@@ -60,35 +59,53 @@ struct NewChatView: View {
                         }
                         .padding()
                     } else {
-                        List(users) { user in
-                            NavigationLink(destination: ChatViewWrapper(user: user)
-                                .environmentObject(chatManager)) {
-                                HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(Color.pink.opacity(0.3))
-                                        .frame(width: 48, height: 48)
-                                        .overlay(
-                                            Text(user.userName.prefix(1).uppercased())
-                                                .font(.title3)
-                                                .foregroundColor(.white)
-                                        )
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(user.userName)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                        Text(user.email)
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                    }
-                                    
-                                    Spacer()
+                        //                        List(users) { user in
+                        //                            NavigationLink(destination: ChatViewWrapper(user: user)
+                        //                                .environmentObject(chatManager)) {
+                        //                                HStack(spacing: 12) {
+                        //                                    Circle()
+                        //                                        .fill(Color.pink.opacity(0.3))
+                        //                                        .frame(width: 48, height: 48)
+                        //                                        .overlay(
+                        //                                            Text(user.userName.prefix(1).uppercased())
+                        //                                                .font(.title3)
+                        //                                                .foregroundColor(.white)
+                        //                                        )
+                        //
+                        //                                    VStack(alignment: .leading, spacing: 4) {
+                        //                                        Text(user.userName)
+                        //                                            .font(.headline)
+                        //                                            .foregroundColor(.primary)
+                        //                                        Text(user.email)
+                        //                                            .font(.caption)
+                        //                                            .foregroundColor(.gray)
+                        //                                    }
+                        //
+                        //                                    Spacer()
+                        //                                }
+                        //                                .padding(.vertical, 8)
+                        //                            }
+                        //                        }
+                        //                        .listStyle(PlainListStyle())
+                        
+                        
+                        
+                        ScrollView {
+                            VStack(spacing: 12) {
+                                ForEach(users) { user in
+                                    NavigationLink(destination: ChatViewWrapper(user: user)
+                                        .environmentObject(chatManager)) {
+                                            UserCard(user: user)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
                                 }
-                                .padding(.vertical, 8)
                             }
+                            .padding(.horizontal)
+                            .padding(.top, 8)
                         }
-                        .listStyle(PlainListStyle())
                     }
+            
+        
                 }
                 
                 if isCreatingConversation {
@@ -99,6 +116,7 @@ struct NewChatView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .pink))
                 }
             }
+            .recifyBackground()
             .navigationTitle("New Message")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -106,6 +124,7 @@ struct NewChatView: View {
                     Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
                     }
+                    .foregroundColor(.pink)
                 }
             }
             .onAppear {
@@ -175,6 +194,47 @@ struct NewChatView: View {
     }
 }
 
+
+struct UserCard: View {
+    let user: User
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            let avatarName = user.avatar.isEmpty ? "tomatoAvatar" : user.avatar
+            
+            Image(avatarName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 56, height: 56)
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.userName)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Text(user.email)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14))
+                .foregroundColor(.gray)
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+    }
+}
+
+
+
 struct ChatViewWrapper: View {
     let user: User
     @EnvironmentObject var chatManager: ChatManager
@@ -219,7 +279,7 @@ struct ChatViewWrapper: View {
         chatManager.createConversation(
             withUserId: userId,
             userName: user.userName,
-            userImage: user.avatar //chnage this from nil to this 
+            userImage: user.avatar //chnage this from nil to this
         ) { conversationId in
             print("Conversation ID: \(conversationId ?? "nil")")
             

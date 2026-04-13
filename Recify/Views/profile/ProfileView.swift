@@ -216,7 +216,7 @@ struct ProfileView: View {
                         .padding(.bottom, 30)
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .recifyBackground()
             .navigationTitle("Account Settings")
             .navigationBarTitleDisplayMode(.automatic)
             .toolbarRole(.editor)
