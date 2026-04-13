@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Message: Identifiable, Codable {
+struct Message: Identifiable, Codable, Equatable {
     @DocumentID var id: String?
     var conversationId: String
     var text: String?

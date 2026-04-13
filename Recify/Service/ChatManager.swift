@@ -14,6 +14,7 @@ class ChatManager: ObservableObject {
     @Published var conversations: [Conversation] = []
     @Published var messages: [Message] = []
     @Published var currentConversation: Conversation?
+    @Published var userCache: [String: User] = [:]
     
     private let db = Firestore.firestore()
     private var conversationsListener: ListenerRegistration?
@@ -31,7 +32,12 @@ class ChatManager: ObservableObject {
         messagesListener?.remove()
     }
     
-    //firebase Real-time Listeners
+    static func getLiveAvatar(for userId: String) -> String? {
+        return shared.userCache[userId]?.avatar
+    }
+    
+    static let shared = ChatManager()
+    
     
     func startListeningToConversations() {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
@@ -125,20 +131,19 @@ class ChatManager: ObservableObject {
     
     // MARK: - Actions
     func sendMessage(text: String, in conversationId: String) {
-        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let currentUser = AuthManager.shared.userProfile else { return }
         
         let currentUserName = AuthManager.shared.userProfile?.userName ?? "Me"
-        let currentAvatar = AuthManager.shared.userProfile?.avatar ?? "cookieAvatar"
+        let currentAvatar = AuthManager.shared.userProfile?.avatar ?? "tomatoAvatar"
         
         let messageId = UUID().uuidString
         let newMessage = Message(
             conversationId: conversationId,
             text: text,
-            imageURL: nil,
             timestamp: Timestamp(date: Date()),
-            senderId: currentUserId,
-            senderName: currentUserName,
-            senderImage: currentAvatar
+            senderId: Auth.auth().currentUser?.uid ?? "",
+            senderName: AuthManager.shared.userProfile?.userName ?? "Me",
+            senderImage: AuthManager.shared.userProfile?.avatar 
         )
         
         do {
@@ -202,7 +207,7 @@ class ChatManager: ObservableObject {
                 otherUserId: userName
             ],
             participantImages: [
-                otherUserId: userImage ?? "cookieAvatar"
+                otherUserId: userImage ?? "tomatoAvatar"
             ],
             lastMessage: "Started a new conversation",
             lastMessageTime: Timestamp(date: Date()),
@@ -225,4 +230,24 @@ class ChatManager: ObservableObject {
         conversationsListener?.remove()
         messagesListener?.remove()
     }
+    
+    func listenToOtherUser(userId: String) {
+        db.collection("users").document(userId).addSnapshotListener { snapshot, error in
+            guard let data = snapshot?.data() else {
+                print("DEBUG: No data for \(userId)")
+                return
+            }
+            let updatedUser = User(
+                id: userId,
+                email: data["email"] as? String ?? "",
+                userName: data["userName"] as? String ?? "",
+                avatar: data["avatar"] as? String ?? "tomatoAvatar"
+            )
+            DispatchQueue.main.async {
+                self.userCache[userId] = updatedUser
+            }
+        }
+    }
+    
+    
 }

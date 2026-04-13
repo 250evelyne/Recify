@@ -12,14 +12,16 @@ import FirebaseFirestore
 struct ConversationRow: View {
     let conversation: Conversation
     
+    @ObservedObject var authManager = AuthManager.shared
+    
     var currentUserId: String {
-        return Auth.auth().currentUser?.uid ?? ""
+        Auth.auth().currentUser?.uid ?? ""
     }
     
     var body: some View {
         HStack(spacing: 12) {
             UserAvatarView(
-                imageURL: conversation.otherUserImage(currentUserId: currentUserId),
+                avatarName: conversation.otherUserImage(currentUserId: currentUserId),
                 name: conversation.otherUserName(currentUserId: currentUserId)
             )
             .frame(width: 56, height: 56)

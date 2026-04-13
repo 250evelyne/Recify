@@ -120,15 +120,24 @@ class AuthManager: ObservableObject {
     
         
     func updateAvatarLocally(newAvatar: String) {
+        self.objectWillChange.send()
+        
         self.userProfile?.avatar = newAvatar
         
         guard let uid = currentUser?.uid else { return }
+        
         db.collection("users").document(uid).updateData([
             "avatar": newAvatar
         ]) { error in
             if let error = error {
-                print("Error syncing avatar to cloud: \(error.localizedDescription)")
+                print("Error: \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    FirebaseViewModel.shared.refreshData()
+                }
             }
         }
     }
+    
+    
 }

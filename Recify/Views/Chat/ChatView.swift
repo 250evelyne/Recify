@@ -29,18 +29,29 @@ struct ChatView: View {
                                 .id(message.id)
                         }
                     }
+                    .id(chatManager.userCache.values.compactMap { $0.avatar }.joined())
                     .padding(.vertical)
                 }
-                .onChange(of: chatManager.messages.count) { _ in
-                    if let lastMessage = chatManager.messages.last {
-                        withAnimation {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                .onChange(of: chatManager.messages) { messages in
+                    for message in messages {
+                        if message.senderId != currentUserId {
+                            chatManager.listenToOtherUser(userId: message.senderId)
                         }
                     }
                 }
                 .onAppear {
-                    if let lastMessage = chatManager.messages.last {
-                        proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                    if let conversationId = conversation.id {
+                        chatManager.startListeningToMessages(conversationId: conversationId)
+                        
+                        for participantId in conversation.participants {
+                            if participantId != currentUserId {
+                                chatManager.listenToOtherUser(userId: participantId)
+                            }
+                        }
+                        
+                        if let lastMessage = chatManager.messages.last {
+                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        }
                     }
                 }
             }
@@ -86,8 +97,11 @@ struct ChatView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 8) {
+                    let otherUserId = conversation.participants.first(where: { $0 != currentUserId }) ?? ""
+                    let liveFriendImage = chatManager.userCache[otherUserId]?.avatar ?? conversation.otherUserImage(currentUserId: currentUserId)
+                    
                     UserAvatarView(
-                        imageURL: conversation.otherUserImage(currentUserId: currentUserId),
+                        avatarName: liveFriendImage,
                         name: conversation.otherUserName(currentUserId: currentUserId)
                     )
                     
@@ -100,31 +114,14 @@ struct ChatView: View {
                     }
                 }
             }
-            
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                HStack(spacing: 16) {
-//                   Button(action: {}) {
-//                        Image(systemName: "video.fill")
-//                   }
-//                    Button(action: {}) {
-//                        Image(systemName: "info.circle")
-//                    }
-//                }
-//            }
         }
-        .onAppear {
-            if let conversationId = conversation.id {
-                chatManager.startListeningToMessages(conversationId: conversationId)
-                chatManager.currentConversation = conversation
-            }
-        }
+        
     }
     
     func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespaces).isEmpty,
               let conversationId = conversation.id else { return }
         
-        // Use 'chatManager' (no $) and call the correct 'in:' parameter
         chatManager.sendMessage(text: messageText, in: conversationId)
         messageText = ""
     }

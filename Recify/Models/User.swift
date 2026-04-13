@@ -8,14 +8,15 @@
 import Foundation
 import FirebaseFirestore
 
-struct User: Identifiable, Codable {
+struct User: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var email: String
-    var userName: String
-    var favorites: [String]
-    var avatar: String
+    var userName: String?
+    var favorites: [String]?
+    var avatar: String?
     
-    init(id: String? = nil, email: String, userName: String, favorites: [String] = [], avatar: String = "cookieAvatar") {
+    init(id: String? = nil, email: String, userName: String? = nil, favorites: [String]? = [], avatar: String? = "tomatoAvatar") {
+        self.id = id
         self.email = email
         self.userName = userName
         self.favorites = favorites

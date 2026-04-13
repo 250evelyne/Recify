@@ -33,6 +33,7 @@
 		040410352F311C3A00EA6C4C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410342F311C3A00EA6C4C /* SignUpView.swift */; };
 		040410372F31234400EA6C4C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040410362F31234300EA6C4C /* ProfileView.swift */; };
 		20794C8F2F58E19F00751877 /* MyPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20794C8E2F58E19F00751877 /* MyPostsView.swift */; };
+		208979BF2F8C40A40061767A /* ChatViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208979BE2F8C40A40061767A /* ChatViewWrapper.swift */; };
 		208CB3952F7DC6D3007038F8 /* addNewRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3922F7DC6D3007038F8 /* addNewRecipe.swift */; };
 		208CB3962F7DC6D3007038F8 /* AddStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3932F7DC6D3007038F8 /* AddStep.swift */; };
 		208CB3972F7DC6D3007038F8 /* AddIngredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208CB3912F7DC6D3007038F8 /* AddIngredient.swift */; };
@@ -122,6 +123,7 @@
 		040410342F311C3A00EA6C4C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		040410362F31234300EA6C4C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		20794C8E2F58E19F00751877 /* MyPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPostsView.swift; sourceTree = "<group>"; };
+		208979BE2F8C40A40061767A /* ChatViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewWrapper.swift; sourceTree = "<group>"; };
 		208CB3912F7DC6D3007038F8 /* AddIngredient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredient.swift; sourceTree = "<group>"; };
 		208CB3922F7DC6D3007038F8 /* addNewRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addNewRecipe.swift; sourceTree = "<group>"; };
 		208CB3932F7DC6D3007038F8 /* AddStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStep.swift; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 				20EE05802F3D0F3B00930D68 /* MessageBubble.swift */,
 				20EE05812F3D0F3B00930D68 /* MessagesListView.swift */,
 				20EE05822F3D0F3B00930D68 /* NewChatView.swift */,
+				208979BE2F8C40A40061767A /* ChatViewWrapper.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -585,6 +588,7 @@
 				040410372F31234400EA6C4C /* ProfileView.swift in Sources */,
 				04040FEF2F3117E600EA6C4C /* Recify.xcdatamodeld in Sources */,
 				208CB3952F7DC6D3007038F8 /* addNewRecipe.swift in Sources */,
+				208979BF2F8C40A40061767A /* ChatViewWrapper.swift in Sources */,
 				FA1B36432F88946200B121C9 /* GroceryStore.swift in Sources */,
 				208CB3962F7DC6D3007038F8 /* AddStep.swift in Sources */,
 				208CB3972F7DC6D3007038F8 /* AddIngredient.swift in Sources */,
