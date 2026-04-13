@@ -41,18 +41,41 @@ class AuthManager: ObservableObject {
             }
             
             if let data = snapshot?.data() {
+                let timestamp = data["createdAt"] as? Timestamp
+                
                 self.userProfile = User(
                     id: userId,
                     email: data["email"] as? String ?? "",
                     userName: data["userName"] as? String ?? "",
                     favorites: data["favorites"] as? [String] ?? [],
-                    avatar: data["avatar"] as? String ?? "tomatoAvatar"
+                    avatar: data["avatar"] as? String ?? "tomatoAvatar",
+                    createdAt: timestamp?.dateValue(),
+                    mealsCooked: data["mealsCooked"] as? Int ?? 0
                 )
-                print(" Profile loaded: \(self.userProfile?.userName ?? "")")
                 
                 DispatchQueue.main.async {
                     FirebaseViewModel.shared.refreshData()
                 }
+            }
+        }
+    }
+    
+    func incrementMealsCooked() {
+        guard let uid = currentUser?.uid else { return }
+        
+        let currentCount = userProfile?.mealsCooked ?? 0
+        let newCount = currentCount + 1
+        
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+            self.userProfile?.mealsCooked = newCount
+        }
+        
+        db.collection("users").document(uid).setData(["mealsCooked": newCount], merge: true) { error in
+            if let error = error {
+                print("Error updating meals cooked: \(error.localizedDescription)")
+            } else {
+                print("Successfully incremented meals cooked to \(newCount)!")
             }
         }
     }

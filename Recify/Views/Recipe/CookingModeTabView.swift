@@ -13,9 +13,9 @@ struct CookingModeTabView: View {
     let imageURL: String?
     
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var authManager: AuthManager
     @State private var currentStepIndex = 0
     
-    // MARK: - FIX 1: Clamped Progress
     var progress: Double {
         guard !steps.isEmpty else { return 0.0 }
         let calculatedProgress = Double(currentStepIndex + 1) / Double(steps.count)
@@ -149,6 +149,7 @@ struct CookingModeTabView: View {
                             currentStepIndex += 1
                         }
                     } else {
+                        authManager.incrementMealsCooked()
                         dismiss()
                     }
                 }) {
@@ -186,6 +187,8 @@ struct CookingModeTabView: View {
                 }
             }
         }
+        
+        
     }
     
     private var placeholderImage: some View {
