@@ -14,68 +14,67 @@ struct OnboardingView: View {
     let pages = OnboardingPage.pages
     
     var body: some View {
-        ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+        VStack {
+            HStack {
+                Text("Recify")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.pink)
+                
+                Spacer()
+                
+                Button("Skip") {
+                    hasSeenOnboarding = true
+                }
+                .foregroundColor(.gray)
+            }
+            .padding()
             
-            VStack {
-                HStack {
-                    Text("Recify")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.pink)
-                    
-                    Spacer()
-                    
-                    Button("Skip") {
+            TabView(selection: $currentPage) {
+                ForEach(0..<pages.count, id: \.self) { index in
+                    OnboardingPageView(page: pages[index])
+                        .tag(index)
+                }
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+            
+            VStack(spacing: 16) {
+                Button(action: {
+                    if currentPage < pages.count - 1 {
+                        withAnimation {
+                            currentPage += 1
+                        }
+                    } else {
                         hasSeenOnboarding = true
                     }
-                    .foregroundColor(.gray)
+                }) {
+                    Text(currentPage < pages.count - 1 ? "Next" : "Get Started")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(colors: [.pink, .pink.opacity(0.8)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .cornerRadius(12)
+                        .shadow(color: .pink.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
-                .padding()
+                .padding(.horizontal, 24)
                 
-                TabView(selection: $currentPage) {
-                    ForEach(0..<pages.count, id: \.self) { index in
-                        OnboardingPageView(page: pages[index])
-                            .tag(index)
+                HStack {
+                    Text("Already have an account?")
+                        .foregroundColor(.gray)
+                    Button("Log In") {
+                        hasSeenOnboarding = true
                     }
+                    .foregroundColor(.pink)
+                    .fontWeight(.semibold)
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-                
-                VStack(spacing: 16) {
-                    Button(action: {
-                        if currentPage < pages.count - 1 {
-                            withAnimation {
-                                currentPage += 1
-                            }
-                        } else {
-                            hasSeenOnboarding = true
-                        }
-                    }) {
-                        Text(currentPage < pages.count - 1 ? "Next" : "Get Started")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.pink)
-                            .cornerRadius(12)
-                    }
-                    .padding(.horizontal, 24)
-                    
-                    HStack {
-                        Text("Already have an account?")
-                            .foregroundColor(.gray)
-                        Button("Log In") {
-                            hasSeenOnboarding = true
-                        }
-                        .foregroundColor(.pink)
-                        .fontWeight(.semibold)
-                    }
-                    .font(.subheadline)
-                }
-                .padding(.bottom, 24)
+                .font(.subheadline)
             }
+            .padding(.bottom, 24)
         }
+        .recifyBackground()
     }
 }
 
