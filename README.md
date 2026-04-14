@@ -1,5 +1,12 @@
-# Recify
-IOS recipe app with Firebase &amp; CoreData - iOS Development II Course Project
+# 🍳 Recify
+
+**An iOS Recipe Discovery & Meal Planning App**
+
+Recify is a comprehensive recipe management platform built with SwiftUI, Firebase, and CoreData. Discover new recipes, manage your pantry, plan meals,add recipes, and connect with fellow cooking enthusiasts — all in one beautifully designed app.
+
+> **👥 Team:** Evelyne, Alexanne, Anabella
+
+---
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 21 38 32" src="https://github.com/user-attachments/assets/a5d0e849-ca3f-49bd-ae77-3a912da2216a" />
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 21 38 37" src="https://github.com/user-attachments/assets/503984ac-6a63-4933-8331-61a58e6f9d08" />
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 13 20 19" src="https://github.com/user-attachments/assets/f3804c27-0f29-4e2f-9175-de46a9722450" />
