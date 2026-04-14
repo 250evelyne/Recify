@@ -18,6 +18,9 @@ Recify is a comprehensive recipe management platform built with SwiftUI, Firebas
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 13 20 49" src="https://github.com/user-attachments/assets/b16a2f06-5e91-4636-9241-b1dc9d163292" />
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 21 48 43" src="https://github.com/user-attachments/assets/5b79990f-d930-4a5f-8325-dc0bad103f1d" />
 <img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 21 49 16" src="https://github.com/user-attachments/assets/01458738-cbc4-4ff6-9536-919b5f9ab87d" />
+<img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 22 01 46" src="https://github.com/user-attachments/assets/cb413baf-d573-4a1d-b622-84f05d99f261" />
+<img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 22 02 11" src="https://github.com/user-attachments/assets/cc0f7a02-5da6-4ff9-bf4b-7e4f05e4cbdc" />
+<img width="153" height="315" alt="Simulator Screenshot - iPhone 15 Plus - 2026-04-13 at 22 02 13" src="https://github.com/user-attachments/assets/d787371c-1732-4fb5-83fe-11a0765fbf03" />
 <img width="153" height="320" alt="Screenshot 2026-03-28 at 3 48 00 PM" src="https://github.com/user-attachments/assets/3c1d672d-155e-4e49-9cec-2bd200298875" />
 <img width="152" height="315" alt="Screenshot 2026-03-28 at 3 47 37 PM" src="https://github.com/user-attachments/assets/89312b0d-1788-4a9e-847e-5595d9605d81" />
 <img width="151" height="314" alt="Screenshot 2026-03-28 at 3 48 48 PM" src="https://github.com/user-attachments/assets/58845145-d70f-404e-8708-245233207793" />
